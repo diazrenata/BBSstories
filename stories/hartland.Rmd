@@ -1,0 +1,44 @@
+---
+title: "BBS route that goes by Hartland"
+output: 
+    html_document:
+       df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(bbstrends)
+library(dplyr)
+library(ggplot2)
+```
+
+
+### Load specific route
+
+The New Hartford route goes up and down Riverton Road and was started in 1994. It feels pretty auspicious. It is route 102, region 18.
+
+```{r load route}
+
+ibd <- readRDS("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\isd_data\\ibd_isd_bbs_rtrg_102_18.Rds")
+```
+
+Here are the species present in this route over the past 25 years:
+
+```{r species list for fun, cols.print=2}
+
+
+ibd_species <- ibd %>%
+  select(id) %>%
+  distinct()
+
+species_list <- read.csv("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\species_data\\species_list_working.csv", stringsAsFactors = F)
+
+species_list <- species_list %>%
+  select(id, english_common_name)
+
+ibd_species <- left_join(ibd_species, species_list) %>%
+  distinct()
+
+(ibd_species)
+
+```
