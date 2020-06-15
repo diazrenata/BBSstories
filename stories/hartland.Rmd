@@ -1,8 +1,8 @@
 ---
 title: "BBS route that goes by Hartland"
 output: 
-    html_document:
-       df_print: paged
+    github_document:
+       df_print: kable
 ---
 
 ```{r setup, include=FALSE}

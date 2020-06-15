@@ -10,10 +10,102 @@ Here are the species present in this route over the past 25 years:
 
     ## Joining, by = "id"
 
-<div data-pagedtable="false">
+<div class="kable-table">
 
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["english_common_name"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"sp3160","2":"Mourning Dove"},{"1":"sp3340","2":"Northern Goshawk"},{"1":"sp3880","2":"Black-billed Cuckoo"},{"1":"sp3930","2":"Hairy Woodpecker"},{"1":"sp3940","2":"Downy Woodpecker"},{"1":"sp4020","2":"Yellow-bellied Sapsucker"},{"1":"sp4123","2":"(unid. Red/Yellow Shafted) Northern Flicker"},{"1":"sp4230","2":"Chimney Swift"},{"1":"sp4440","2":"Eastern Kingbird"},{"1":"sp4520","2":"Great Crested Flycatcher"},{"1":"sp4560","2":"Eastern Phoebe"},{"1":"sp4610","2":"Eastern Wood-Pewee"},{"1":"sp4660","2":"Willow Flycatcher"},{"1":"sp4770","2":"Blue Jay"},{"1":"sp4880","2":"American Crow"},{"1":"sp4930","2":"European Starling"},{"1":"sp4950","2":"Brown-headed Cowbird"},{"1":"sp4980","2":"Red-winged Blackbird"},{"1":"sp5070","2":"Baltimore Oriole"},{"1":"sp5110","2":"Common Grackle"},{"1":"sp5140","2":"Evening Grosbeak"},{"1":"sp5190","2":"House Finch"},{"1":"sp5290","2":"American Goldfinch"},{"1":"sp5600","2":"Chipping Sparrow"},{"1":"sp5630","2":"Field Sparrow"},{"1":"sp5810","2":"Song Sparrow"},{"1":"sp5870","2":"Eastern Towhee"},{"1":"sp5930","2":"Northern Cardinal"},{"1":"sp5950","2":"Rose-breasted Grosbeak"},{"1":"sp5980","2":"Indigo Bunting"},{"1":"sp6080","2":"Scarlet Tanager"},{"1":"sp6130","2":"Barn Swallow"},{"1":"sp6140","2":"Tree Swallow"},{"1":"sp6160","2":"Bank Swallow"},{"1":"sp6170","2":"Northern Rough-winged Swallow"},{"1":"sp6190","2":"Cedar Waxwing"},{"1":"sp6240","2":"Red-eyed Vireo"},{"1":"sp6270","2":"Warbling Vireo"},{"1":"sp6280","2":"Yellow-throated Vireo"},{"1":"sp6290","2":"Blue-headed Vireo"},{"1":"sp6360","2":"Black-and-white Warbler"},{"1":"sp6410","2":"Blue-winged Warbler"},{"1":"sp6520","2":"Yellow Warbler"},{"1":"sp6540","2":"Black-throated Blue Warbler"},{"1":"sp6556","2":"(unid. Myrtle/Audubon's) Yellow-rumped Warbler"},{"1":"sp6590","2":"Chestnut-sided Warbler"},{"1":"sp6670","2":"Black-throated Green Warbler"},{"1":"sp6710","2":"Pine Warbler"},{"1":"sp6740","2":"Ovenbird"},{"1":"sp6760","2":"Louisiana Waterthrush"},{"1":"sp6810","2":"Common Yellowthroat"},{"1":"sp6870","2":"American Redstart"},{"1":"sp6882","2":"House Sparrow"},{"1":"sp7030","2":"Northern Mockingbird"},{"1":"sp7040","2":"Gray Catbird"},{"1":"sp7270","2":"White-breasted Nuthatch"},{"1":"sp7310","2":"Tufted Titmouse"},{"1":"sp7350","2":"Black-capped Chickadee"},{"1":"sp7550","2":"Wood Thrush"},{"1":"sp7560","2":"Veery"},{"1":"sp7590","2":"Hermit Thrush"},{"1":"sp7610","2":"American Robin"},{"1":"sp4090","2":"Red-bellied Woodpecker"},{"1":"sp4280","2":"Ruby-throated Hummingbird"},{"1":"sp4670","2":"Least Flycatcher"},{"1":"sp5580","2":"White-throated Sparrow"},{"1":"sp5677","2":"(unid. race) Dark-eyed Junco"},{"1":"sp6620","2":"Blackburnian Warbler"},{"1":"sp7210","2":"House Wren"},{"1":"sp7260","2":"Brown Creeper"},{"1":"sp7280","2":"Red-breasted Nuthatch"},{"1":"sp3000","2":"Ruffed Grouse"},{"1":"sp3100","2":"Wild Turkey"},{"1":"sp3430","2":"Broad-winged Hawk"},{"1":"sp3870","2":"Yellow-billed Cuckoo"},{"1":"sp4050","2":"Pileated Woodpecker"},{"1":"sp4661","2":"Alder Flycatcher"},{"1":"sp7510","2":"Blue-gray Gnatcatcher"},{"1":"sp3250","2":"Turkey Vulture"},{"1":"sp3390","2":"Red-shouldered Hawk"},{"1":"sp6730","2":"Prairie Warbler"},{"1":"sp7222","2":"Winter Wren"},{"1":"sp3131","2":"Rock Pigeon"},{"1":"sp5840","2":"Swamp Sparrow"},{"1":"sp6750","2":"Northern Waterthrush"},{"1":"sp3330","2":"Cooper's Hawk"},{"1":"sp5170","2":"Purple Finch"},{"1":"sp4860","2":"Common Raven"},{"1":"sp6390","2":"Worm-eating Warbler"},{"1":"sp7180","2":"Carolina Wren"},{"1":"sp7660","2":"Eastern Bluebird"},{"1":"sp3370","2":"Red-tailed Hawk"},{"1":"sp4900","2":"Fish Crow"}],"options":{"columns":{"min":{},"max":[2]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
+| id     | english\_common\_name                          |
+| :----- | :--------------------------------------------- |
+| sp3160 | Mourning Dove                                  |
+| sp3340 | Northern Goshawk                               |
+| sp3880 | Black-billed Cuckoo                            |
+| sp3930 | Hairy Woodpecker                               |
+| sp3940 | Downy Woodpecker                               |
+| sp4020 | Yellow-bellied Sapsucker                       |
+| sp4123 | (unid. Red/Yellow Shafted) Northern Flicker    |
+| sp4230 | Chimney Swift                                  |
+| sp4440 | Eastern Kingbird                               |
+| sp4520 | Great Crested Flycatcher                       |
+| sp4560 | Eastern Phoebe                                 |
+| sp4610 | Eastern Wood-Pewee                             |
+| sp4660 | Willow Flycatcher                              |
+| sp4770 | Blue Jay                                       |
+| sp4880 | American Crow                                  |
+| sp4930 | European Starling                              |
+| sp4950 | Brown-headed Cowbird                           |
+| sp4980 | Red-winged Blackbird                           |
+| sp5070 | Baltimore Oriole                               |
+| sp5110 | Common Grackle                                 |
+| sp5140 | Evening Grosbeak                               |
+| sp5190 | House Finch                                    |
+| sp5290 | American Goldfinch                             |
+| sp5600 | Chipping Sparrow                               |
+| sp5630 | Field Sparrow                                  |
+| sp5810 | Song Sparrow                                   |
+| sp5870 | Eastern Towhee                                 |
+| sp5930 | Northern Cardinal                              |
+| sp5950 | Rose-breasted Grosbeak                         |
+| sp5980 | Indigo Bunting                                 |
+| sp6080 | Scarlet Tanager                                |
+| sp6130 | Barn Swallow                                   |
+| sp6140 | Tree Swallow                                   |
+| sp6160 | Bank Swallow                                   |
+| sp6170 | Northern Rough-winged Swallow                  |
+| sp6190 | Cedar Waxwing                                  |
+| sp6240 | Red-eyed Vireo                                 |
+| sp6270 | Warbling Vireo                                 |
+| sp6280 | Yellow-throated Vireo                          |
+| sp6290 | Blue-headed Vireo                              |
+| sp6360 | Black-and-white Warbler                        |
+| sp6410 | Blue-winged Warbler                            |
+| sp6520 | Yellow Warbler                                 |
+| sp6540 | Black-throated Blue Warbler                    |
+| sp6556 | (unid. Myrtle/Audubon’s) Yellow-rumped Warbler |
+| sp6590 | Chestnut-sided Warbler                         |
+| sp6670 | Black-throated Green Warbler                   |
+| sp6710 | Pine Warbler                                   |
+| sp6740 | Ovenbird                                       |
+| sp6760 | Louisiana Waterthrush                          |
+| sp6810 | Common Yellowthroat                            |
+| sp6870 | American Redstart                              |
+| sp6882 | House Sparrow                                  |
+| sp7030 | Northern Mockingbird                           |
+| sp7040 | Gray Catbird                                   |
+| sp7270 | White-breasted Nuthatch                        |
+| sp7310 | Tufted Titmouse                                |
+| sp7350 | Black-capped Chickadee                         |
+| sp7550 | Wood Thrush                                    |
+| sp7560 | Veery                                          |
+| sp7590 | Hermit Thrush                                  |
+| sp7610 | American Robin                                 |
+| sp4090 | Red-bellied Woodpecker                         |
+| sp4280 | Ruby-throated Hummingbird                      |
+| sp4670 | Least Flycatcher                               |
+| sp5580 | White-throated Sparrow                         |
+| sp5677 | (unid. race) Dark-eyed Junco                   |
+| sp6620 | Blackburnian Warbler                           |
+| sp7210 | House Wren                                     |
+| sp7260 | Brown Creeper                                  |
+| sp7280 | Red-breasted Nuthatch                          |
+| sp3000 | Ruffed Grouse                                  |
+| sp3100 | Wild Turkey                                    |
+| sp3430 | Broad-winged Hawk                              |
+| sp3870 | Yellow-billed Cuckoo                           |
+| sp4050 | Pileated Woodpecker                            |
+| sp4661 | Alder Flycatcher                               |
+| sp7510 | Blue-gray Gnatcatcher                          |
+| sp3250 | Turkey Vulture                                 |
+| sp3390 | Red-shouldered Hawk                            |
+| sp6730 | Prairie Warbler                                |
+| sp7222 | Winter Wren                                    |
+| sp3131 | Rock Pigeon                                    |
+| sp5840 | Swamp Sparrow                                  |
+| sp6750 | Northern Waterthrush                           |
+| sp3330 | Cooper’s Hawk                                  |
+| sp5170 | Purple Finch                                   |
+| sp4860 | Common Raven                                   |
+| sp6390 | Worm-eating Warbler                            |
+| sp7180 | Carolina Wren                                  |
+| sp7660 | Eastern Bluebird                               |
+| sp3370 | Red-tailed Hawk                                |
+| sp4900 | Fish Crow                                      |
 
 </div>
