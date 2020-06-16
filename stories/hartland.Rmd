@@ -27,8 +27,11 @@ Here are the species present in this route over the past 25 years:
 ```{r species list for fun}
 
 ibd_species <- ibd %>%
-  select(id) %>%
-  distinct()
+  select(id, ind_size) %>%
+  group_by(id) %>%
+  summarize(mean_size = mean(ind_size)) %>%
+  ungroup() %>%
+  arrange(mean_size)
 
 species_list <- read.csv("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\species_data\\species_list_working.csv", stringsAsFactors = F)
 
@@ -94,6 +97,8 @@ ggplot(pops, aes(year, (prop_abund), color = id)) +
 
 ```
 
+### Trends/tradeoffs in E and N
+
 We can do some (crude) linear model fitting. I've generally been finding that lms are OK, with caveats:
 
 - you do want to check for autocorrelation
@@ -113,6 +118,14 @@ summary(abund_lm)
 
 confint(abund_lm)
 
+sv$abund_prediction = predict(abund_lm)
+
+ggplot(sv, aes(x = year, y = scale(abundance))) +
+  geom_point() +
+  geom_line(aes(x = year, y = abund_prediction)) + 
+  theme_bw()
+
+hist(resid(abund_lm))
 
 energy_lm <- lm(scaled_value ~ year, data = filter(sv_long, currency == "energy"))
 
@@ -120,22 +133,143 @@ summary(energy_lm)
 
 confint(energy_lm)
 
+sv$energy_prediction <- predict(energy_lm)
+
+
+ggplot(sv, aes(x = year, y = scale(energy))) +
+  geom_point() +
+  geom_line(aes(x = year, y = energy_prediction)) + 
+  theme_bw()
+
+hist(resid(energy_lm))
+
 ```
 
-So here the lms are generally aligning with what looks intuitive from the plots: a gentle decline in individual abundance, but no signal in energy. 
+Important points: 
+
+* p = .04 for abundance, but .55 (!) for energy
+* confidence interval for slope for abundance gets close to 0; estimate is -.055 (this is on scaled)
+* r2 for abundance is around .13-.15 (adj v nonadj). 
+* contrasted to energy, where the slope estimate is right on 0 and the r2 is .01 to -.02 (adj v nonadj)! 
 
 
-One thing that interests me is, energy looks more *variable* than abundance. 
+I've played a bit with autocorrelation and transformations, but trying not to get hung up on p values. Basically, the lms are generally aligning with what looks intuitive from the plots: a gentle decline in individual abundance, but no signal in energy. 
+
+Importantly, even though the average slope for energy is pretty close to 0, I would *not* call this compensation in the sense that the size distribution is shifting such that the same amount of energy gets divided among varying numbers of individiuals. Under that scenario, we'd expect per capita energy use to trade off with abundance: when abundance is low, per capita energy use should be high to compensate. That is not what we see: 
+
+```{r abund v compensation}
+
+ggplot(sv, aes(x = abundance, y = mean_energy)) +
+  geom_point() +
+  theme_bw()
+
+summary(lm(scale(mean_energy) ~ scale(abundance), sv))
+
+```
+
+There's pretty much no support for the notion that mean energy use declines with increasing abundance.
+
+
+It looks to me a lot more like energy varies a lot but not systematically with time. Energy is also much more variable than abundance:
 
 ```{r variability}
 
+print("energy sd/mean")
 sd(sv$energy) / mean(sv$energy)
 
+print("abundance sd/mean")
 sd(sv$abundance) / mean(sv$abundance)
 
 ```
 
-I'm kind of curious about, comparing individual year ISDs to some kind of overall mean ISD. 
+
+Another notion is that energy should maybe track abundance? We have already seen that energy is more variable than abundance and that the overall trend for energy is not the same as the one for abundance. Here is the extent to which abundance predicts energy:
+
+```{r abund v energy}
+
+energy_abund_lm <- (lm(scale(energy) ~ scale(abundance), data = sv))
+
+sv$e_from_n <- predict(energy_abund_lm)
+
+ggplot(sv, aes(x = scale(abundance), y = scale(energy))) +
+  geom_point() +
+  geom_line(aes(x = scale(abundance), y = e_from_n)) +
+  theme_bw()
+
+summary(energy_abund_lm)
+hist(resid(energy_abund_lm))
+```
+
+So....decent, but a fair amount of error remaining. It's difficult to know how much error is _a lot_ of error for an ecological community a priori. We can say provisionally that this is probably not the reflection of an extremely high-fidelity, controlled, idealized amplification/dampening of a fixed energy distribution: there's clearly play. But then again, we don't expect communities to behave in highly controlled, high-fidelity, idealized ways! There are all kinds of sources of measurement error etc, plus stochasticity, plus small N sampling issues. 
+
+
+### Fixed or variable ISDs
+
+One interesting way energy could track abundance would be if there were essentially one ISD for a community that endured over time, and the ISD we observe at each time point is just the result of drawing $N_t$ individuals from that distribution. In that scenario we would expect higher $N_t$ to give us more energy, but there is still room for error around that relationship. 
+
+There are a variety of ways we could construct our ur-ISD:
+
+- All of the individuals we have ever observed.
+    - This is straightforward but will allow us to put more weight into time points with higher N. 
+- Take a mean of the ISDs from every time step.
+    - This can become distorted by sharp distributions from low N.
+    
+```{r compare ur isd methods}
+
+all_individuals_isd <- density(log(ibd$ind_size), from = 0, to = 1.2 * max(log(ibd$ind_size)), n = 8192)
+
+all_individuals_isd <- data.frame(
+  size = all_individuals_isd$x,
+  density = all_individuals_isd$y / sum(all_individuals_isd$y)
+)
+
+make_year_isd <- function(thisyear, ibd) {
+  this_ibd <- filter(ibd, year == thisyear)
+  this_isd <- density(log(this_ibd$ind_size), from = 0, to = 1.2 * max(log(ibd$ind_size)), n = 8192)
+  
+  return(data.frame(x =this_isd$x,
+                    y = this_isd$y / sum(this_isd$y),
+                    year = thisyear))
+}
+
+
+year_isds <- lapply(unique(ibd$year), FUN = make_year_isd, ibd = ibd)
+
+
+year_isds <- bind_rows(year_isds)
+
+mean_year_isds <- year_isds %>%
+  group_by(x) %>%
+  summarize(mean_density = mean(y)) %>%
+  ungroup() %>%
+  rename(size = x)
+
+gridExtra::grid.arrange(
+  grobs = list(ggplot(mean_year_isds, aes(size, mean_density)) + 
+  geom_line() +
+  theme_bw() +
+  ggtitle("Mean of annual ISDs"),
+  
+ggplot(all_individuals_isd, aes(size, density)) +
+  geom_line() +
+  theme_bw() +
+  ggtitle("All individuals")
+), nrow = 1)
+
+ggplot(all_individuals_isd, aes(size, density)) +
+  geom_line() +
+  geom_line(data = mean_year_isds, aes(size, mean_density), color = "blue") +
+  theme_bw() +
+  ggtitle("Both at once for scale")
+```
+
+The mean one is considerably broader/less well defined than the all-the-individuals-at-once one. I'm not sure what to make of that. 
+
+
+
+
+Alternatively, there could be substantively different underlying ISDs we are drawing our $N_t$ individuals from, and the underlying ISDs could vary systematically over time or orthogonal/not-detectably-parallel-to time. 
+
 
 ```{r isd playing}
 
@@ -165,51 +299,8 @@ year_isds <- bind_rows(year_isds)
 ggplot(overall_isd, aes(x, y)) +
   geom_point() +
   theme_bw() +
-  geom_line(data = year_isds, aes(x = x, y = y, group = year), alpha = .1)
-
-
-ggplot(filter(year_isds, year == 2010), aes(x =x, y=y)) +
-  geom_line()
-
-overall_isd <- overall_isd %>%
-  rename(overall_y = y)
-
-year_isds <- year_isds %>%
-  left_join(overall_isd)
-
-year_isds <- year_isds %>%
-  mutate(ydiff = y - overall_y)
-
-ggplot(filter(year_isds), aes(x, ydiff, group = year, color = year)) +
-  geom_line(alpha = .2) +
-  theme_bw() +
-  scale_color_viridis_c(end = .9) +
-  facet_wrap(vars(year))
-
-
-```
-
-The intuitive description, to me, of these dynamics is a fairly believable trend in abundance, but *highly variable* energy that does not map clearly onto time. I would *not* call this compensation, because of the poor correspondence between abundance and mean energy use:
-
-```{r abund v compensation}
-
-hypothetical_e <- mean(sv$energy)
-
-sv$hypothetical_mean_e = hypothetical_e / sv$abundance
-
-ggplot(sv, aes(x = abundance, y = mean_energy, color = energy)) +
-  geom_point()
-
-ggplot(sv, aes(abundance, energy, color = year)) +
-  geom_point()
-```
-
-I think what I mean is, if energy had a slope of 0 over time in a *fixed* way, then when abundance is high mean energy should be low. But I don't really see support for that. It looks to me a lot more like energy varies a lot but not systematically with time; it's not fixed but free. 
-
-```{r energy v abund}
-
-summary(lm(scale(energy) ~ scale(abundance), sv))
-summary(lm(scale(mean_energy) ~ scale(abundance), sv))
+  geom_line(data = year_isds, aes(x = x, y = y, group = year, color = as.factor(year)), alpha = .3) +
+  theme(legend.position = "none")
 
 ```
 
