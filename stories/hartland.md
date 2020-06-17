@@ -339,16 +339,68 @@ Similarly, the cloud of dots visualizes the variation in
 energy-abundance relation obtained via sampling. Compared to the red
 dots, which are observed.
 
+![](hartland_files/figure-gfm/position%20over%20time-1.png)<!-- -->
+
+    ## Warning in mean.default(percentiles$low_p): argument is not numeric or logical:
+    ## returning NA
+
+    ## [1] NA
+
+    ## Warning in mean.default(percentiles$high_p): argument is not numeric or logical:
+    ## returning NA
+
+    ## [1] NA
+
+    ## Warning in mean.default(percentiles$outside_95): argument is not numeric or
+    ## logical: returning NA
+
+    ## [1] NA
+
+    ## [1] "Energy too low:"
+
+    ## [1] 0.28
+
+    ## [1] "Energy too high:"
+
+    ## [1] 0.28
+
+    ## [1] "Energy outside 95% interval (2 sided):"
+
+    ## [1] 0.56
+
+So - I could be wrong about this - but I think we’re getting *way too
+many* years with suspiciousy high/low total energy, than we would expect
+if every year were a samples of \(N_t\) individuals from the overall
+ISD. Using 2.5 and 97.5 as cutoffs, half the years are outside that
+interval.
+
+I think the way for a year to be outside that interval is for its ISD to
+be relatively very different from the mean/overall ISD. For the
+difference to propagate all the way up to energy, it’s the per capita
+energy that is different. You can have a different ISD and not have per
+capita energy change, but you can’t have per capita energy change and
+not have a different ISD.
+
+Years with unusual energy are not necessarily similar to each other in
+their ISDs. But they might be.
+
+    ## Joining, by = "year"
+
+![](hartland_files/figure-gfm/plot%20annual%20isds-1.png)<!-- -->
+
+#### Time ideas
+
 One thing I find interesting about this exercise is to ask whether the
 position of the observed E shifts systematically over time.
-
-![](hartland_files/figure-gfm/position%20over%20time-1.png)<!-- -->
 
 It might be interesting to look at comparisons to the overall ISD, vs a
 pool from a local short time period, vs a pool from the same number of
 time steps randomly distributed. So, how does E in 1990 compare to a
 random draw from a pool of 1988, 1989, 1991, 1992, vs a random draw from
-a pool of 2007, 1994, 1990, 2019? If observations are closer to a local
+a pool of 2011, 2005, 1998, 1995? If observations are closer to a local
 moving average ISD, than to one randomly dispersed in time, you have
 some kind of temporal structure in the variability. But if not, there’s
 variability but it’s not structured temporally.
+
+A related-but-slightly-sideways question is, *how many distinct ur-ISDs
+do we think there are?*

@@ -339,8 +339,6 @@ The cloud of lines represent the distribution of *total energy values* for 1000 
 Similarly, the cloud of dots visualizes the variation in energy-abundance relation obtained via sampling. Compared to the red dots, which are observed.
 
 
-One thing I find interesting about this exercise is to ask whether the position of the observed E shifts systematically over time. 
-
 ```{r position over time}
 
 percentiles <- list()
@@ -357,18 +355,59 @@ for(i in 1:length(unique(sv$year))) {
   )
 }
 
-percentiles <- bind_rows(percentiles)
+percentiles <- bind_rows(percentiles) 
 
 ggplot(percentiles, aes(year, percentile)) +
   geom_point() +
-  theme_bw()
+  theme_bw() +
+  geom_hline(yintercept = c(2.5, 97.5), color = "red")
+
+mean(percentiles$low_p)
+mean(percentiles$high_p) 
+mean(percentiles$outside_95)
+
+percentiles <- percentiles %>%
+  mutate(low_p = percentile <2.5,
+         high_p = percentile >97.5) %>%
+  mutate(outside_95 = (low_p + high_p) > 0)
+
+print("Energy too low:")
+mean(percentiles$low_p)
+
+print("Energy too high:")
+mean(percentiles$high_p)
+
+print("Energy outside 95% interval (2 sided):")
+mean(percentiles$outside_95)
 
 ```
+
+So - I could be wrong about this - but I think we're getting *way too many* years with suspiciousy high/low total energy, than we would expect if every year were a samples of $N_t$ individuals from the overall ISD. Using 2.5 and 97.5 as cutoffs, half the years are outside that interval. 
+
+I think the way for a year to be outside that interval is for its ISD to be relatively very different from the mean/overall ISD. For the difference to propagate all the way up to energy, it's the per capita energy that is different. You can have a different ISD and not have per capita energy change, but you can't have per capita energy change and not have a different ISD. 
+
+Years with unusual energy are not necessarily similar to each other in their ISDs. But they might be. 
+
+
+```{r plot annual isds}
+
+year_isds <- left_join(year_isds, percentiles) %>%
+  mutate(description = ifelse(
+    outside_95, ifelse(low_p, "low", "high"), "inside"
+  ))
+
+ggplot(year_isds, aes(x, y, color = description)) +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(year), scales = "free_y")
+
+```
+
+
+
+#### Time ideas
+One thing I find interesting about this exercise is to ask whether the position of the observed E shifts systematically over time. 
 
 It might be interesting to look at comparisons to the overall ISD, vs a pool from a local short time period, vs a pool from the same number of time steps randomly distributed. So, how does E in 1990 compare to a random draw from a pool of `r c(1988, 1989, 1991, 1992)`, vs a random draw from a pool of  `r sample(c(1994:1989, 1991:2019), size = 4, replace = F)`? If observations are closer to a local moving average ISD, than to one randomly dispersed in time, you have some kind of temporal structure in the variability. But if not, there's variability but it's not structured temporally. 
 
-```{r moving window isds}
-
-
-
-```
+A related-but-slightly-sideways question is, *how many distinct ur-ISDs do we think there are?*
