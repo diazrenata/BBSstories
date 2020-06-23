@@ -1,5 +1,5 @@
 ---
-title: "BBS route that goes by Hartland"
+title: "Another route"
 output: 
     github_document:
        df_print: kable
@@ -13,13 +13,12 @@ library(ggplot2)
 ```
 
 
-### Load specific route
-
-The New Hartford route goes up and down Riverton Road and was started in 1994. It feels pretty auspicious. It is route 102, region 18.
+### Load route
+Another route
 
 ```{r load route}
 
-ibd <- readRDS("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\isd_data\\ibd_isd_bbs_rtrg_102_18.Rds")
+ibd <- readRDS("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\isd_data\\ibd_isd_bbs_rtrg_105_4.Rds")
 ```
 
 Here are the species present in this route over the past 25 years:
@@ -41,7 +40,9 @@ species_list <- species_list %>%
 ibd_species <- left_join(ibd_species, species_list) %>%
   distinct()
 
-ibd_species
+head(ibd_species)
+
+print("...104 species total")
 
 ggplot(ibd_species, aes(x = log(mean_size))) +
   geom_histogram() +
@@ -66,37 +67,13 @@ sv <- ibd %>%
 sv_long <- sv %>%
   tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
 
-ggplot(filter(sv_long, !grepl("mean", currency)), aes(x = year, y = value, color = currency)) +
+ggplot(filter(sv_long), aes(x = year, y = value, color = currency)) +
   geom_point() +
   geom_line() +
   theme_bw() +
   scale_color_viridis_d(end = .8) +
   theme(legend.position = "none") +
   facet_wrap(vars(currency), scales = "free_y")
-
-```
-
-Here is population abundances:
-
-```{r pops, fig.dim = c(10, 6)}
-
-pops <- ibd %>%
-  select(year, id) %>%
-  group_by(year, id) %>%
-  summarize(abund = dplyr::n()) %>%
-  ungroup() %>%
-  group_by(year) %>%
-  mutate(annual_abund = sum(abund)) %>%
-  ungroup() %>%
-  group_by_all() %>%
-  mutate(prop_abund = abund / annual_abund) %>%
-  ungroup()
-
-ggplot(pops, aes(year, (prop_abund), color = id)) +
-  geom_line() +
-  theme_bw() +
-  scale_color_viridis_d() +
-  theme(legend.position = "none")
 
 ```
 
@@ -148,32 +125,16 @@ hist(resid(energy_lm))
 
 ```
 
-Important points: 
-
-* p = .04 for abundance, but .55 (!) for energy
-* confidence interval for slope for abundance gets close to 0; estimate is -.055 (this is on scaled)
-* r2 for abundance is around .13-.15 (adj v nonadj). 
-* contrasted to energy, where the slope estimate is right on 0 and the r2 is .01 to -.02 (adj v nonadj)! 
-
-
-I've played a bit with autocorrelation and transformations, but trying not to get hung up on p values. Basically, the lms are generally aligning with what looks intuitive from the plots: a gentle decline in individual abundance, but no signal in energy. 
-
-Importantly, even though the average slope for energy is pretty close to 0, I would *not* call this compensation in the sense that the size distribution is shifting such that the same amount of energy gets divided among varying numbers of individiuals. Under that scenario, we'd expect per capita energy use to trade off with abundance: when abundance is low, per capita energy use should be high to compensate. That is not what we see: 
-
 ```{r abund v compensation}
 
 ggplot(sv, aes(x = abundance, y = mean_energy)) +
   geom_point() +
   theme_bw()
 
-summary(lm(scale(mean_energy) ~ scale(abundance), sv))
+ summary(lm(scale(mean_energy) ~ scale(abundance), sv))
 
 ```
 
-There's pretty much no support for the notion that mean energy use declines with increasing abundance.
-
-
-It looks to me a lot more like energy varies a lot but not systematically with time. Energy is also much more variable than abundance:
 
 ```{r variability}
 
@@ -203,19 +164,8 @@ summary(energy_abund_lm)
 hist(resid(energy_abund_lm))
 ```
 
-So....decent, but a fair amount of error remaining. It's difficult to know how much error is _a lot_ of error for an ecological community a priori. We can say provisionally that this is probably not the reflection of an extremely high-fidelity, controlled, idealized amplification/dampening of a fixed energy distribution: there's clearly play. But then again, we don't expect communities to behave in highly controlled, high-fidelity, idealized ways! There are all kinds of sources of measurement error etc, plus stochasticity, plus small N sampling issues. 
-
-
 ### Fixed or variable ISDs
 
-One interesting way energy could track abundance would be if there were essentially one ISD for a community that endured over time, and the ISD we observe at each time point is just the result of drawing $N_t$ individuals from that distribution. In that scenario we would expect higher $N_t$ to give us more energy, but there is still room for error around that relationship. 
-
-There are a variety of ways we could construct our ur-ISD:
-
-- All of the individuals we have ever observed.
-    - This is straightforward but will allow us to put more weight into time points with higher N. 
-- Take a mean of the ISDs from every time step.
-    - This can become distorted by sharp distributions from low N.
     
 ```{r compare ur isd methods}
 
@@ -340,100 +290,3 @@ ggplot(randomized_es_cv, aes(x = energy_cv)) +
 The cloud of lines represent the distribution of *total energy values* for 1000 bootstrap sampled ISDs. The histogram is the coefficient of variation (sd/mean) for E over every simulation; the red line is the observed. The observed E time series is way more variable than any of the ones that we generated by resampling from a stable ISD.
 
 Similarly, the cloud of dots visualizes the variation in energy-abundance relation obtained via sampling. Compared to the red dots, which are observed.
-
-
-```{r position over time}
-
-percentiles <- list()
-
-for(i in 1:length(unique(sv$year))) {
-  this_year <- unique(sv$year)[i]
-  this_val <- filter(sv, year == this_year)$energy
-  
-  this_vector <- filter(randomized_es, year == this_year)$energy
-  
-  percentiles[[i]] <- data.frame(
-    year = this_year,
-    percentile = scadsanalysis::get_percentile(this_val, this_vector)
-  )
-}
-
-percentiles <- bind_rows(percentiles) 
-
-ggplot(percentiles, aes(year, percentile)) +
-  geom_point() +
-  theme_bw() +
-  geom_hline(yintercept = c(2.5, 97.5), color = "red")
-
-mean(percentiles$low_p)
-mean(percentiles$high_p) 
-mean(percentiles$outside_95)
-
-percentiles <- percentiles %>%
-  mutate(low_p = percentile <2.5,
-         high_p = percentile >97.5) %>%
-  mutate(outside_95 = (low_p + high_p) > 0)
-
-print("Energy too low:")
-mean(percentiles$low_p)
-
-print("Energy too high:")
-mean(percentiles$high_p)
-
-print("Energy outside 95% interval (2 sided):")
-mean(percentiles$outside_95)
-
-percentiles <- left_join(percentiles, sv)
-
-
-ggplot(percentiles, aes(mean_energy, percentile)) +
-  geom_point() +
-  geom_vline(xintercept = mean(ibd$ind_b))
-
-ggplot(percentiles, aes(year, percentile)) +
-  geom_point()
-
-ggplot(percentiles, aes(year, mean_energy)) +
-  geom_point()
-```
-
-So - I could be wrong about this - but I think we're getting *way too many* years with suspiciousy high/low total energy, than we would expect if every year were a samples of $N_t$ individuals from the overall ISD. Using 2.5 and 97.5 as cutoffs, half the years are outside that interval. 
-
-I think the way for a year to be outside that interval is for its ISD to be relatively very different from the mean/overall ISD. For the difference to propagate all the way up to energy, it's the per capita energy that is different. You can have a different ISD and not have per capita energy change, but you can't have per capita energy change and not have a different ISD. 
-
-Years with unusual energy are not necessarily similar to each other in their ISDs. But they might be. 
-
-
-```{r plot annual isds}
-
-year_isds <- left_join(year_isds, percentiles) %>%
-  mutate(description = ifelse(
-    outside_95, ifelse(low_p, "low", "high"), "inside"
-  ))
-
-year_isds <- year_isds %>%
-  mutate(percentile_binned = as.character(ceiling(percentile / 10)))
-
-ggplot(year_isds, aes(x, y, color = description)) +
-  geom_line() +
-  theme_bw() +
-  facet_wrap(vars(year), scales = "free_y")
-
-
-ggplot(year_isds, aes(x, y, color = year)) +
-  geom_line() +
-  theme_bw() +
-  facet_wrap(vars(description), scales = "free_y")
-
-
-
-```
-
-
-
-#### Time ideas
-One thing I find interesting about this exercise is to ask whether the position of the observed E shifts systematically over time. 
-
-It might be interesting to look at comparisons to the overall ISD, vs a pool from a local short time period, vs a pool from the same number of time steps randomly distributed. So, how does E in 1990 compare to a random draw from a pool of `r c(1988, 1989, 1991, 1992)`, vs a random draw from a pool of  `r sample(c(1994:1989, 1991:2019), size = 4, replace = F)`? If observations are closer to a local moving average ISD, than to one randomly dispersed in time, you have some kind of temporal structure in the variability. But if not, there's variability but it's not structured temporally. 
-
-A related-but-slightly-sideways question is, *how many distinct ur-ISDs do we think there are?*

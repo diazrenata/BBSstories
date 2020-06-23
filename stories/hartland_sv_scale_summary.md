@@ -1,10 +1,10 @@
 BBS route that goes by Hartland
 ================
 
-### Load specific route
+### Load route
 
 The New Hartford route goes up and down Riverton Road and was started in
-1994. It feels pretty auspicious. It is route 102, region 18.
+1994. It is route 102, region 18.
 
 Here are the species present in this route over the past 25 years:
 
@@ -12,116 +12,27 @@ Here are the species present in this route over the past 25 years:
 
 <div class="kable-table">
 
-| id     |  mean\_size | english\_common\_name                          |
-| :----- | ----------: | :--------------------------------------------- |
-| sp4280 |    3.119282 | Ruby-throated Hummingbird                      |
-| sp7510 |    5.771964 | Blue-gray Gnatcatcher                          |
-| sp7260 |    8.022228 | Brown Creeper                                  |
-| sp6730 |    8.028863 | Prairie Warbler                                |
-| sp6410 |    8.176580 | Blue-winged Warbler                            |
-| sp6870 |    8.191548 | American Redstart                              |
-| sp6670 |    8.690181 | Black-throated Green Warbler                   |
-| sp6540 |    9.012196 | Black-throated Blue Warbler                    |
-| sp6590 |    9.298763 | Chestnut-sided Warbler                         |
-| sp7280 |    9.345654 | Red-breasted Nuthatch                          |
-| sp6620 |    9.492168 | Blackburnian Warbler                           |
-| sp6810 |    9.826291 | Common Yellowthroat                            |
-| sp7222 |    9.897642 | Winter Wren                                    |
-| sp4670 |   10.210357 | Least Flycatcher                               |
-| sp6520 |   10.624649 | Yellow Warbler                                 |
-| sp7210 |   10.766179 | House Wren                                     |
-| sp7350 |   10.803537 | Black-capped Chickadee                         |
-| sp6360 |   11.369229 | Black-and-white Warbler                        |
-| sp6710 |   11.531489 | Pine Warbler                                   |
-| sp6556 |   11.775897 | (unid. Myrtle/Audubon’s) Yellow-rumped Warbler |
-| sp5600 |   12.210202 | Chipping Sparrow                               |
-| sp6160 |   12.554152 | Bank Swallow                                   |
-| sp4661 |   12.750238 | Alder Flycatcher                               |
-| sp5290 |   12.778235 | American Goldfinch                             |
-| sp5630 |   12.841621 | Field Sparrow                                  |
-| sp6270 |   12.847626 | Warbling Vireo                                 |
-| sp4660 |   13.428910 | Willow Flycatcher                              |
-| sp6390 |   13.681880 | Worm-eating Warbler                            |
-| sp4610 |   13.906114 | Eastern Wood-Pewee                             |
-| sp5980 |   14.602984 | Indigo Bunting                                 |
-| sp6170 |   15.507200 | Northern Rough-winged Swallow                  |
-| sp6750 |   15.583659 | Northern Waterthrush                           |
-| sp5840 |   15.690661 | Swamp Sparrow                                  |
-| sp6240 |   16.219341 | Red-eyed Vireo                                 |
-| sp6290 |   16.814482 | Blue-headed Vireo                              |
-| sp6130 |   17.816031 | Barn Swallow                                   |
-| sp6280 |   18.024075 | Yellow-throated Vireo                          |
-| sp6740 |   18.761662 | Ovenbird                                       |
-| sp5170 |   18.920701 | Purple Finch                                   |
-| sp5677 |   19.603705 | (unid. race) Dark-eyed Junco                   |
-| sp4560 |   19.751938 | Eastern Phoebe                                 |
-| sp7180 |   19.787783 | Carolina Wren                                  |
-| sp6760 |   19.953199 | Louisiana Waterthrush                          |
-| sp6140 |   20.946833 | Tree Swallow                                   |
-| sp7270 |   21.226533 | White-breasted Nuthatch                        |
-| sp5190 |   21.242841 | House Finch                                    |
-| sp7310 |   21.956907 | Tufted Titmouse                                |
-| sp5810 |   22.774715 | Song Sparrow                                   |
-| sp5580 |   23.592726 | White-throated Sparrow                         |
-| sp4230 |   23.925906 | Chimney Swift                                  |
-| sp3940 |   25.799751 | Downy Woodpecker                               |
-| sp7660 |   26.421533 | Eastern Bluebird                               |
-| sp6080 |   27.548473 | Scarlet Tanager                                |
-| sp6882 |   27.602077 | House Sparrow                                  |
-| sp7590 |   29.750193 | Hermit Thrush                                  |
-| sp6190 |   31.393964 | Cedar Waxwing                                  |
-| sp7560 |   31.974124 | Veery                                          |
-| sp5070 |   32.900268 | Baltimore Oriole                               |
-| sp4520 |   33.447896 | Great Crested Flycatcher                       |
-| sp7040 |   35.284905 | Gray Catbird                                   |
-| sp4440 |   39.842513 | Eastern Kingbird                               |
-| sp5870 |   39.969766 | Eastern Towhee                                 |
-| sp4950 |   40.839762 | Brown-headed Cowbird                           |
-| sp5930 |   42.494258 | Northern Cardinal                              |
-| sp5950 |   43.685054 | Rose-breasted Grosbeak                         |
-| sp7030 |   50.072708 | Northern Mockingbird                           |
-| sp7550 |   50.147079 | Wood Thrush                                    |
-| sp4020 |   50.370861 | Yellow-bellied Sapsucker                       |
-| sp3880 |   51.917638 | Black-billed Cuckoo                            |
-| sp4980 |   52.678119 | Red-winged Blackbird                           |
-| sp5140 |   58.422958 | Evening Grosbeak                               |
-| sp3870 |   62.020298 | Yellow-billed Cuckoo                           |
-| sp3930 |   62.626135 | Hairy Woodpecker                               |
-| sp4090 |   69.818549 | Red-bellied Woodpecker                         |
-| sp4930 |   78.194586 | European Starling                              |
-| sp7610 |   78.427017 | American Robin                                 |
-| sp4770 |   87.635399 | Blue Jay                                       |
-| sp5110 |  107.076965 | Common Grackle                                 |
-| sp3160 |  119.138900 | Mourning Dove                                  |
-| sp4123 |  132.280950 | (unid. Red/Yellow Shafted) Northern Flicker    |
-| sp4900 |  286.481032 | Fish Crow                                      |
-| sp4050 |  290.026751 | Pileated Woodpecker                            |
-| sp3131 |  356.093468 | Rock Pigeon                                    |
-| sp3330 |  417.962877 | Cooper’s Hawk                                  |
-| sp3430 |  444.194269 | Broad-winged Hawk                              |
-| sp4880 |  452.332550 | American Crow                                  |
-| sp3000 |  591.393452 | Ruffed Grouse                                  |
-| sp3390 |  611.212772 | Red-shouldered Hawk                            |
-| sp3340 |  877.258686 | Northern Goshawk                               |
-| sp4860 |  920.056556 | Common Raven                                   |
-| sp3370 | 1119.059739 | Red-tailed Hawk                                |
-| sp3250 | 1608.542454 | Turkey Vulture                                 |
-| sp3100 | 6043.706643 | Wild Turkey                                    |
+| id     | mean\_size | english\_common\_name     |
+| :----- | ---------: | :------------------------ |
+| sp4280 |   3.119282 | Ruby-throated Hummingbird |
+| sp7510 |   5.771964 | Blue-gray Gnatcatcher     |
+| sp7260 |   8.022228 | Brown Creeper             |
+| sp6730 |   8.028863 | Prairie Warbler           |
+| sp6410 |   8.176580 | Blue-winged Warbler       |
+| sp6870 |   8.191548 | American Redstart         |
 
 </div>
 
+    ## [1] "...93 species total"
+
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](hartland_files/figure-gfm/species%20list%20for%20fun-1.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/species%20list%20for%20fun-1.png)<!-- -->
 
 Here is how species richness, abundance, biomass, and energy have
 changed over those years:
 
-![](hartland_files/figure-gfm/state%20variables-1.png)<!-- -->
-
-Here is population abundances:
-
-![](hartland_files/figure-gfm/pops-1.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/state%20variables-1.png)<!-- -->
 
 ### Trends/tradeoffs in E and N
 
@@ -157,7 +68,7 @@ that lms are OK, with caveats:
     ## (Intercept)  4.9498911 219.274937839
     ## year        -0.1093092  -0.002467888
 
-![](hartland_files/figure-gfm/lms-1.png)<!-- -->![](hartland_files/figure-gfm/lms-2.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/lms-1.png)<!-- -->![](hartland_sv_scale_summary_files/figure-gfm/lms-2.png)<!-- -->
 
     ## 
     ## Call:
@@ -181,7 +92,7 @@ that lms are OK, with caveats:
     ## (Intercept) -150.3334871 83.00381889
     ## year          -0.0413774  0.07494154
 
-![](hartland_files/figure-gfm/lms-3.png)<!-- -->![](hartland_files/figure-gfm/lms-4.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/lms-3.png)<!-- -->![](hartland_sv_scale_summary_files/figure-gfm/lms-4.png)<!-- -->
 
 Important points:
 
@@ -205,7 +116,7 @@ expect per capita energy use to trade off with abundance: when abundance
 is low, per capita energy use should be high to compensate. That is not
 what we see:
 
-![](hartland_files/figure-gfm/abund%20v%20compensation-1.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/abund%20v%20compensation-1.png)<!-- -->
 
     ## 
     ## Call:
@@ -244,7 +155,7 @@ already seen that energy is more variable than abundance and that the
 overall trend for energy is not the same as the one for abundance. Here
 is the extent to which abundance predicts energy:
 
-![](hartland_files/figure-gfm/abund%20v%20energy-1.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/abund%20v%20energy-1.png)<!-- -->
 
     ## 
     ## Call:
@@ -265,7 +176,7 @@ is the extent to which abundance predicts energy:
     ## Multiple R-squared:  0.3252, Adjusted R-squared:  0.2958 
     ## F-statistic: 11.08 on 1 and 23 DF,  p-value: 0.002919
 
-![](hartland_files/figure-gfm/abund%20v%20energy-2.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/abund%20v%20energy-2.png)<!-- -->
 
 So….decent, but a fair amount of error remaining. It’s difficult to know
 how much error is *a lot* of error for an ecological community a priori.
@@ -293,7 +204,7 @@ There are a variety of ways we could construct our ur-ISD:
   - Take a mean of the ISDs from every time step.
       - This can become distorted by sharp distributions from low N.
 
-![](hartland_files/figure-gfm/compare%20ur%20isd%20methods-1.png)<!-- -->![](hartland_files/figure-gfm/compare%20ur%20isd%20methods-2.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/compare%20ur%20isd%20methods-1.png)<!-- -->![](hartland_sv_scale_summary_files/figure-gfm/compare%20ur%20isd%20methods-2.png)<!-- -->
 
 The plots above are both constructed based on KDEs. There are
 assumptions and artefacts in there I’m not quite 100% on: the weighting
@@ -303,7 +214,7 @@ started comparing them via overlap, etc. I’d like to explore something a
 little different at the moment, so I’m going to actually put a pin in
 things derived from KDEs and work instead off of pools of individuals.
 
-![](hartland_files/figure-gfm/unaltered%20individuals-1.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/unaltered%20individuals-1.png)<!-- -->
 
 This is the distribution of sizes of all the individuals we’ve ever seen
 on this route.
@@ -327,11 +238,11 @@ variation might or might not rise to the magnitude we observe here.
 
     ## Joining, by = "year"
 
-![](hartland_files/figure-gfm/randomize%20isd-1.png)<!-- -->![](hartland_files/figure-gfm/randomize%20isd-2.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/randomize%20isd-1.png)<!-- -->![](hartland_sv_scale_summary_files/figure-gfm/randomize%20isd-2.png)<!-- -->
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](hartland_files/figure-gfm/randomize%20isd-3.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/randomize%20isd-3.png)<!-- -->
 
 The cloud of lines represent the distribution of *total energy values*
 for 1000 bootstrap sampled ISDs. The histogram is the coefficient of
@@ -343,7 +254,7 @@ Similarly, the cloud of dots visualizes the variation in
 energy-abundance relation obtained via sampling. Compared to the red
 dots, which are observed.
 
-![](hartland_files/figure-gfm/position%20over%20time-1.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/position%20over%20time-1.png)<!-- -->
 
     ## Warning in mean.default(percentiles$low_p): argument is not numeric or logical:
     ## returning NA
@@ -374,7 +285,7 @@ dots, which are observed.
 
     ## Joining, by = "year"
 
-![](hartland_files/figure-gfm/position%20over%20time-2.png)<!-- -->![](hartland_files/figure-gfm/position%20over%20time-3.png)<!-- -->![](hartland_files/figure-gfm/position%20over%20time-4.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/position%20over%20time-2.png)<!-- -->![](hartland_sv_scale_summary_files/figure-gfm/position%20over%20time-3.png)<!-- -->![](hartland_sv_scale_summary_files/figure-gfm/position%20over%20time-4.png)<!-- -->
 
 So - I could be wrong about this - but I think we’re getting *way too
 many* years with suspiciousy high/low total energy, than we would expect
@@ -394,7 +305,7 @@ their ISDs. But they might be.
 
     ## Joining, by = "year"
 
-![](hartland_files/figure-gfm/plot%20annual%20isds-1.png)<!-- -->![](hartland_files/figure-gfm/plot%20annual%20isds-2.png)<!-- -->
+![](hartland_sv_scale_summary_files/figure-gfm/plot%20annual%20isds-1.png)<!-- -->![](hartland_sv_scale_summary_files/figure-gfm/plot%20annual%20isds-2.png)<!-- -->
 
 #### Time ideas
 
@@ -405,7 +316,7 @@ It might be interesting to look at comparisons to the overall ISD, vs a
 pool from a local short time period, vs a pool from the same number of
 time steps randomly distributed. So, how does E in 1990 compare to a
 random draw from a pool of 1988, 1989, 1991, 1992, vs a random draw from
-a pool of 1992, 2013, 1997, 2002? If observations are closer to a local
+a pool of 1998, 2006, 1997, 2011? If observations are closer to a local
 moving average ISD, than to one randomly dispersed in time, you have
 some kind of temporal structure in the variability. But if not, there’s
 variability but it’s not structured temporally.

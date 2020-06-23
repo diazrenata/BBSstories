@@ -1,0 +1,43 @@
+library(ggplot2)
+library(dplyr)
+
+individual_rats <- portalr::summarise_individual_rodents(clean = TRUE, type = "Granivores", time = "date")
+
+head(individual_rats)
+
+individual_rats <- individual_rats %>%
+  filter(year %in% c(1978:2002), !is.na(wgt)) %>%
+  mutate(six_mo = ifelse(month > 6, 2, 1)) %>%
+  mutate(year_six_mo = (year * 10) + six_mo) %>%
+  mutate(bmr = 5.69 * (wgt ^ .75)) %>%
+  group_by(year_six_mo) %>%
+  summarize(n = dplyr::n(),
+            biomass = sum(wgt),
+            energy = sum(bmr)) %>%
+  ungroup() %>%
+  mutate(mean_m = biomass/n,
+         mean_e = energy/n) %>%
+  tidyr::pivot_longer(-year_six_mo, names_to = "currency")
+
+
+
+ggplot(individual_rats, aes(year_six_mo, value)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(currency), scales = "free_y")
+
+wide_rats <- individual_rats %>%
+  tidyr::pivot_wider(id_cols = year_six_mo, names_from = currency, values_from = value)
+
+ggplot(wide_rats, aes(n, mean_e)) +
+  geom_point() +
+  theme_bw()
+
+summary(lm(data =wide_rats, scale(mean_e) ~ scale(n)))
+
+
+summary(lm(scale(energy) ~ year_six_mo, wide_rats))
+summary(lm(scale(n) ~ year_six_mo, wide_rats))
+summary(lm(scale(biomass) ~ year_six_mo, wide_rats))
+summary(lm(scale(mean_e) ~ year_six_mo, wide_rats))
