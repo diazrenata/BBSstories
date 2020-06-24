@@ -1,0 +1,324 @@
+---
+title: "Comanche Peak, CO"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(bbstrends)
+library(dplyr)
+library(ggplot2)
+```
+
+
+### Load route
+Another route - Comanche Peak, near where I grew up (ish). Also started in 1994!
+
+```{r load route}
+
+ibd <- readRDS("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\isd_data\\ibd_isd_bbs_rtrg_304_17.Rds")
+```
+
+Here are the species present in this route over the past 25 years:
+
+```{r species list for fun}
+
+ibd_species <- ibd %>%
+  select(id, ind_size) %>%
+  group_by(id) %>%
+  summarize(mean_size = mean(ind_size)) %>%
+  ungroup() %>%
+  arrange(mean_size)
+
+species_list <- read.csv("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\species_data\\species_list_working.csv", stringsAsFactors = F)
+
+species_list <- species_list %>%
+  select(id, english_common_name)
+
+ibd_species <- left_join(ibd_species, species_list) %>%
+  distinct()
+
+print(ibd_species)
+
+print(paste0("...", nrow(ibd_species), " species total"))
+
+ggplot(ibd_species, aes(x = log(mean_size))) +
+  geom_histogram() +
+  theme_bw()
+```
+
+Here is how species richness, abundance, biomass, and energy have changed over those years:
+
+```{r state variables}
+
+sv <- ibd %>%
+  group_by(year) %>%
+  summarize(richness = length(unique(id)),
+            abundance = dplyr::n(),
+            biomass = sum(ind_size),
+            energy = sum(ind_b)) %>%
+  ungroup() %>%
+  mutate(mean_energy = energy / abundance,
+         mean_mass = biomass/abundance)
+
+
+sv_long <- sv %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
+
+ggplot(filter(sv_long), aes(x = year, y = value, color = currency)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  theme(legend.position = "none") +
+  facet_wrap(vars(currency), scales = "free_y")
+
+```
+
+Before getting too invested in models, here are observations from the state variable time series....
+
+- Energy is highly variable without a pronounced trend or structure.
+- Abundance and _mean energy_ (or mean mass) have a somewhat different structure. I would argue for three distinguishable time chunks: that in the 1990s, we have medium abundance of small individuals; that in the early 2000s we have low abundances of *large* individuals, and that abruptly in the late 2010s we have low abundances of small individuals again. Is this an echo/signature of some kind of compensation/constraint? Hard to say: Energy is definitely not fixed, but, the apparent co-variation between mean energy and abundance _has the outcome of_ buffering total energy use against fluctuations in either N or mean e. It is hard to think or talk about this because there is a lot of circularity. 
+- I am not at all confident that the patterns - that I think are pretty robust - in N and mean_e will come out in linear models; they're not straightforward trends.
+
+### Trends/tradeoffs in E and N
+
+```{r lms}
+
+sv_long <- sv_long %>%
+  group_by(currency) %>%
+  mutate(scaled_value = scale(value)) %>%
+  ungroup()
+
+abund_lm <- lm(scaled_value ~ year, data = filter(sv_long, currency == "abundance"))
+
+summary(abund_lm)
+
+confint(abund_lm)
+
+sv$abund_prediction = predict(abund_lm)
+
+ggplot(sv, aes(x = year, y = scale(abundance))) +
+  geom_point() +
+  geom_line(aes(x = year, y = abund_prediction)) + 
+  theme_bw()
+
+#hist(resid(abund_lm))
+
+energy_lm <- lm(scaled_value ~ year, data = filter(sv_long, currency == "energy"))
+
+summary(energy_lm)
+
+confint(energy_lm)
+
+sv$energy_prediction <- predict(energy_lm)
+
+
+ggplot(sv, aes(x = year, y = scale(energy))) +
+  geom_point() +
+  geom_line(aes(x = year, y = energy_prediction)) + 
+  theme_bw()
+
+#hist(resid(energy_lm))
+
+```
+
+As I suspected, there's not support for a _linear_ fit to abundance ~ time. Nor is there for energy. 
+
+
+```{r abund v compensation}
+
+ggplot(sv, aes(x = abundance, y = mean_energy)) +
+  geom_point() +
+  theme_bw()
+
+summary(lm(scale(mean_energy) ~ scale(abundance), sv))
+
+```
+
+Here we see *strong* support for a negative relationship between abundance and mean energy. 
+
+
+```{r variability}
+
+print("energy sd/mean")
+sd(sv$energy) / mean(sv$energy)
+
+print("abundance sd/mean")
+sd(sv$abundance) / mean(sv$abundance)
+
+```
+
+
+Energy has lower variability than abundance. I am *not sure* if that is a trivially expected outcome of a scenario where shifts in mean_e run counter to shifts in abundance, but I think it is.
+
+
+I _might_ describe this as evidence/consistent with a tradeoff between abundance and mean energy with neither a trending nor an obviously regulated energetic budget. It seems significant to me that shifts in mean energy run so counter to abundance. This is not always the case.
+
+That said, abundance also predicts *total* energy. To a point. If mean_e were completely offsetting changes in abundance, I think we would expect the E ~ N relationship to be decoupled. So perhaps size shifts are _weakening_ the relationship, but not rendering it totally invariant... 
+
+
+```{r abund v energy}
+
+energy_abund_lm <- (lm(scale(energy) ~ scale(abundance), data = sv))
+
+sv$e_from_n <- predict(energy_abund_lm)
+
+ggplot(sv, aes(x = scale(abundance), y = scale(energy))) +
+  geom_point() +
+  geom_line(aes(x = scale(abundance), y = e_from_n)) +
+  theme_bw()
+
+summary(energy_abund_lm)
+```
+
+### Fixed or variable ISDs
+
+This is moving towards a somewhat more nuanced look at how the ISD (which we have so far looked at mostly via mean_e) is shifting over time. 
+
+Just based on the state variable timeseries, we expect there to be variability in the ISD over time. 
+
+    
+```{r compare ur isd methods}
+
+all_individuals_isd <- density(log(ibd$ind_size), from = 0, to = 1.2 * max(log(ibd$ind_size)), n = 8192)
+
+all_individuals_isd <- data.frame(
+  size = all_individuals_isd$x,
+  density = all_individuals_isd$y / sum(all_individuals_isd$y)
+)
+
+make_year_isd <- function(thisyear, ibd) {
+  this_ibd <- filter(ibd, year == thisyear)
+  this_isd <- density(log(this_ibd$ind_size), from = 0, to = 1.2 * max(log(ibd$ind_size)), n = 8192)
+  
+  return(data.frame(x =this_isd$x,
+                    y = this_isd$y / sum(this_isd$y),
+                    year = thisyear))
+}
+
+
+year_isds <- lapply(unique(ibd$year), FUN = make_year_isd, ibd = ibd)
+
+
+year_isds <- bind_rows(year_isds)
+
+ggplot(ibd, aes(log(ind_size))) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(year), scales = "free_y")
+
+
+mean_year_isds <- year_isds %>%
+  group_by(x) %>%
+  summarize(mean_density = mean(y)) %>%
+  ungroup() %>%
+  rename(size = x)
+
+gridExtra::grid.arrange(
+  grobs = list(ggplot(mean_year_isds, aes(size, mean_density)) + 
+  geom_line() +
+  theme_bw() +
+  ggtitle("Mean of annual ISDs"),
+  
+ggplot(all_individuals_isd, aes(size, density)) +
+  geom_line() +
+  theme_bw() +
+  ggtitle("All individuals")
+), nrow = 1)
+
+ggplot(all_individuals_isd, aes(size, density)) +
+  geom_line() +
+  geom_line(data = mean_year_isds, aes(size, mean_density), color = "blue") +
+  theme_bw() +
+  ggtitle("Both at once for scale")
+```
+
+This site kicks up an important point about the distinction between pooling all indiivduals to construct the "if it were all just one ISD" ISD, and taking some kind of mean across years. For this site, the shape of the ISD is strongly associated with the total number of individuals; the ones skewed towards small individuals also have a lot mroe individuals. So when you weight the ISD from each year equally, you get more density spread towards the larger end of the spectrum because you are giving relatively more weight to years that have larger individuals and also (coincidentally?!?!?!?!?) fewer individuals.
+
+I did the randomization that follows based on just pooling all individuals. 
+
+```{r unaltered individuals}
+
+ggplot(ibd, aes(x = log(ind_size), y = ..ncount..)) +
+  geom_histogram(bins = 100) +
+  geom_density(aes(x = log(ind_size), y = ..ndensity..)) +
+  theme_bw()
+
+
+```
+
+
+This is the distribution of sizes of all the individuals we've ever seen on this route. 
+
+One possibility is that we're equally likely to draw any of these individuals at any time step, and so we expect the ISD we observe at any time step to be a random sample of $N_t$ of all of these individuals. Alternatively, there could be substantively different underlying ISDs we are drawing our $N_t$ individuals from, and the underlying ISDs could vary systematically over time or orthogonal/not-detectably-parallel-to time. 
+
+Energy could vary without a systematic trend, and be positively associated with abundance, if the ISD at each time step is generated via the random draws from an ur-ISD. 
+
+### Energy variability from a randomized isd
+
+```{r randomize isd}
+
+randomized_isd_e <- function(thisyear, ibd) {
+  
+  this_abund <- nrow(ibd [ which(ibd$year == thisyear), ])
+  
+  sampled_ind_b <- ibd$ind_b[ sample.int(nrow(ibd), size = this_abund, replace = F)]
+  
+  return(data.frame(
+    year = thisyear,
+    energy = sum(sampled_ind_b)))
+
+}
+
+
+
+randomized_es_list <- lapply(unique(sv$year), FUN = function(thisyear, ibd, times) return(bind_rows(replicate(n = times, expr = randomized_isd_e(thisyear = thisyear, ibd = ibd), simplify = F), .id = "rep")), ibd = ibd, times = 1000)
+
+
+randomized_es <- bind_rows(randomized_es_list) %>%
+  left_join(select(sv, year, abundance))
+
+
+ggplot(randomized_es, aes(year, energy, group = rep)) +
+  geom_line(alpha = .01) +
+ geom_point(data = sv, aes(year, energy, group = year), color = "red") +
+  theme_bw() 
+
+ggplot(randomized_es, aes(abundance, energy)) +
+  geom_jitter(height = 0, alpha = .01) +
+  theme_bw() +
+  geom_point(data = sv, aes(x = abundance, y = energy), color = "red")
+
+randomized_es_cv <- randomized_es %>%
+  group_by(rep) %>%
+  summarize(energy_sd = sd(energy),
+            energy_mean = mean(energy)) %>%
+  mutate(energy_cv = energy_sd / energy_mean) %>%
+  ungroup()
+
+ggplot(randomized_es_cv, aes(x = energy_cv)) +
+  geom_histogram() +
+  theme_bw() +
+  geom_vline(xintercept = sd(sv$energy) / mean(sv$energy), color = "red")
+
+
+```
+It's maybe not a huge surprise that we see the observed energy diverging from the trajectory if were were sampling N_t individuals from a single conglomerate ISD. I'm not sure how reasonable that scenario is for this site, given what you can see just from the sv plots!
+
+It's pretty interesting that observed energy is *less* variable over the entire timeseries than if it were coming from all one ISD. I think this tracks with the negative relationship between mean_e and N......and contrasts with what you see in New Hartford. 
+
+What would we expect for mean_e in the sampling-one-ISD scenario? I guess that it would be fixed and invariant wrt to abundance...
+
+```{r randomized mean es}
+
+randomized_es <- mutate(randomized_es, mean_e  = energy/abundance)
+
+ggplot(randomized_es, aes(x = year, y = mean_e, group= rep)) +
+  geom_line(alpha = .01) +
+  theme_bw() +
+  geom_point(data = sv, aes(x = year, y = mean_energy, group = NA), color = "red")
+
+```

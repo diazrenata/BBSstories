@@ -1,0 +1,296 @@
+---
+title: "Another route"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(bbstrends)
+library(dplyr)
+library(ggplot2)
+```
+
+
+### Load rats
+
+```{r load route}
+
+
+individual_rats <- portalr::summarise_individual_rodents(clean = TRUE, type = "Granivores", time = "date", length = "Longterm")
+
+ibd <- individual_rats %>%
+  filter(year %in% c(1978:2002), !is.na(wgt), treatment == "control") %>%
+  mutate(six_mo = ifelse(month > 6, 2, 1)) %>%
+  mutate(year_six_mo = (year * 10) + six_mo) %>%
+  mutate(bmr = 5.69 * (wgt ^ .75)) %>%
+  select(year_six_mo, species, wgt, bmr) %>%
+  rename(year= year_six_mo,
+         id = species,
+         ind_size = wgt,
+         ind_b = bmr) %>%
+  mutate(id = as.character(id))
+
+
+```
+
+Here are the species present in this route over the past 25 years:
+
+```{r species list for fun}
+
+ibd_species <- ibd %>%
+  select(id, ind_size) %>%
+  group_by(id) %>%
+  summarize(mean_size = mean(ind_size)) %>%
+  ungroup() %>%
+  arrange(mean_size) %>%
+  distinct() 
+
+print(ibd_species)
+ggplot(ibd_species, aes(x = log(mean_size))) +
+  geom_histogram() +
+  theme_bw()
+```
+
+Here is how species richness, abundance, biomass, and energy have changed over those years:
+
+```{r state variables}
+
+sv <- ibd %>%
+  group_by(year) %>%
+  summarize(richness = length(unique(id)),
+            abundance = dplyr::n(),
+            biomass = sum(ind_size),
+            energy = sum(ind_b)) %>%
+  ungroup() %>%
+  mutate(mean_energy = energy / abundance,
+         mean_mass = biomass/abundance)
+
+
+sv_long <- sv %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
+
+ggplot(filter(sv_long), aes(x = year, y = value, color = currency)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  theme(legend.position = "none") +
+  facet_wrap(vars(currency), scales = "free_y")
+
+```
+
+### Trends/tradeoffs in E and N
+
+We can do some (crude) linear model fitting. I've generally been finding that lms are OK, with caveats:
+
+- you do want to check for autocorrelation
+- the normal q-q plots are often kind of wonky
+
+
+```{r lms}
+
+sv_long <- sv_long %>%
+  group_by(currency) %>%
+  mutate(scaled_value = scale(value)) %>%
+  ungroup()
+
+abund_lm <- lm(scaled_value ~ year, data = filter(sv_long, currency == "abundance"))
+
+summary(abund_lm)
+
+confint(abund_lm)
+
+sv$abund_prediction = predict(abund_lm)
+
+ggplot(sv, aes(x = year, y = scale(abundance))) +
+  geom_point() +
+  geom_line(aes(x = year, y = abund_prediction)) + 
+  theme_bw()
+
+hist(resid(abund_lm))
+
+energy_lm <- lm(scaled_value ~ year, data = filter(sv_long, currency == "energy"))
+
+summary(energy_lm)
+
+confint(energy_lm)
+
+sv$energy_prediction <- predict(energy_lm)
+
+
+ggplot(sv, aes(x = year, y = scale(energy))) +
+  geom_point() +
+  geom_line(aes(x = year, y = energy_prediction)) + 
+  theme_bw()
+
+hist(resid(energy_lm))
+
+```
+
+```{r abund v compensation}
+
+ggplot(sv, aes(x = abundance, y = mean_energy)) +
+  geom_point() +
+  theme_bw()
+
+ summary(lm(scale(mean_energy) ~ scale(abundance), sv))
+
+```
+
+
+```{r variability}
+
+print("energy sd/mean")
+sd(sv$energy) / mean(sv$energy)
+
+print("abundance sd/mean")
+sd(sv$abundance) / mean(sv$abundance)
+
+```
+
+
+Another notion is that energy should maybe track abundance? We have already seen that energy is more variable than abundance and that the overall trend for energy is not the same as the one for abundance. Here is the extent to which abundance predicts energy:
+
+```{r abund v energy}
+
+energy_abund_lm <- (lm(scale(energy) ~ scale(abundance), data = sv))
+
+sv$e_from_n <- predict(energy_abund_lm)
+
+ggplot(sv, aes(x = scale(abundance), y = scale(energy))) +
+  geom_point() +
+  geom_line(aes(x = scale(abundance), y = e_from_n)) +
+  theme_bw()
+
+summary(energy_abund_lm)
+hist(resid(energy_abund_lm))
+```
+
+### Fixed or variable ISDs
+
+    
+```{r compare ur isd methods}
+
+all_individuals_isd <- density(log(ibd$ind_size), from = 0, to = 1.2 * max(log(ibd$ind_size)), n = 8192)
+
+all_individuals_isd <- data.frame(
+  size = all_individuals_isd$x,
+  density = all_individuals_isd$y / sum(all_individuals_isd$y)
+)
+
+make_year_isd <- function(thisyear, ibd) {
+  this_ibd <- filter(ibd, year == thisyear)
+  this_isd <- density(log(this_ibd$ind_size), from = 0, to = 1.2 * max(log(ibd$ind_size)), n = 8192)
+  
+  return(data.frame(x =this_isd$x,
+                    y = this_isd$y / sum(this_isd$y),
+                    year = thisyear))
+}
+
+
+year_isds <- lapply(unique(ibd$year), FUN = make_year_isd, ibd = ibd)
+
+
+year_isds <- bind_rows(year_isds)
+
+mean_year_isds <- year_isds %>%
+  group_by(x) %>%
+  summarize(mean_density = mean(y)) %>%
+  ungroup() %>%
+  rename(size = x)
+
+gridExtra::grid.arrange(
+  grobs = list(ggplot(mean_year_isds, aes(size, mean_density)) + 
+  geom_line() +
+  theme_bw() +
+  ggtitle("Mean of annual ISDs"),
+  
+ggplot(all_individuals_isd, aes(size, density)) +
+  geom_line() +
+  theme_bw() +
+  ggtitle("All individuals")
+), nrow = 1)
+
+ggplot(all_individuals_isd, aes(size, density)) +
+  geom_line() +
+  geom_line(data = mean_year_isds, aes(size, mean_density), color = "blue") +
+  theme_bw() +
+  ggtitle("Both at once for scale")
+```
+
+The plots above are both constructed based on KDEs. There are assumptions and artefacts in there I'm not quite 100% on: the weighting of samples from different time steps. I also have a well-worn mental module that likes to construct ISDs via kdes or GMMs and then get started comparing them via overlap, etc. I'd like to explore something a little different at the moment, so I'm going to actually put a pin in things derived from KDEs and work instead off of pools of individuals. 
+
+```{r unaltered individuals}
+
+ggplot(ibd, aes(x = log(ind_size), y = ..ncount..)) +
+  geom_histogram(bins = 100) +
+  geom_density(aes(x = log(ind_size), y = ..ndensity..)) +
+  theme_bw()
+
+
+```
+
+
+This is the distribution of sizes of all the individuals we've ever seen on this route. 
+
+One possibility is that we're equally likely to draw any of these individuals at any time step, and so we expect the ISD we observe at any time step to be a random sample of $N_t$ of all of these individuals. Alternatively, there could be substantively different underlying ISDs we are drawing our $N_t$ individuals from, and the underlying ISDs could vary systematically over time or orthogonal/not-detectably-parallel-to time. 
+
+These possibilities go fairly deep in their implications. We can start by thinking about it in terms of energy?
+
+Energy could vary without a systematic trend if the ISD at each time step is generated via the random draws from an ur-ISD. But that variation might or might not rise to the magnitude we observe here.
+
+### Energy variability from a randomized isd
+
+```{r randomize isd}
+
+randomized_isd_e <- function(thisyear, ibd) {
+  
+  this_abund <- nrow(ibd [ which(ibd$year == thisyear), ])
+  
+  sampled_ind_b <- ibd$ind_b[ sample.int(nrow(ibd), size = this_abund, replace = F)]
+  
+  return(data.frame(
+    year = thisyear,
+    energy = sum(sampled_ind_b)))
+
+}
+
+
+
+randomized_es_list <- lapply(unique(sv$year), FUN = function(thisyear, ibd, times) return(bind_rows(replicate(n = times, expr = randomized_isd_e(thisyear = thisyear, ibd = ibd), simplify = F), .id = "rep")), ibd = ibd, times = 1000)
+
+
+randomized_es <- bind_rows(randomized_es_list) %>%
+  left_join(select(sv, year, abundance))
+
+
+ggplot(randomized_es, aes(year, energy, group = rep)) +
+  geom_line(alpha = .01) +
+ geom_point(data = sv, aes(year, energy, group = year), color = "red") +
+  theme_bw() 
+
+ggplot(randomized_es, aes(abundance, energy)) +
+  geom_jitter(height = 0, alpha = .01) +
+  theme_bw() +
+  geom_point(data = sv, aes(x = abundance, y = energy), color = "red")
+
+randomized_es_cv <- randomized_es %>%
+  group_by(rep) %>%
+  summarize(energy_sd = sd(energy),
+            energy_mean = mean(energy)) %>%
+  mutate(energy_cv = energy_sd / energy_mean) %>%
+  ungroup()
+
+ggplot(randomized_es_cv, aes(x = energy_cv)) +
+  geom_histogram() +
+  theme_bw() +
+  geom_vline(xintercept = sd(sv$energy) / mean(sv$energy), color = "red")
+
+
+```
+
+The cloud of lines represent the distribution of *total energy values* for 1000 bootstrap sampled ISDs. The histogram is the coefficient of variation (sd/mean) for E over every simulation; the red line is the observed. The observed E time series is way more variable than any of the ones that we generated by resampling from a stable ISD.
+
+Similarly, the cloud of dots visualizes the variation in energy-abundance relation obtained via sampling. Compared to the red dots, which are observed.
