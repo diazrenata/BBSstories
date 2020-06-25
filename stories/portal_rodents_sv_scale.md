@@ -152,7 +152,9 @@ is the extent to which abundance predicts energy:
 
 ### Fixed or variable ISDs
 
-![](portal_rodents_sv_scale_files/figure-gfm/compare%20ur%20isd%20methods-1.png)<!-- -->![](portal_rodents_sv_scale_files/figure-gfm/compare%20ur%20isd%20methods-2.png)<!-- -->
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](portal_rodents_sv_scale_files/figure-gfm/compare%20ur%20isd%20methods-1.png)<!-- -->![](portal_rodents_sv_scale_files/figure-gfm/compare%20ur%20isd%20methods-2.png)<!-- -->![](portal_rodents_sv_scale_files/figure-gfm/compare%20ur%20isd%20methods-3.png)<!-- -->
 
 The plots above are both constructed based on KDEs. There are
 assumptions and artefacts in there I’m not quite 100% on: the weighting

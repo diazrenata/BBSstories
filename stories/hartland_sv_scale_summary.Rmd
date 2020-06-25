@@ -219,6 +219,12 @@ year_isds <- lapply(unique(ibd$year), FUN = make_year_isd, ibd = ibd)
 
 year_isds <- bind_rows(year_isds)
 
+ggplot(ibd, aes(log(ind_size))) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(year), scales = "free_y")
+
+
 mean_year_isds <- year_isds %>%
   group_by(x) %>%
   summarize(mean_density = mean(y)) %>%
