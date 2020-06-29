@@ -1,0 +1,334 @@
+---
+title: "Second draft scaling residual variation"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r sim function}
+
+simulate_data <- function(ntimesteps, intercept, slope_ratio, sd_ratio) {
+  
+  slope <- slope_ratio * intercept
+  
+  sd_error = sd_ratio * mean(intercept, (intercept + (ntimesteps * slope)))
+  
+  vals <- intercept + ((1:ntimesteps) * slope) + rnorm(ntimesteps, sd = sd_error)
+  
+  return(data.frame(
+    time = 1:ntimesteps,
+    value = vals,
+    true_slope = slope,
+    true_slope_ratio = slope_ratio,
+    true_error_ratio = sd_ratio,
+    true_error = sd_error,
+    true_intercept = intercept
+  ))
+  
+}
+
+set.seed(1977)
+one_sim <- simulate_data(25, runif(1, 600, 900), runif(1, -.0007, .0007), sd_ratio = .015)
+
+ggplot(one_sim, aes(time, value)) + 
+  geom_point() +
+  theme_bw() +
+  scale_y_continuous(limits = c(0, NA))
+
+```
+
+## Explaining the analysis
+
+For a given response vector (in this case, a timeseries ~ year)
+
+1. Make a least squares estimate
+2. Divide the actual values by the estimate
+3. I think the mean of this vector is 1, but that its standard deviation is a scaled measure of variation around the trend line.
+
+```{r one lm}
+
+one_lm <- lm(value ~ time, data = one_sim)
+
+one_sim$est <- predict(one_lm)
+
+ggplot(one_sim, aes(time, value)) +
+  geom_point() +
+  geom_line(aes(time, est), color = "pink") +
+  theme_bw() +
+  scale_y_continuous(limits = c(0, NA))
+
+one_sim$est_scale <- one_sim$value / one_sim$est
+
+ggplot(one_sim, aes(time, est_scale)) +
+  geom_point() +
+  theme_bw()
+
+mean(one_sim$est_scale)
+
+sd(one_sim$est_scale)
+
+```
+
+# Exploring how it behaves
+
+
+### Non trending and low error 
+
+```{r flat low}
+
+flat_low <- replicate(n = 10, expr = simulate_data(25, runif(1, 600, 900), runif(1, -.0007, .0007), sd_ratio = .015), simplify = F)
+
+flat_low <- bind_rows(flat_low, .id = "rep") %>%
+  mutate(type = "flat_low",
+         rep = as.numeric(rep))
+
+
+flat_low2 <- replicate(n = 10, expr = simulate_data(25, runif(1, 30000, 40000), runif(1, -.0007, .0007), sd_ratio = .015), simplify = F)
+
+flat_low2 <- bind_rows(flat_low2, .id = "rep") %>%
+  mutate(type = "flat_low",
+         rep = as.numeric(rep) + 10)
+
+flat_low <- bind_rows(flat_low, flat_low2)
+
+ggplot(flat_low, aes(time, value, group = rep)) +
+  geom_line() + theme_bw()
+```
+
+### Trending and low error
+```{r trend low}
+
+trend_low <- replicate(n = 10, expr = simulate_data(25, runif(1, 600, 900), sample(c(-1, 1), size = 1) * runif(1, .01, .02), sd_ratio = .015), simplify = F)
+
+trend_low <- bind_rows(trend_low, .id = "rep") %>%
+  mutate(type = "trend_low",
+         rep = as.numeric(rep))
+
+
+trend_low2 <- replicate(n = 10, expr = simulate_data(25, runif(1, 30000, 40000), sample(c(-1, 1), size = 1) * runif(1, .01, .02), sd_ratio = .015), simplify = F)
+
+trend_low2 <- bind_rows(trend_low2, .id = "rep") %>%
+  mutate(type = "trend_low",
+         rep = as.numeric(rep) + 10)
+
+trend_low <- bind_rows(trend_low, trend_low2)
+
+ggplot(trend_low, aes(time, value, group = rep)) +
+  geom_line() + theme_bw()
+
+
+```
+
+### Non trending and high error
+```{r flat high}
+
+flat_high <- replicate(n = 10, expr = simulate_data(25, runif(1, 600, 900), runif(1, -.0007, .0007), sd_ratio = .07), simplify = F)
+
+flat_high <- bind_rows(flat_high, .id = "rep") %>%
+  mutate(type = "flat_high",
+         rep = as.numeric(rep))
+
+
+flat_high2 <- replicate(n = 10, expr = simulate_data(25, runif(1, 30000, 40000), runif(1, -.0007, .0007), sd_ratio = .07), simplify = F)
+
+flat_high2 <- bind_rows(flat_high2, .id = "rep") %>%
+  mutate(type = "flat_high",
+         rep = as.numeric(rep) + 10)
+
+flat_high <- bind_rows(flat_high, flat_high2)
+
+
+ggplot(flat_high, aes(time, value, group = rep)) +
+  geom_line() + theme_bw()
+
+
+```
+
+### Trending and high error
+```{r trend high}
+
+trend_high <- replicate(n = 10, expr = simulate_data(25, runif(1, 600, 900), sample(c(-1, 1), size = 1) * runif(1, .01, .02), sd_ratio = .07), simplify = F)
+
+trend_high <- bind_rows(trend_high, .id = "rep") %>%
+  mutate(type = "trend_high",
+         rep = as.numeric(rep))
+
+trend_high2 <- replicate(n = 10, expr = simulate_data(25, runif(1, 30000, 40000), sample(c(-1, 1), size = 1) * runif(1, .01, .02), sd_ratio = .07), simplify = F)
+
+trend_high2 <- bind_rows(trend_high2, .id = "rep") %>%
+  mutate(type = "trend_high",
+         rep = as.numeric(rep) + 10)
+
+trend_high <- bind_rows(trend_high, trend_high2)
+
+
+ggplot(trend_high, aes(time, value, group = rep)) +
+  geom_line() + theme_bw()
+
+
+```
+
+### All
+
+```{r all}
+
+all_sims <- bind_rows(flat_low, flat_high, trend_low, trend_high)
+
+all_sims <- mutate(all_sims, rep_trend = paste0(rep, type),
+                   currency_scale = rep > 10) 
+
+
+ggplot(all_sims, aes(time, value, group = rep_trend, color = type)) +
+  geom_line() + theme_bw()
+
+
+
+ggplot(all_sims, aes(time, value, group = rep_trend, color = type)) +
+  geom_line() + theme_bw() + facet_wrap(vars(currency_scale), scales = "free_y")
+```
+
+```{r extract lm metrics}
+
+lm_fuzz <- function(a_vector) {
+  
+  this_ts <- data.frame(time = 1:length(a_vector), value = a_vector)
+  
+  this_lm <- lm(value ~ time, this_ts) 
+  
+  this_slope <- coefficients(this_lm)[["time"]]
+  
+  this_p <- anova(this_lm)[1,5]
+  
+  this_r2 <- summary(this_lm)$r.squared
+  
+  this_est <- predict(this_lm)
+  
+  scaled_ests <- this_est / a_vector
+  
+  sd_scaled_ests = sd(scaled_ests)
+  mean_scaled_ests = mean(scaled_ests)
+  
+  scaled_slope = this_slope / mean(this_est)
+  
+  scaled_intercept_slope = this_slope / coefficients(this_lm)[["(Intercept)"]]
+  
+  return(data.frame(
+    slope = this_slope,
+    p = this_p,
+    r2 = this_r2,
+    sd_scaled_ests = sd_scaled_ests,
+    mean_scaled_ests = mean_scaled_ests,
+    cv = sd(a_vector) / mean(a_vector),
+    scaled_slope = scaled_slope,
+    scaled_intercept_slope = scaled_intercept_slope
+  ))
+  
+}
+
+
+lm_summaries <- list()
+
+for(i in 1:length(unique(all_sims$rep_trend))) {
+  
+  this_df <- filter(all_sims, rep_trend == unique(all_sims$rep_trend)[i])
+  
+  lm_summaries[[i]] <- lm_fuzz(this_df$value)
+
+  lm_summaries[[i]]$rep_trend = this_df$rep_trend[1]
+  lm_summaries[[i]]$type = this_df$type[1]
+  lm_summaries[[i]]$currency_scale = this_df$currency_scale[1]
+    
+}
+
+lm_summaries <- bind_rows(lm_summaries) 
+```
+
+```{r vis}
+
+head(lm_summaries)
+
+ggplot(lm_summaries, aes(slope, sd_scaled_ests, color = type)) +
+  geom_point() +
+  theme_bw()
+
+
+ggplot(lm_summaries, aes(scaled_intercept_slope, sd_scaled_ests, color = type, shape = currency_scale)) +
+  geom_point() +
+  theme_bw()
+
+```
+
+```{r sims plots}
+
+all_sims <- left_join(all_sims, lm_summaries)
+
+
+ggplot(all_sims, aes(x = time, y = value, color = sd_scaled_ests, group = rep_trend)) +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(type, currency_scale), scales = "free_y") +
+  scale_color_viridis_c()
+
+
+ggplot(all_sims, aes(x = time, y = value, color = scaled_intercept_slope, group = rep_trend)) +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(type, currency_scale), scales = "free_y")
+
+
+
+colnames(all_sims)
+
+ggplot(all_sims, aes(true_slope_ratio, scaled_intercept_slope, color =  type)) + 
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)
+
+```
+
+```{r trying hartland}
+
+individual_rats <- portalr::summarise_individual_rodents(clean = TRUE, type = "Granivores", time = "date", length = "Longterm")
+
+ibd <- individual_rats %>%
+  filter(year %in% c(1978:2002), !is.na(wgt), treatment == "control") %>%
+  mutate(six_mo = ifelse(month > 6, 2, 1)) %>%
+  mutate(year_six_mo = (year * 10) + six_mo) %>%
+  mutate(bmr = 5.69 * (wgt ^ .75)) %>%
+  select(year_six_mo, species, wgt, bmr) %>%
+  rename(year= year_six_mo,
+         id = species,
+         ind_size = wgt,
+         ind_b = bmr) %>%
+  mutate(id = as.character(id))
+
+
+sv <- ibd %>%
+  group_by(year) %>%
+  summarize(richness = length(unique(id)),
+            abundance = dplyr::n(),
+            biomass = sum(ind_size),
+            energy = sum(ind_b)) %>%
+  ungroup() %>%
+  mutate(mean_energy = energy / abundance,
+         mean_mass = biomass/abundance) %>%
+  mutate(time = row_number())
+
+sv_fuzz <- list(
+  abundance = lm_fuzz(sv$abundance),
+  energy = lm_fuzz(sv$energy)
+)
+
+sv_fuzz <- bind_rows(sv_fuzz, .id = "currency")
+
+head(sv_fuzz)
+
+
+ggplot(lm_summaries, aes(scaled_intercept_slope, sd_scaled_ests, color = type, shape = currency_scale)) +
+  geom_point() +
+  theme_bw() +
+  geom_point(data = sv_fuzz, aes(scaled_intercept_slope, sd_scaled_ests, color = currency, shape = currency))
+```
