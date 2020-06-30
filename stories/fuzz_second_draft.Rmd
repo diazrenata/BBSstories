@@ -32,8 +32,8 @@ simulate_data <- function(ntimesteps, intercept, slope_ratio, sd_ratio) {
 }
 
 set.seed(1977)
-one_sim <- simulate_data(25, runif(1, 600, 900), runif(1, -.0007, .0007), sd_ratio = .015)
-
+#one_sim <- simulate_data(25, runif(1, 600, 900), runif(1, -.0007, .0007), sd_ratio = .015)
+one_sim <- simulate_data(25,400, .03, sd_ratio = .3)
 ggplot(one_sim, aes(time, value)) + 
   geom_point() +
   theme_bw() +
@@ -54,6 +54,7 @@ For a given response vector (in this case, a timeseries ~ year)
 one_lm <- lm(value ~ time, data = one_sim)
 
 one_sim$est <- predict(one_lm)
+one_sim$resid <- resid(one_lm)
 
 ggplot(one_sim, aes(time, value)) +
   geom_point() +
@@ -61,7 +62,8 @@ ggplot(one_sim, aes(time, value)) +
   theme_bw() +
   scale_y_continuous(limits = c(0, NA))
 
-one_sim$est_scale <- one_sim$value / one_sim$est
+one_sim$est_scale <- one_sim$est / one_sim$value
+one_sim$resid_scale <- abs(one_sim$resid) / one_sim$est
 
 ggplot(one_sim, aes(time, est_scale)) +
   geom_point() +
@@ -71,6 +73,15 @@ mean(one_sim$est_scale)
 
 sd(one_sim$est_scale)
 
+
+
+ggplot(one_sim, aes(time, resid_scale)) +
+  geom_point() +
+  theme_bw()
+
+mean(one_sim$resid_scale)
+
+sd(one_sim$resid_scale)
 ```
 
 # Exploring how it behaves
@@ -126,14 +137,14 @@ ggplot(trend_low, aes(time, value, group = rep)) +
 ### Non trending and high error
 ```{r flat high}
 
-flat_high <- replicate(n = 10, expr = simulate_data(25, runif(1, 600, 900), runif(1, -.0007, .0007), sd_ratio = .07), simplify = F)
+flat_high <- replicate(n = 10, expr = simulate_data(25, runif(1, 600, 900), runif(1, -.0007, .0007), sd_ratio = .15), simplify = F)
 
 flat_high <- bind_rows(flat_high, .id = "rep") %>%
   mutate(type = "flat_high",
          rep = as.numeric(rep))
 
 
-flat_high2 <- replicate(n = 10, expr = simulate_data(25, runif(1, 30000, 40000), runif(1, -.0007, .0007), sd_ratio = .07), simplify = F)
+flat_high2 <- replicate(n = 10, expr = simulate_data(25, runif(1, 30000, 40000), runif(1, -.0007, .0007), sd_ratio = .15), simplify = F)
 
 flat_high2 <- bind_rows(flat_high2, .id = "rep") %>%
   mutate(type = "flat_high",
@@ -151,13 +162,13 @@ ggplot(flat_high, aes(time, value, group = rep)) +
 ### Trending and high error
 ```{r trend high}
 
-trend_high <- replicate(n = 10, expr = simulate_data(25, runif(1, 600, 900), sample(c(-1, 1), size = 1) * runif(1, .01, .02), sd_ratio = .07), simplify = F)
+trend_high <- replicate(n = 10, expr = simulate_data(25, runif(1, 600, 900), sample(c(-1, 1), size = 1) * runif(1, .01, .02), sd_ratio = .15), simplify = F)
 
 trend_high <- bind_rows(trend_high, .id = "rep") %>%
   mutate(type = "trend_high",
          rep = as.numeric(rep))
 
-trend_high2 <- replicate(n = 10, expr = simulate_data(25, runif(1, 30000, 40000), sample(c(-1, 1), size = 1) * runif(1, .01, .02), sd_ratio = .07), simplify = F)
+trend_high2 <- replicate(n = 10, expr = simulate_data(25, runif(1, 30000, 40000), sample(c(-1, 1), size = 1) * runif(1, .01, .02), sd_ratio = .15), simplify = F)
 
 trend_high2 <- bind_rows(trend_high2, .id = "rep") %>%
   mutate(type = "trend_high",
@@ -209,6 +220,12 @@ lm_fuzz <- function(a_vector) {
   
   scaled_ests <- this_est / a_vector
   
+  this_resid <- resid(this_lm)
+  
+  scaled_resid <- abs(this_resid) / this_est
+  
+  mean_scaled_resid = mean(scaled_resid)
+  
   sd_scaled_ests = sd(scaled_ests)
   mean_scaled_ests = mean(scaled_ests)
   
@@ -224,7 +241,8 @@ lm_fuzz <- function(a_vector) {
     mean_scaled_ests = mean_scaled_ests,
     cv = sd(a_vector) / mean(a_vector),
     scaled_slope = scaled_slope,
-    scaled_intercept_slope = scaled_intercept_slope
+    scaled_intercept_slope = scaled_intercept_slope,
+    mean_scaled_resid = mean_scaled_resid
   ))
   
 }
@@ -237,11 +255,11 @@ for(i in 1:length(unique(all_sims$rep_trend))) {
   this_df <- filter(all_sims, rep_trend == unique(all_sims$rep_trend)[i])
   
   lm_summaries[[i]] <- lm_fuzz(this_df$value)
-
+  
   lm_summaries[[i]]$rep_trend = this_df$rep_trend[1]
   lm_summaries[[i]]$type = this_df$type[1]
   lm_summaries[[i]]$currency_scale = this_df$currency_scale[1]
-    
+  
 }
 
 lm_summaries <- bind_rows(lm_summaries) 
@@ -251,14 +269,20 @@ lm_summaries <- bind_rows(lm_summaries)
 
 head(lm_summaries)
 
-ggplot(lm_summaries, aes(slope, sd_scaled_ests, color = type)) +
+ggplot(lm_summaries, aes(slope, mean_scaled_resid, color = type)) +
   geom_point() +
   theme_bw()
 
 
-ggplot(lm_summaries, aes(scaled_intercept_slope, sd_scaled_ests, color = type, shape = currency_scale)) +
+ggplot(lm_summaries, aes(scaled_intercept_slope, mean_scaled_resid, color = type, shape = currency_scale)) +
   geom_point() +
   theme_bw()
+
+
+ggplot(lm_summaries, aes(scaled_intercept_slope, mean_scaled_resid, color = type, shape = p < .05)) +
+  geom_point() +
+  theme_bw()
+
 
 ```
 
@@ -267,7 +291,7 @@ ggplot(lm_summaries, aes(scaled_intercept_slope, sd_scaled_ests, color = type, s
 all_sims <- left_join(all_sims, lm_summaries)
 
 
-ggplot(all_sims, aes(x = time, y = value, color = sd_scaled_ests, group = rep_trend)) +
+ggplot(all_sims, aes(x = time, y = value, color = mean_scaled_resid, group = rep_trend)) +
   geom_line() +
   theme_bw() +
   facet_wrap(vars(type, currency_scale), scales = "free_y") +
@@ -289,34 +313,107 @@ ggplot(all_sims, aes(true_slope_ratio, scaled_intercept_slope, color =  type)) +
 
 ```
 
-```{r trying hartland}
 
-individual_rats <- portalr::summarise_individual_rodents(clean = TRUE, type = "Granivores", time = "date", length = "Longterm")
+### Trying on a few real datasets
 
-ibd <- individual_rats %>%
-  filter(year %in% c(1978:2002), !is.na(wgt), treatment == "control") %>%
-  mutate(six_mo = ifelse(month > 6, 2, 1)) %>%
-  mutate(year_six_mo = (year * 10) + six_mo) %>%
-  mutate(bmr = 5.69 * (wgt ^ .75)) %>%
-  select(year_six_mo, species, wgt, bmr) %>%
-  rename(year= year_six_mo,
-         id = species,
-         ind_size = wgt,
-         ind_b = bmr) %>%
-  mutate(id = as.character(id))
+```{r loading some real datasets, fig.dim = c(6, 20)}
 
+datasets <- data.frame(
+  dataset_name = c("rockies",
+                   "hartland",
+                   "alberta",
+                   "cochise_birds",
+                   "salamonie",
+                   "tilden",
+              #     "gainesville",
+                   "portal_rats"),
+  rtrg_code = c("rtrg_304_17",
+                "rtrg_102_18",
+                "rtrg_105_4",
+                "rtrg_133_6",
+                "rtrg_19_35",
+                "rtrg_172_14",
+           #     "rtrg_113_25",
+                NA)
+)
 
-sv <- ibd %>%
-  group_by(year) %>%
-  summarize(richness = length(unique(id)),
-            abundance = dplyr::n(),
-            biomass = sum(ind_size),
-            energy = sum(ind_b)) %>%
-  ungroup() %>%
-  mutate(mean_energy = energy / abundance,
-         mean_mass = biomass/abundance) %>%
-  mutate(time = row_number())
+all_datasets <- list()
 
+for(i in 1:nrow(datasets)) {
+  
+  if(datasets$dataset_name[i] != "portal_rats") {
+    
+    ibd <- readRDS(paste0("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\isd_data\\ibd_isd_bbs_", datasets$rtrg_code[i], ".Rds"))
+    
+    sv <- ibd %>%
+      group_by(year) %>%
+      summarize(richness = length(unique(id)),
+                abundance = dplyr::n(),
+                biomass = sum(ind_size),
+                energy = sum(ind_b)) %>%
+      ungroup() %>%
+      mutate(mean_energy = energy / abundance,
+             mean_mass = biomass/abundance,
+             site_name = datasets$dataset_name[i])
+  } else {
+    
+    individual_rats <- portalr::summarise_individual_rodents(clean = TRUE, type = "Granivores", time = "date", length = "Longterm")
+    
+    ibd <- individual_rats %>%
+      filter(year %in% c(1978:2002), !is.na(wgt), treatment == "control") %>%
+      mutate(six_mo = ifelse(month > 6, .5, 0)) %>%
+      mutate(year_six_mo = (year + six_mo)) %>%
+      mutate(bmr = 5.69 * (wgt ^ .75)) %>%
+      select(year_six_mo, species, wgt, bmr) %>%
+      rename(year= year_six_mo,
+             id = species,
+             ind_size = wgt,
+             ind_b = bmr) %>%
+      mutate(id = as.character(id))
+    
+    
+    sv <- ibd %>%
+      group_by(year) %>%
+      summarize(richness = length(unique(id)),
+                abundance = dplyr::n(),
+                biomass = sum(ind_size),
+                energy = sum(ind_b)) %>%
+      ungroup() %>%
+      mutate(mean_energy = energy / abundance,
+             mean_mass = biomass/abundance,
+             site_name = datasets$dataset_name[i]) %>%
+      mutate(time = row_number())
+    
+  }
+  
+  all_datasets[[i]] <- sv
+  
+}
+
+all_datasets <- bind_rows(all_datasets)
+
+gridExtra::grid.arrange(grobs = list(
+  ggplot(all_datasets, aes(year, abundance, color = site_name)) +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(site_name), scales = "free", ncol = 1) + 
+    ggtitle("Abundance"
+    ) +
+   theme(legend.position = "top"),
+  ggplot(all_datasets, aes(year, energy, color = site_name)) + 
+ geom_line() +
+  theme_bw() +
+  facet_wrap(vars(site_name), scales = "free", ncol = 1) +
+   ggtitle("Energy") +
+   theme(legend.position = "top")),
+ ncol = 2
+)
+
+fuzzes <- list()
+
+for(i in 1:nrow(datasets)) {
+  
+  sv <- filter(all_datasets, site_name == datasets$dataset_name[i])
 sv_fuzz <- list(
   abundance = lm_fuzz(sv$abundance),
   energy = lm_fuzz(sv$energy)
@@ -324,11 +421,51 @@ sv_fuzz <- list(
 
 sv_fuzz <- bind_rows(sv_fuzz, .id = "currency")
 
-head(sv_fuzz)
+sv_fuzz <- mutate(sv_fuzz, site_name = datasets$dataset_name[i])  
+
+fuzzes[[i]] <- sv_fuzz
+}
+
+fuzzes <- bind_rows(fuzzes)
+
+```
 
 
-ggplot(lm_summaries, aes(scaled_intercept_slope, sd_scaled_ests, color = type, shape = currency_scale)) +
+```{r datasets vis}
+
+ggplot(lm_summaries, aes(scaled_intercept_slope, mean_scaled_resid, alpha = p < 0.05)) +
   geom_point() +
   theme_bw() +
-  geom_point(data = sv_fuzz, aes(scaled_intercept_slope, sd_scaled_ests, color = currency, shape = currency))
+  geom_point(data = fuzzes, aes(scaled_intercept_slope, mean_scaled_resid, shape = currency, color = site_name, alpha = p < 0.05), size = 5) +
+  scale_alpha_discrete(range = c(.3, 1))
+
+all_datasets[ which(all_datasets$site_name == "portal_rats"), "year"] <- as.numeric(substr(as.character(all_datasets[ which(all_datasets$site_name == "portal_rats"), "year"]), 1, 4)) + (.5 * (all_datasets[ which(all_datasets$site_name == "portal_rats"), "year"] - 1))
+  
+
+gridExtra::grid.arrange(grobs = list(
+  ggplot(all_datasets, aes(year, abundance, color = site_name)) +
+  geom_line() +
+  theme_bw() +
+  #facet_wrap(vars(site_name), scales = "free", ncol = 1) + 
+    ggtitle("Abundance"
+    ) +
+   theme(legend.position = "top"),
+  ggplot(all_datasets, aes(year, energy, color = site_name)) + 
+ geom_line() +
+  theme_bw() +
+ # facet_wrap(vars(site_name), scales = "free", ncol = 1) +
+   ggtitle("Energy") +
+   theme(legend.position = "top")),
+ ncol = 2
+)
+
+```
+
+
+```{r some numerical intuition}
+
+start = 1000
+
+```
+
 ```
