@@ -49,43 +49,30 @@ ggplot(one_sim, aes(time, value)) +
 
 For a given response vector (in this case, a timeseries ~ year)
 
-1. Make a least squares estimate
-2. Divide the actual values by the estimate
-3. I think the mean of this vector is 1, but that its standard deviation is a scaled measure of variation around the trend line.
+1. Divide all values by the mean
+2. Fit a lm
+3. Take the mean of the absolute value of the residuals
+4. Extract the slope
 
 ```{r one lm}
 
-one_lm <- lm(value ~ time, data = one_sim)
+one_sim$adj_value = one_sim$value / mean(one_sim$value)
+
+one_lm <- lm(adj_value ~ time, data = one_sim)
 
 one_sim$est <- predict(one_lm)
-one_sim$resid <- resid(one_lm)
+one_sim$abs_resid <- abs(resid(one_lm))
 
-ggplot(one_sim, aes(time, value)) +
-  geom_point() +
+ggplot(one_sim, aes(time, adj_value)) +
+  geom_line() +
   geom_line(aes(time, est), color = "pink") +
   theme_bw() +
-  scale_y_continuous(limits = c(0, NA))
+  scale_y_continuous(limits = c(0, NA)) +
+  geom_point(aes(time, abs_resid), color = "red")
 
-one_sim$est_scale <- one_sim$est / (one_sim$value)
-one_sim$resid_scale <- abs(one_sim$resid) / mean(one_sim$est)
+mean(one_sim$abs_resid)
 
-ggplot(one_sim, aes(time, est_scale)) +
-  geom_point() +
-  theme_bw()
-
-mean(one_sim$est_scale)
-
-sd(one_sim$est_scale)
-
-
-
-ggplot(one_sim, aes(time, resid_scale)) +
-  geom_point() +
-  theme_bw()
-
-mean(one_sim$resid_scale)
-
-sd(one_sim$resid_scale)
+coefficients(one_lm)
 ```
 
 # Exploring how it behaves
@@ -203,14 +190,14 @@ ggplot(all_sims, aes(time, value, group = rep_trend, color = type)) +
 
 
 ggplot(all_sims, aes(time, value, group = rep_trend, color = type)) +
-  geom_line() + theme_bw() + facet_wrap(vars(currency_scale, type), scales = "free_y")
+  geom_line() + theme_bw() + facet_wrap(vars(currency_scale), scales = "free_y")
 ```
 
 ```{r extract lm metrics}
 
 lm_fuzz <- function(a_vector) {
   
-  this_ts <- data.frame(time = 1:length(a_vector), value = a_vector)
+  this_ts <- data.frame(time = 1:length(a_vector), value = a_vector / mean(a_vector))
   
   this_lm <- lm(value ~ time, this_ts) 
   
@@ -226,27 +213,17 @@ lm_fuzz <- function(a_vector) {
   
   this_resid <- resid(this_lm)
   
-  scaled_resid <- abs(this_resid) /  mean(this_est)
+  abs_resid <- abs(this_resid)
   
-  mean_scaled_resid = mean(scaled_resid)
+  mean_abs_resid = mean(abs_resid)
   
-  sd_scaled_ests = sd(scaled_ests)
-  mean_scaled_ests = mean(scaled_ests)
-  
-  scaled_slope = this_slope / mean(this_est)
-  
-  scaled_intercept_slope = this_slope / coefficients(this_lm)[["(Intercept)"]]
   
   return(data.frame(
     slope = this_slope,
     p = this_p,
     r2 = this_r2,
-    sd_scaled_ests = sd_scaled_ests,
-    mean_scaled_ests = mean_scaled_ests,
     cv = sd(a_vector) / mean(a_vector),
-    scaled_slope = scaled_slope,
-    scaled_intercept_slope = scaled_intercept_slope,
-    mean_scaled_resid = mean_scaled_resid
+    mean_abs_resid = mean_abs_resid
   ))
   
 }
@@ -271,49 +248,16 @@ lm_summaries <- bind_rows(lm_summaries)
 
 ```{r vis}
 
-head(lm_summaries)
 
-ggplot(lm_summaries, aes(slope, mean_scaled_resid, color = type)) +
+ggplot(lm_summaries, aes(slope, mean_abs_resid, color = type, shape = currency_scale)) +
   geom_point() +
   theme_bw()
 
 
-ggplot(lm_summaries, aes(scaled_intercept_slope, mean_scaled_resid, color = type, shape = currency_scale)) +
+ggplot(lm_summaries, aes(slope, mean_abs_resid, color = type, shape = p < .05)) +
   geom_point() +
   theme_bw()
 
-
-ggplot(lm_summaries, aes(scaled_intercept_slope, mean_scaled_resid, color = type, shape = p < .05)) +
-  geom_point() +
-  theme_bw()
-
-
-```
-
-```{r sims plots}
-
-all_sims <- left_join(all_sims, lm_summaries)
-
-
-ggplot(all_sims, aes(x = time, y = value, color = mean_scaled_resid, group = rep_trend)) +
-  geom_line() +
-  theme_bw() +
-  facet_wrap(vars(type, currency_scale), scales = "free_y") +
-  scale_color_viridis_c()
-
-
-ggplot(all_sims, aes(x = time, y = value, color = scaled_intercept_slope, group = rep_trend)) +
-  geom_line() +
-  theme_bw() +
-  facet_wrap(vars(type, currency_scale), scales = "free_y")
-
-
-
-colnames(all_sims)
-
-ggplot(all_sims, aes(true_slope_ratio, scaled_intercept_slope, color =  type)) + 
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1)
 
 ```
 
@@ -329,7 +273,8 @@ datasets <- data.frame(
                    "cochise_birds",
                    "salamonie",
                    "tilden",
-              #     "gainesville",
+                   "gainesville",
+                   "gainesville_nooutlier",
                    "portal_rats"),
   rtrg_code = c("rtrg_304_17",
                 "rtrg_102_18",
@@ -337,7 +282,9 @@ datasets <- data.frame(
                 "rtrg_133_6",
                 "rtrg_19_35",
                 "rtrg_172_14",
-           #     "rtrg_113_25",
+                "rtrg_113_25",
+                                "rtrg_113_25",
+
                 NA)
 )
 
@@ -359,6 +306,10 @@ for(i in 1:nrow(datasets)) {
       mutate(mean_energy = energy / abundance,
              mean_mass = biomass/abundance,
              site_name = datasets$dataset_name[i])
+    
+    if(datasets$dataset_name[i] == "gainesville_nooutlier") {
+      sv <- filter(sv, abundance < 3000)
+    }
   } else {
     
     individual_rats <- portalr::summarise_individual_rodents(clean = TRUE, type = "Granivores", time = "date", length = "Longterm")
@@ -437,64 +388,32 @@ fuzzes <- bind_rows(fuzzes)
 
 ```{r datasets vis}
 
-ggplot(lm_summaries, aes(scaled_intercept_slope, mean_scaled_resid, alpha = p < 0.05)) +
+ggplot(lm_summaries, aes(slope, mean_abs_resid, alpha = p < 0.05)) +
   geom_point() +
   theme_bw() +
-  geom_point(data = fuzzes, aes(scaled_intercept_slope, mean_scaled_resid, shape = currency, color = site_name, alpha = p < 0.05), size = 5) +
+  geom_point(data = fuzzes, aes(slope, mean_abs_resid, shape = currency, color = site_name, alpha = p < 0.05), size = 5) +
   scale_alpha_discrete(range = c(.3, 1))
-
-all_datasets[ which(all_datasets$site_name == "portal_rats"), "year"] <- as.numeric(substr(as.character(all_datasets[ which(all_datasets$site_name == "portal_rats"), "year"]), 1, 4)) + (.5 * (all_datasets[ which(all_datasets$site_name == "portal_rats"), "year"] - 1))
-  
-
-gridExtra::grid.arrange(grobs = list(
-  ggplot(all_datasets, aes(year, abundance, color = site_name)) +
-  geom_line() +
-  theme_bw() +
-  #facet_wrap(vars(site_name), scales = "free", ncol = 1) + 
-    ggtitle("Abundance"
-    ) +
-   theme(legend.position = "top"),
-  ggplot(all_datasets, aes(year, energy, color = site_name)) + 
- geom_line() +
-  theme_bw() +
- # facet_wrap(vars(site_name), scales = "free", ncol = 1) +
-   ggtitle("Energy") +
-   theme(legend.position = "top")),
- ncol = 2
-)
-
-all_datasets <- all_datasets %>%
-  group_by(site_name) %>%
-  mutate(abundance_scaled = scale(abundance),
-         energy_scaled = scale(energy)) %>%
-  ungroup()
-
-
-gridExtra::grid.arrange(grobs = list(
-  ggplot(all_datasets, aes(year, abundance_scaled, color = site_name)) +
-  geom_line() +
-  theme_bw() +
-  #facet_wrap(vars(site_name), scales = "free", ncol = 1) + 
-    ggtitle("Abundance"
-    ) +
-   theme(legend.position = "top"),
-  ggplot(all_datasets, aes(year, energy_scaled, color = site_name)) + 
- geom_line() +
-  theme_bw() +
- # facet_wrap(vars(site_name), scales = "free", ncol = 1) +
-   ggtitle("Energy") +
-   theme(legend.position = "top")),
- ncol = 2
-)
-
-
 ```
 
 
-```{r some numerical intuition}
+```{r slope intuition}
 
-start = 1000
+portal_adj <- filter(all_datasets, site_name == "portal_rats") %>%
+  mutate(adj_n = abundance / mean(abundance),
+         adj_e = energy / mean(energy)) %>%
+  mutate(time = row_number())
 
-```
+portaln_lm <- lm(adj_n ~ time, portal_adj)
+
+plot(predict(portaln_lm))
+
+max(predict(portaln_lm)) / min(predict(portaln_lm))
+
+
+portale_lm <- lm(adj_e ~ time, portal_adj)
+
+plot(predict(portale_lm))
+
+max(predict(portale_lm)) / min(predict(portale_lm))
 
 ```
