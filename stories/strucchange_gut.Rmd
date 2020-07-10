@@ -221,7 +221,11 @@ gridExtra::grid.arrange(grobs = energy_plots)
 
 #### h
 
-Above, I set the minimum number of observations in a segment to 4. This is because setting it to 2 is too few (needs to be > regressors), and setting it to 3 gave Extremely Complex results:
+Above, I set the minimum number of observations in a segment to 4. This is because setting it to 2 is too few (needs to be > regressors), and setting it to 3 gave Extremely Complex results that tend to involve many tiny sections (see below). It's subjective, but my assessment is these are overfitting/overfitting relative to what I see as the major signals in the data. 
+
+For example, I think 6 segments is excessive for the `cochise_birds` data, and am more comfortable with the 3 segments achieved via `h = 4`. `cochise_birds` only has 18 datapoints, and splitting it into 6 is a little absurd....
+
+Note also that the default in `strucchange` is `h = .15 * (nobs)`. For these timeseries, that's 3-4 depending on the length of the timeseries. 
 
 
 ```{r h at 3}
