@@ -1,0 +1,289 @@
+---
+title: "Comanche Peak, CO - Segments" 
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(bbstrends)
+library(dplyr)
+library(ggplot2)
+```
+
+
+### Load route
+Another route - Comanche Peak, near where I grew up (ish). Also started in 1994!
+
+```{r load route}
+
+ibd <- readRDS("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\isd_data\\ibd_isd_bbs_rtrg_304_17.Rds")
+```
+
+Here is how abundance and energy have changed over those years:
+
+```{r state variables}
+
+sv <- ibd %>%
+  group_by(year) %>%
+  summarize(
+            abundance = dplyr::n(),
+            energy = sum(ind_b)) %>%
+  ungroup() 
+
+
+sv_long <- sv %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
+
+ggplot(filter(sv_long), aes(x = year, y = value, color = currency)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  theme(legend.position = "none") +
+  facet_wrap(vars(currency), scales = "free_y")
+
+```
+
+I am using this route to play around with segments because I think it is an example of one that is well-described via segments (more so than a single linear fit). 
+
+
+```{r linear fits no segs}
+
+abundance_lm <- lm(abundance ~ year, sv)
+
+summary(abundance_lm)
+
+sv$abundance_predict <- predict(abundance_lm)
+
+
+ggplot(sv, aes(year, abundance)) + 
+  geom_point() +
+  geom_line(aes(year, abundance_predict)) +
+  theme_bw()
+
+energy_lm <- lm(energy ~ year, sv) 
+summary(energy_lm)
+
+sv$energy_predict <- predict(energy_lm)
+
+
+ggplot(sv, aes(year, energy)) + 
+  geom_point() +
+  geom_line(aes(year, energy_predict)) +
+  theme_bw()
+```
+
+So what's demonstrated here is, neither abundance nor energy finds a significantly non-zero slope. The fitted slopes are flat and obscure enormous amounts of variation thru time. For abundance, but perhaps not for energy, it seems likely that a break-point model will be more appropriate. It looks like there's a pronounced negative slope from 1994-2013, and then a jump in the late 2010s. 
+
+
+# Segmented
+
+```{r segmented}
+
+library(segmented)
+
+abund_segmented <- segmented(abundance_lm, control = seg.control(fix.npsi = FALSE))
+
+summary(abund_segmented)
+
+plot(abund_segmented)
+
+```
+
+Segmented constrains the break points to be continuous. 
+
+
+# bcp
+
+```{r bcp}
+
+library(bcp)
+
+abund_bcp <- bcp(sv$abundance, x = sv$year)
+
+
+plot(abund_bcp)
+
+summary(abund_bcp)
+
+```
+
+## envcpt
+
+```{r envcpt}
+library(EnvCpt)
+
+all_envcpt = envcpt(ts(sv$abundance))
+
+all_envcpt$summary
+
+AIC(all_envcpt)
+
+plot(all_envcpt, type = "fit")
+
+```
+
+
+### Strucchange
+
+```{r struc}
+library(strucchange)
+
+abund_sc <- breakpoints(formula = abundance ~ year, data = sv, h = 3)
+
+abund_sc
+
+summary(abund_sc)
+
+plot(abund_sc)
+
+coef(abund_sc)
+
+sv$sc_fit <- fitted(abund_sc)
+
+sv$hand_fit <- c(
+  17588.05 + (sv$year[1:19] * -8.663986),
+  35651.8 + (sv$year[20:24] * -17.5)
+)
+
+ggplot(sv, aes(x = year, y = abundance)) +
+  geom_line() +
+  geom_vline(xintercept = 2013) +
+  geom_line(aes(x = year, y = sc_fit), color = "green") +
+  geom_point(aes(x = year, y = hand_fit), color = "pink")
+
+
+
+abundscale_sc <- breakpoints(formula = scale(sqrt(abundance)) ~ year, data = sv, h = 3)
+
+abundscale_sc
+
+summary(abundscale_sc)
+
+plot(abundscale_sc)
+
+coef(abundscale_sc)
+
+sv$scscale_fit <- fitted(abundscale_sc)
+
+ggplot(sv, aes(x = year, y = scale(abundance))) +
+  geom_line() +
+  geom_vline(xintercept = 2013) +
+  geom_line(aes(x = year, y = scscale_fit), color = "green") +
+theme_bw()
+```
+
+This seems like a reasonable description of the dynamics. Strucchange allows the intercept to change and allows model selection via BIC. 
+
+It doesn't seem sensitive to scale(sqrt()).
+
+Maybe trying it on energy?
+
+Energy I am less confident has any breakpoints:
+
+```{r strucchange energy}
+
+ggplot(sv, aes(year, energy)) +
+  geom_line() +
+  theme_bw()
+
+energy_sc <-breakpoints(formula = energy ~ year, data = sv, h = 3)
+
+energy_sc
+
+summary(energy_sc)
+
+plot(energy_sc)
+
+coef(energy_sc)
+
+sv$sc_efit <- fitted(energy_sc)
+
+
+ggplot(sv, aes(x = year, y = energy)) +
+  geom_line() +
+  geom_vline(xintercept = 2013) +
+  geom_line(aes(x = year, y = sc_efit), color = "green")
+
+```
+
+Is there a way to tell if this slope is "significantly" different from 0?
+
+```{r intercept}
+energy_sc2 <-breakpoints(formula = energy ~ 1, data = sv, h = 3)
+
+summary(energy_sc2)
+
+BIC(energy_sc2)
+BIC(energy_sc)
+
+logLik(energy_sc2)
+
+# df is 2, intercept and variance
+
+logLik(energy_sc)
+
+print("df is 3, intercept, slope, and variance")
+
+print("loglik is higher for slope model, but parameter penalty means no slope (barely) wins")
+
+sv$sc_eintfit <- fitted(energy_sc2)
+
+
+ggplot(sv, aes(x = year, y = energy)) +
+  geom_line() +
+  geom_vline(xintercept = 2013) +
+  geom_line(aes(x = year, y = sc_efit), color = "green") +
+  geom_line(aes(x = year, y = sc_eintfit), color = "pink")
+
+
+```
+
+Contrast this to if I fit abundance with an intercept-only model...
+
+```{r abund intercept only}
+
+abund_int <- breakpoints(formula = abundance ~ 1, data = sv, h = 3)
+
+abund_int
+
+summary(abund_int)
+
+plot(abund_int)
+
+coef(abund_int)
+
+sv$sc_fit_abundflat <- fitted(abund_int)
+ 
+ggplot(sv, aes(x = year, y = abundance)) +
+  geom_line() +
+  geom_line(aes(x = year, y = sc_fit), color = "green") +
+  geom_point(aes(x = year, y = sc_fit_abundflat), color = "pink")
+
+BIC(abund_int)
+
+BIC(abund_sc)
+
+logLik(abund_int)
+
+logLik(abund_sc)
+
+```
+
+Haha, you can have 3 segments if you fit the intercept, or 2 segments + slopes. The BIG is pretttttttty close, but the slopes win out just barely. (I don't think a difference in BIC of 1 unit is super meaningful)
+
+
+
+### Strucchange method
+
+So I think there's the bones of a potential method here, to code up and gut-check on a handful of datasets...
+
+1. Fit:
+
+`breakpoints(response ~ year)` and `breakpoints(response ~ 1)`
+
+2. Use BIC to select slope or intercept model
+
+
