@@ -39,6 +39,8 @@ datasets <- data.frame(
 
 all_datasets <- list()
 
+all_eucl_dist_ts <- list()
+
 for(i in 1:nrow(datasets)) {
   
   if(datasets$dataset_name[i] != "portal_rats") {
@@ -56,8 +58,33 @@ for(i in 1:nrow(datasets)) {
              mean_mass = biomass/abundance,
              site_name = datasets$dataset_name[i])
     
+    species_matrix <- ibd %>%
+      select(year, id) %>%
+      group_by(year, id) %>%
+      summarize(abund = n()) %>%
+      ungroup() %>%
+      tidyr::pivot_wider(id_cols = year, names_from = id, values_from = abund, values_fill = 0)
+    
+    eucl_dist <- species_matrix %>%
+      select(year) %>%
+      distinct() %>%
+      mutate(dist_previous = NA)
+    
+    for(j in 2:nrow(eucl_dist)) {
+      
+      year_mat <- as.matrix(
+        filter(species_matrix, year %in% c(eucl_dist$year[j], eucl_dist$year[j-1])) %>%
+          select(-year)
+      )
+     
+      eucl_dist$dist_previous[j] <- dist(year_mat)
+      
+    }
+    
     if(datasets$dataset_name[i] == "gainesville_nooutlier") {
       sv <- filter(sv, abundance < 3000)
+      
+      eucl_dist <- filter(eucl_dist, year %in% sv$year)
     }
   } else {
     
@@ -88,29 +115,79 @@ for(i in 1:nrow(datasets)) {
              site_name = datasets$dataset_name[i]) %>%
       mutate(time = row_number())
     
+    species_matrix <- ibd %>%
+      select(year, id) %>%
+      group_by(year, id) %>%
+      summarize(abund = n()) %>%
+      ungroup() %>%
+      tidyr::pivot_wider(id_cols = year, names_from = id, values_from = abund, values_fill = 0)
+    
+    eucl_dist <- species_matrix %>%
+      select(year) %>%
+      distinct() %>%
+      mutate(dist_previous = NA)
+    
+    for(j in 2:nrow(eucl_dist)) {
+      
+      year_mat <- as.matrix(
+        filter(species_matrix, year %in% c(eucl_dist$year[j], eucl_dist$year[j-1])) %>%
+          select(-year)
+      )
+     
+      eucl_dist$dist_previous[j] <- dist(year_mat)
+      
+    }
   }
   
   all_datasets[[i]] <- sv
+  all_eucl_dist_ts[[i]] <- eucl_dist %>%
+     mutate(site_name = datasets$dataset_name[i])
+  
   
 }
 ```
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'year' (override with `.groups` argument)
+
     ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'year' (override with `.groups` argument)
+
     ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'year' (override with `.groups` argument)
+
     ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'year' (override with `.groups` argument)
+
     ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'year' (override with `.groups` argument)
+
     ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'year' (override with `.groups` argument)
+
     ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'year' (override with `.groups` argument)
+
     ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'year' (override with `.groups` argument)
 
     ## Loading in data version 2.18.0
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
+    ## `summarise()` regrouping output by 'year' (override with `.groups` argument)
+
 ``` r
 all_datasets <- bind_rows(all_datasets)
-
+all_eucl_dist_ts <- bind_rows(all_eucl_dist_ts)
 gridExtra::grid.arrange(grobs = list(
   ggplot(all_datasets, aes(year, abundance, color = site_name)) +
   geom_line() +
@@ -250,7 +327,7 @@ abund_plots_h3 <- list()
 for(i in 1:nrow(datasets)) {
   thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "abundance", all_datasets = all_datasets)
   
-  abund_plots_h3[[i]] <- plot_breakpoint_fit(thisdat, h = 3)
+  abund_plots_h3[[i]] <- plot_breakpoint_fit(thisdat, h = .33)
 }
 
 gridExtra::grid.arrange(grobs = abund_plots_h3)
@@ -264,10 +341,12 @@ energy_plots_h3 <- list()
 for(i in 1:nrow(datasets)) {
   thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "energy", all_datasets = all_datasets)
   
-  energy_plots_h3[[i]] <- plot_breakpoint_fit(thisdat, h = 3)
+  energy_plots_h3[[i]] <- plot_breakpoint_fit(thisdat, h = .33)
 }
 
 gridExtra::grid.arrange(grobs = energy_plots_h3)
 ```
 
 ![](strucchange_gut_files/figure-gfm/h%20at%203-2.png)<!-- -->
+
+### Just for fun, Eucl dist
