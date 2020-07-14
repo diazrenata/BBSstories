@@ -9,11 +9,11 @@ Template for methods exploration
     ## `summarise()` ungrouping output (override with `.groups` argument)
     ## `summarise()` ungrouping output (override with `.groups` argument)
     ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
 
     ## Loading in data version 2.18.0
 
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
 ![](template_files/figure-gfm/loading%20some%20real%20datasets-1.png)<!-- -->
@@ -48,3 +48,5 @@ Template for methods exploration
 ### Net change via lm
 
 ![](template_files/figure-gfm/select%20lm%20fit-1.png)<!-- -->![](template_files/figure-gfm/select%20lm%20fit-2.png)<!-- -->
+
+![](template_files/figure-gfm/select%20lm%20fit%20with%20p-1.png)<!-- -->![](template_files/figure-gfm/select%20lm%20fit%20with%20p-2.png)<!-- -->

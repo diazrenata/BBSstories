@@ -11,7 +11,7 @@ library(strucchange)
 
 ### Trying on a few real datasets
 
-```{r loading some real datasets, fig.dim = c(6, 20)}
+```{r loading some real datasets, fig.dim = c(6, 24)}
 
 datasets <- data.frame(
   dataset_name = c("rockies",
@@ -20,19 +20,23 @@ datasets <- data.frame(
                    "cochise_birds",
                    "salamonie",
                    "tilden",
-                   "gainesville",
-                   "gainesville_nooutlier",
-                   "portal_rats"),
+                   #"gainesville",
+                   #"gainesville_nooutlier",
+                   "portal_rats",
+                   "mccoy",
+                   "cranbury"),
   rtrg_code = c("rtrg_304_17",
                 "rtrg_102_18",
                 "rtrg_105_4",
                 "rtrg_133_6",
                 "rtrg_19_35",
                 "rtrg_172_14",
-                "rtrg_113_25",
-                "rtrg_113_25",
+                #"rtrg_113_25",
+                #"rtrg_113_25",
                 
-                NA)
+                NA,
+                "rtrg_63_25",
+                "rtrg_26_59")
 )
 
 all_datasets <- list()
@@ -126,6 +130,7 @@ abund_results <- datasets %>%
          cap_ratio = NA,
          cap_p_wilcox = NA,
          lm_ratio = NA,
+         lm_p_ratio = NA,
          currency = "abundance")
 
 for(i in 1:nrow(datasets)) {
@@ -150,13 +155,15 @@ for(i in 1:nrow(datasets)) {
   abund_results$cap_p_wilcox[i] <- wilcox.test(first_five, last_five)$p.value
 
   abund_results$lm_ratio[i] <- get_lm_change(thisdat)
-  
+    abund_results$lm_p_ratio[i] <- get_lm_change(thisdat, use_p = T)
+
   }
 energy_results <- datasets %>%
   mutate(nbp = NA,
          cap_ratio = NA,
          cap_p_wilcox = NA,
          lm_ratio = NA,
+         lm_p_ratio = NA,
          currency = "energy")
 
 for(i in 1:nrow(datasets)) {
@@ -181,6 +188,8 @@ for(i in 1:nrow(datasets)) {
   energy_results$cap_p_wilcox[i] <- wilcox.test(first_five, last_five)$p.value
 
   energy_results$lm_ratio[i] <- get_lm_change(thisdat)
+  
+  energy_results$lm_p_ratio[i] <- get_lm_change(thisdat, use_p = T)
   
   }
 

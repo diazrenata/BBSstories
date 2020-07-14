@@ -13,7 +13,7 @@ library(strucchange)
 
 ### Trying on a few real datasets
 
-```{r loading some real datasets}
+```{r loading some real datasets, fig.dim = c(6, 24)}
 
 datasets <- data.frame(
   dataset_name = c("rockies",
@@ -22,19 +22,23 @@ datasets <- data.frame(
                    "cochise_birds",
                    "salamonie",
                    "tilden",
-                   "gainesville",
-                   "gainesville_nooutlier",
-                   "portal_rats"),
+                   #"gainesville",
+                   #"gainesville_nooutlier",
+                   "portal_rats",
+                   "mccoy",
+                   "cranbury"),
   rtrg_code = c("rtrg_304_17",
                 "rtrg_102_18",
                 "rtrg_105_4",
                 "rtrg_133_6",
                 "rtrg_19_35",
                 "rtrg_172_14",
-                "rtrg_113_25",
-                "rtrg_113_25",
+                #"rtrg_113_25",
+                #"rtrg_113_25",
                 
-                NA)
+                NA,
+                "rtrg_63_25",
+                "rtrg_26_59")
 )
 
 if(params$this_dataset != "all") {
@@ -237,5 +241,31 @@ for(i in 1:nrow(datasets)) {
 }
 
 gridExtra::grid.arrange(grobs = energy_slope_plots)
+```
+
+
+```{r select lm fit with p}
+
+abund_slope_plots_p <- list()
+
+for(i in 1:nrow(datasets)) {
+  thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "abundance", all_datasets = all_datasets)
+  
+  abund_slope_plots_p[[i]] <- plot_lm_change(thisdat, use_p = T)
+}
+
+gridExtra::grid.arrange(grobs = abund_slope_plots_p)
+
+
+
+energy_slope_plots_p <- list()
+
+for(i in 1:nrow(datasets)) {
+  thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "energy", all_datasets = all_datasets)
+  
+  energy_slope_plots_p[[i]] <- plot_lm_change(thisdat, use_p=T)
+}
+
+gridExtra::grid.arrange(grobs = energy_slope_plots_p)
 ```
 

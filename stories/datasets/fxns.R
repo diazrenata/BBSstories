@@ -111,7 +111,7 @@ compare_caps <- function(some_caps) {
 
 
 
-get_lm_change <- function(this_dat) {
+get_lm_change <- function(this_dat, use_p = F) {
 
 
   int_lm <- lm(response ~ 1, this_dat)
@@ -123,7 +123,18 @@ get_lm_change <- function(this_dat) {
     best_lm <- (slope_lm)
   }
 
+  if(use_p) {
 
+    lm_compare <- anova(int_lm, slope_lm)
+
+    lm_p <- lm_compare$`Pr(>F)`[2]
+
+    if(lm_p < .05) {
+      best_lm <- (slope_lm)
+    } else {
+      best_lm <- (int_lm)
+    }
+  }
   preds <- predict(best_lm)
 
   pred_ratio <- preds[ length(preds)] / preds[1]
@@ -131,7 +142,7 @@ get_lm_change <- function(this_dat) {
   return(pred_ratio)
 }
 
-plot_lm_change <- function(this_dat) {
+plot_lm_change <- function(this_dat, use_p = F) {
 
   int_lm <- lm(response ~ 1, this_dat)
   slope_lm <- lm(response ~ time, this_dat)
@@ -144,6 +155,22 @@ plot_lm_change <- function(this_dat) {
     lm_color <- "red"
   }
 
+  if(use_p) {
+
+    lm_compare <- anova(int_lm, slope_lm)
+
+    lm_p <- lm_compare$`Pr(>F)`[2]
+
+    if(lm_p < .05) {
+      best_lm <- (slope_lm)
+      lm_color <- "red"
+
+    } else {
+      best_lm <- (int_lm)
+      lm_color <- "blue"
+
+    }
+  }
 
   this_dat$preds <- predict(best_lm)
 
