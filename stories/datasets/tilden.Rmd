@@ -1,20 +1,20 @@
-Exploring strucchange on several datasets
-================
-
-### Strucchange method
-
-So I think there’s the bones of a potential method here, to code up and
-gut-check on a handful of datasets…
-
-1.  Fit:
-
-`breakpoints(response ~ year)` and `breakpoints(response ~ 1)`
-
-2.  Use BIC to select slope or intercept model
+---
+title: "Template for methods exploration"
+output: github_document
+params:
+ this_dataset: ["tilden"]
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+library(dplyr)
+library(ggplot2)
+library(strucchange)
+```
 
 ### Trying on a few real datasets
 
-``` r
+```{r loading some real datasets}
+
 datasets <- data.frame(
   dataset_name = c("rockies",
                    "hartland",
@@ -37,6 +37,11 @@ datasets <- data.frame(
                 NA)
 )
 
+if(params$this_dataset != "all") {
+  datasets <- datasets %>%
+    filter(dataset_name == params$this_dataset)
+  
+}
 all_datasets <- list()
 
 
@@ -95,22 +100,7 @@ for(i in 1:nrow(datasets)) {
   
   
 }
-```
 
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-
-    ## Loading in data version 2.18.0
-
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-
-``` r
 all_datasets <- bind_rows(all_datasets)
 gridExtra::grid.arrange(grobs = list(
   ggplot(all_datasets, aes(year, abundance, color = site_name)) +
@@ -128,11 +118,11 @@ gridExtra::grid.arrange(grobs = list(
     theme(legend.position = "top")),
   ncol = 2
 )
+
 ```
 
-![](strucchange_gut_files/figure-gfm/loading%20some%20real%20datasets-1.png)<!-- -->
+```{r breakpoints fxns}
 
-``` r
 fit_breakpoints <- function(dat, h = 4) {
   
   
@@ -189,18 +179,11 @@ subset_all_datasets <- function(site, curr, all_datasets) {
   
 }
 
-dat <- subset_all_datasets("portal_rats", "abundance", all_datasets)
 
-rats_bp <- fit_breakpoints(dat)
-
-dat <- predict_breakpoints(dat, rats_bp)
-
-print(plot_breakpoint_fit(dat))
 ```
 
-![](strucchange_gut_files/figure-gfm/breakpoints%20fxns-1.png)<!-- -->
+```{r multiple datasets}
 
-``` r
 abund_plots <- list()
 
 for(i in 1:nrow(datasets)) {
@@ -210,11 +193,9 @@ for(i in 1:nrow(datasets)) {
 }
 
 gridExtra::grid.arrange(grobs = abund_plots)
-```
 
-![](strucchange_gut_files/figure-gfm/multiple%20datasets-1.png)<!-- -->
 
-``` r
+
 energy_plots <- list()
 
 for(i in 1:nrow(datasets)) {
@@ -226,47 +207,13 @@ for(i in 1:nrow(datasets)) {
 gridExtra::grid.arrange(grobs = energy_plots)
 ```
 
-![](strucchange_gut_files/figure-gfm/multiple%20datasets-2.png)<!-- -->
-
-<!-- #### h -->
-
-<!-- Above, I set the minimum number of observations in a segment to 4. This is because setting it to 2 is too few (needs to be > regressors), and setting it to 3 gave Extremely Complex results that tend to involve many tiny sections (see below). It's subjective, but my assessment is these are overfitting/overfitting relative to what I see as the major signals in the data.  -->
-
-<!-- For example, I think 6 segments is excessive for the `cochise_birds` data, and am more comfortable with the 3 segments achieved via `h = 4`. `cochise_birds` only has 18 datapoints, and splitting it into 6 is a little absurd.... -->
-
-<!-- Note also that the default in `strucchange` is `h = .15 * (nobs)`. For these timeseries, that's 3-4 depending on the length of the timeseries.  -->
-
-<!-- ```{r h at 3} -->
-
-<!-- abund_plots_h3 <- list() -->
-
-<!-- for(i in 1:nrow(datasets)) { -->
-
-<!--   thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "abundance", all_datasets = all_datasets) -->
-
-<!--   abund_plots_h3[[i]] <- plot_breakpoint_fit(thisdat, h = .33) -->
-
-<!-- } -->
-
-<!-- gridExtra::grid.arrange(grobs = abund_plots_h3) -->
-
-<!-- energy_plots_h3 <- list() -->
-
-<!-- for(i in 1:nrow(datasets)) { -->
-
-<!--   thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "energy", all_datasets = all_datasets) -->
-
-<!--   energy_plots_h3[[i]] <- plot_breakpoint_fit(thisdat, h = .33) -->
-
-<!-- } -->
-
-<!-- gridExtra::grid.arrange(grobs = energy_plots_h3) -->
-
-<!-- ``` -->
 
 ## Comparison to first/last 5 years
 
-``` r
+
+```{r get first and last five years}
+
+
 all_datasets_caps <- all_datasets %>%
   group_by(site_name) %>%
   mutate(time_step = row_number()) %>%
@@ -283,20 +230,13 @@ ggplot(all_datasets_caps, aes(year, abundance, color = in_cap)) +
   geom_point() +
   theme_bw() +
   facet_wrap(vars(site_name), scales = "free")
-```
 
-![](strucchange_gut_files/figure-gfm/get%20first%20and%20last%20five%20years-1.png)<!-- -->
-
-``` r
 ggplot(all_datasets_caps, aes(year, energy, color = in_cap)) +
   geom_point() +
   theme_bw() +
   facet_wrap(vars(site_name), scales = "free")
-```
 
-![](strucchange_gut_files/figure-gfm/get%20first%20and%20last%20five%20years-2.png)<!-- -->
 
-``` r
 filter_caps <- function(datasets_to_pass, site, currency = "abundance") {
   
   colnames(datasets_to_pass)[ which(colnames(datasets_to_pass) == currency)] <- "response"
@@ -347,35 +287,12 @@ compare_caps <- function(some_caps) {
 all_caps <- lapply(unique(all_datasets$site_name), FUN = filter_caps, datasets_to_pass = all_datasets_caps)
 
 all_caps_comparisons <- lapply(all_caps, FUN = compare_caps)
-```
 
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
 
-``` r
 all_caps_energy <- lapply(unique(all_datasets$site_name), FUN = filter_caps, datasets_to_pass = all_datasets_caps, currency = "energy")
 
 all_caps_energy_comparisons <- lapply(all_caps_energy, FUN = compare_caps)
-```
 
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-    ## `summarise()` regrouping output by 'which_cap', 'site_name' (override with `.groups` argument)
-
-``` r
 all_caps_comparisons <- bind_rows(all_caps_comparisons)
 all_caps_energy_comparisons <- bind_rows(all_caps_energy_comparisons)
 
@@ -388,36 +305,75 @@ ggplot(all_caps_comparisons, aes(which_cap, mean, color = pval < .05)) +
   geom_errorbar(aes(ymin = response_lower, ymax = response_upper)) +
   facet_grid(rows = vars(currency), cols = vars(site_name), scales = "free") +
   theme_bw()
-```
 
-![](strucchange_gut_files/figure-gfm/get%20first%20and%20last%20five%20years-3.png)<!-- -->
-
-``` r
 ggplot(all_caps_comparisons, aes(which_cap, mean, color = wilcox_pval < .05)) +
   geom_point() +
   geom_errorbar(aes(ymin = response_lower, ymax = response_upper)) +
   facet_grid(rows = vars(currency), cols = vars(site_name), scales = "free") +
   theme_bw()
+
 ```
 
-![](strucchange_gut_files/figure-gfm/get%20first%20and%20last%20five%20years-4.png)<!-- -->
+### Net change via lm
 
-``` r
-ggplot(all_caps_comparisons, aes(site_name, ratio, color = pval < .05, shape = currency)) +
-  geom_point() +
-  theme_bw() +
-  geom_hline(yintercept = 1) +
-  theme(axis.text.x = element_text(angle = 35, hjust = 1))
+```{r select lm fit}
+
+get_lm_change <- function(sv, currency = "abundance") {
+  
+  this_dat <- sv
+  
+  colnames(this_dat)[ which(colnames(this_dat) == currency)] <- "response"
+  
+  int_lm <- lm(response ~ 1, this_dat)
+  slope_lm <- lm(response ~ year, this_dat)
+  
+  if(BIC(int_lm) < BIC(slope_lm)) {
+    best_lm <- (int_lm)
+  } else {
+    best_lm <- (slope_lm)
+  }
+  
+  
+  preds <- predict(best_lm)
+  
+  pred_ratio <- preds[ length(preds)] / preds[1]
+  
+  return(pred_ratio)
+}
+
+plot_lm_change <- function(sv, currency = "abundance") {
+  
+  this_dat <- sv
+  
+  colnames(this_dat)[ which(colnames(this_dat) == currency)] <- "response"
+  
+  int_lm <- lm(response ~ 1, this_dat)
+  slope_lm <- lm(response ~ year, this_dat)
+  
+  if(BIC(int_lm) < BIC(slope_lm)) {
+    best_lm <- (int_lm)
+    lm_color <- "blue"
+  } else {
+    best_lm <- (slope_lm)
+    lm_color <- "red"
+  }
+  
+  
+  this_dat$preds <- predict(best_lm)
+
+  
+  this_plot <- ggplot(this_dat, aes(year, response)) +
+    geom_point() +
+    geom_line(aes(year, preds), color = lm_color) +
+    theme_bw() +
+    ggtitle(paste0(this_dat$site_name[1], " ", currency))
+  
+  return(this_plot)
+}
+
+plot_lm_change(sv, "abundance")
+
+plot_lm_change(sv, "energy")
+
 ```
 
-![](strucchange_gut_files/figure-gfm/get%20first%20and%20last%20five%20years-5.png)<!-- -->
-
-``` r
-ggplot(all_caps_comparisons, aes(site_name, ratio, color = wilcox_pval < .05, shape = currency)) +
-  geom_point() +
-  theme_bw() +
-  geom_hline(yintercept = 1) +
-  theme(axis.text.x = element_text(angle = 35, hjust = 1))
-```
-
-![](strucchange_gut_files/figure-gfm/get%20first%20and%20last%20five%20years-6.png)<!-- -->

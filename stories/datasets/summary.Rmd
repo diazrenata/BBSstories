@@ -1,0 +1,193 @@
+---
+title: "Summary"
+output: github_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+library(dplyr)
+library(ggplot2)
+library(strucchange)
+```
+
+### Trying on a few real datasets
+
+```{r loading some real datasets, fig.dim = c(6, 20)}
+
+datasets <- data.frame(
+  dataset_name = c("rockies",
+                   "hartland",
+                   "alberta",
+                   "cochise_birds",
+                   "salamonie",
+                   "tilden",
+                   "gainesville",
+                   "gainesville_nooutlier",
+                   "portal_rats"),
+  rtrg_code = c("rtrg_304_17",
+                "rtrg_102_18",
+                "rtrg_105_4",
+                "rtrg_133_6",
+                "rtrg_19_35",
+                "rtrg_172_14",
+                "rtrg_113_25",
+                "rtrg_113_25",
+                
+                NA)
+)
+
+all_datasets <- list()
+
+
+for(i in 1:nrow(datasets)) {
+  
+  if(datasets$dataset_name[i] != "portal_rats") {
+    
+    ibd <- readRDS(paste0("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\isd_data\\ibd_isd_bbs_", datasets$rtrg_code[i], ".Rds"))
+    
+    sv <- ibd %>%
+      group_by(year) %>%
+      summarize(richness = length(unique(id)),
+                abundance = dplyr::n(),
+                biomass = sum(ind_size),
+                energy = sum(ind_b)) %>%
+      ungroup() %>%
+      mutate(mean_energy = energy / abundance,
+             mean_mass = biomass/abundance,
+             site_name = datasets$dataset_name[i])
+    
+    if(datasets$dataset_name[i] == "gainesville_nooutlier") {
+      sv <- filter(sv, abundance < 3000)
+    } 
+  } else {
+    
+    individual_rats <- portalr::summarise_individual_rodents(clean = TRUE, type = "Granivores", time = "date", length = "Longterm")
+    
+    ibd <- individual_rats %>%
+      filter(year %in% c(1978:2002), !is.na(wgt), treatment == "control") %>%
+      mutate(six_mo = ifelse(month > 6, .5, 0)) %>%
+      mutate(year_six_mo = (year + six_mo)) %>%
+      mutate(bmr = 5.69 * (wgt ^ .75)) %>%
+      select(year_six_mo, species, wgt, bmr) %>%
+      rename(year= year_six_mo,
+             id = species,
+             ind_size = wgt,
+             ind_b = bmr) %>%
+      mutate(id = as.character(id))
+    
+    
+    sv <- ibd %>%
+      group_by(year) %>%
+      summarize(richness = length(unique(id)),
+                abundance = dplyr::n(),
+                biomass = sum(ind_size),
+                energy = sum(ind_b)) %>%
+      ungroup() %>%
+      mutate(mean_energy = energy / abundance,
+             mean_mass = biomass/abundance,
+             site_name = datasets$dataset_name[i]) %>%
+      mutate(time = row_number())
+    
+  }
+  
+  all_datasets[[i]] <- sv
+  
+  
+}
+
+all_datasets <- bind_rows(all_datasets)
+gridExtra::grid.arrange(grobs = list(
+  ggplot(all_datasets, aes(year, abundance, color = site_name)) +
+    geom_line() +
+    theme_bw() +
+    facet_wrap(vars(site_name), scales = "free", ncol = 1) + 
+    ggtitle("Abundance"
+    ) +
+    theme(legend.position = "top"),
+  ggplot(all_datasets, aes(year, energy, color = site_name)) + 
+    geom_line() +
+    theme_bw() +
+    facet_wrap(vars(site_name), scales = "free", ncol = 1) +
+    ggtitle("Energy") +
+    theme(legend.position = "top")),
+  ncol = 2
+)
+
+```
+
+```{r breakpoints fxns}
+source(here::here("stories", "datasets", "fxns.R"))
+
+```
+
+```{r get results}
+
+abund_results <- datasets %>%
+  mutate(nbp = NA,
+         cap_ratio = NA,
+         cap_p_wilcox = NA,
+         lm_ratio = NA,
+         currency = "abundance")
+
+for(i in 1:nrow(datasets)) {
+  thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "abundance", all_datasets = all_datasets)
+  
+  this_bp <- fit_breakpoints(thisdat)
+  
+  abund_results$nbp[i] <- count_breakpoints(this_bp)
+  
+  first_five <- thisdat$response[1:5]
+  last_five <- thisdat$response[(nrow(thisdat)-4):nrow(thisdat)]
+  
+  abund_results$cap_ratio[i] <- mean(last_five) / mean(first_five)
+  
+  while(any(first_five %in% last_five)) {
+    first_five <- first_five + rnorm(n = 5,
+            0, .05)
+    last_five <- last_five + rnorm(n = 5,
+            0, .05)
+  }
+
+  abund_results$cap_p_wilcox[i] <- wilcox.test(first_five, last_five)$p.value
+
+  abund_results$lm_ratio[i] <- get_lm_change(thisdat)
+  
+  }
+energy_results <- datasets %>%
+  mutate(nbp = NA,
+         cap_ratio = NA,
+         cap_p_wilcox = NA,
+         lm_ratio = NA,
+         currency = "energy")
+
+for(i in 1:nrow(datasets)) {
+  thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "energy", all_datasets = all_datasets)
+  
+  this_bp <- fit_breakpoints(thisdat)
+  
+  energy_results$nbp[i] <- count_breakpoints(this_bp)
+  
+  first_five <- thisdat$response[1:5]
+  last_five <- thisdat$response[(nrow(thisdat)-4):nrow(thisdat)]
+  
+  energy_results$cap_ratio[i] <- mean(last_five) / mean(first_five)
+  
+  while(any(first_five %in% last_five)) {
+    first_five <- first_five + rnorm(n = 5,
+            0, .05)
+    last_five <- last_five + rnorm(n = 5,
+            0, .05)
+  }
+
+  energy_results$cap_p_wilcox[i] <- wilcox.test(first_five, last_five)$p.value
+
+  energy_results$lm_ratio[i] <- get_lm_change(thisdat)
+  
+  }
+
+
+results <- bind_rows(abund_results, energy_results)
+
+print(results)
+```
+
+
