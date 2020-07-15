@@ -33,6 +33,52 @@ predict_breakpoints <- function(dat, breakpoints_fit) {
   return(dat)
 }
 
+
+summarize_breakpoints <- function(dat, breakpoints_fit) {
+
+  dat <- dat  %>%
+    dplyr::mutate(fitted = fitted(breakpoints_fit),
+                  breakpoints = dplyr::row_number() %in% breakpoints_fit$breakpoints,
+                  nbp = length(breakpoints_fit$breakpoints [ which(!is.na(breakpoints_fit$breakpoints))]),
+                  has_slope = any(grepl("time", breakpoints_fit$call)))
+
+  dat$net_change <- dat$fitted[ nrow(dat)] / dat$fitted[1]
+
+  if(isTRUE(all.equal(dat$net_change[1], 1))) {
+    dat$net_change <- 1
+  }
+
+
+  changes <- data.frame(
+    t = dat$fitted[1: (nrow(dat) - 1)],
+    t_plus_1 = dat$fitted[2:nrow(dat)]
+  )
+
+  for(i in 1:nrow(changes)) {
+    if(isTRUE(all.equal(changes$t[i], changes$t_plus_1[i]))) {
+      changes$change[i] <- 0
+    } else {
+      changes$change[i] <- changes$t_plus_1[i] - changes$t[i]
+    }
+  }
+     changes <- changes %>%
+    dplyr::mutate(pos_or_0 = change >= 0,
+                  neg_or_0 = change <= 0)
+
+  dat$monotonic <- any(
+    sum(changes$pos_or_0) == nrow(changes),
+    sum(changes$neg_or_0) == nrow(changes)
+  )
+
+  dat$m <- (dat$fitted[ nrow(dat)] - dat$fitted[ 1]) / (dat$time[nrow(dat)] - dat$time[1])
+
+  dat$b <- dat$fitted[1]
+
+  return(dat)
+
+}
+
+
 plot_breakpoint_fit <- function(dat, h = 4) {
 
   if(!("fitted" %in% colnames(dat))) {
@@ -45,7 +91,7 @@ plot_breakpoint_fit <- function(dat, h = 4) {
            geom_line(aes(x = time, y = fitted)) +
            theme_bw() +
            geom_vline(xintercept = dat$time[which(dat$breakpoints)]) +
-           ggtitle(dat$site_name[1]))
+           ggtitle(paste0(dat$site_name[1], " ", dat$currency[1])))
 
 }
 
@@ -57,6 +103,8 @@ subset_all_datasets <- function(site, curr, all_datasets) {
 
   colnames(dat)[ which(colnames(dat) == curr)]  <- "response"
   colnames(dat)[ which(colnames(dat) == "year")] <- "time"
+
+  dat$currency <- curr
 
   return(dat)
 

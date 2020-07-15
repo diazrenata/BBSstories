@@ -1,0 +1,352 @@
+---
+title: "Interpreting breakpoint fits"
+output: github_document
+params:
+ this_dataset: ["all"]
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+library(dplyr)
+library(ggplot2)
+library(strucchange)
+```
+
+## An idea
+
+Look specifically at the predictions from the best-fitting breakpoint model. (This model could be: no breakpoints + no slope, no breakpoints + slope, n breakpoints + no slope, n breakpoints + slopes).
+
+There's some qualitative behaviors we can extract from the predictions (that come logically but less elegantly from the parameters, etc).
+
+Two axes:
+
+1. **Monotonic or squiggly:** Monotonic can encompass all linear (no-break) models, _and_ any models with breakpoints that do not result in changes in direction. 
+2. **Net change or net 0:** The ratio of the end:beginning _prediction_.
+
+The 2x2:
+
+1. **Monotonic** and **net change**: This would be some kind of overall trend, either steady (probably would show as a 1-segment linear model), possibly accelerating or decelerating across the timeseries (would show as multiple segments with slopes), or even as a series of abrupt changes (would show as multiple segments with *no* slopes).
+2. **Monotonic** and **no net change**: This can basically only be accomplished as a one-segment linear model with a slope very close to 0. (Theoretically you could have many verrrrry gently sloping segments, but I doubt we have the statistical power such that something like that would emerge as the best fit). I think this is either very stable or *so* variable that not even many breakpoints can adequately capture the variability. 
+3. **Turnpoints** and **net change**: The TS changes direction at least once, and ends up somewhere other than where it started. This *must* involve breakpoints. At the moment I think I have less confidence in such an outcome as evidence of systematic directional change - it seems potentially sensitive to, if we stopped surveying 5 years earlier, would we have a totally different trend? 
+4. **Turnpoints** and **no net change**: Qualitatively different from, monotonic and no net change....Again, I am not sure how confident I am in this as a signal of any kind of regulation/buffering. But maybe. 
+
+
+### Illustration via a few real datasets
+
+```{r loading some real datasets, fig.dim = c(6, 24)}
+
+datasets <- data.frame(
+  dataset_name = c("rockies",
+                   "hartland",
+                   "alberta",
+                   "cochise_birds",
+                   "salamonie",
+                   "tilden",
+                   #"gainesville",
+                   #"gainesville_nooutlier",
+                   "portal_rats",
+                   "mccoy",
+                   "cranbury"),
+  rtrg_code = c("rtrg_304_17",
+                "rtrg_102_18",
+                "rtrg_105_4",
+                "rtrg_133_6",
+                "rtrg_19_35",
+                "rtrg_172_14",
+                #"rtrg_113_25",
+                #"rtrg_113_25",
+
+                NA,
+                "rtrg_63_25",
+                "rtrg_26_59")
+)
+
+if(params$this_dataset != "all") {
+  datasets <- datasets %>%
+    filter(dataset_name == params$this_dataset)
+
+}
+all_datasets <- list()
+
+
+for(i in 1:nrow(datasets)) {
+
+  if(datasets$dataset_name[i] != "portal_rats") {
+
+    ibd <- readRDS(paste0("C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\isd_data\\ibd_isd_bbs_", datasets$rtrg_code[i], ".Rds"))
+
+    sv <- ibd %>%
+      group_by(year) %>%
+      summarize(richness = length(unique(id)),
+                abundance = dplyr::n(),
+                biomass = sum(ind_size),
+                energy = sum(ind_b)) %>%
+      ungroup() %>%
+      mutate(mean_energy = energy / abundance,
+             mean_mass = biomass/abundance,
+             site_name = datasets$dataset_name[i])
+
+    if(datasets$dataset_name[i] == "gainesville_nooutlier") {
+      sv <- filter(sv, abundance < 3000)
+    }
+  } else {
+
+    individual_rats <- portalr::summarise_individual_rodents(clean = TRUE, type = "Granivores", time = "date", length = "Longterm")
+
+    ibd <- individual_rats %>%
+      filter(year %in% c(1978:2002), !is.na(wgt), treatment == "control") %>%
+      mutate(six_mo = ifelse(month > 6, .5, 0)) %>%
+      mutate(year_six_mo = (year + six_mo)) %>%
+      mutate(bmr = 5.69 * (wgt ^ .75)) %>%
+      select(year_six_mo, species, wgt, bmr) %>%
+      rename(year= year_six_mo,
+             id = species,
+             ind_size = wgt,
+             ind_b = bmr) %>%
+      mutate(id = as.character(id))
+
+
+    sv <- ibd %>%
+      group_by(year) %>%
+      summarize(richness = length(unique(id)),
+                abundance = dplyr::n(),
+                biomass = sum(ind_size),
+                energy = sum(ind_b)) %>%
+      ungroup() %>%
+      mutate(mean_energy = energy / abundance,
+             mean_mass = biomass/abundance,
+             site_name = datasets$dataset_name[i]) %>%
+      mutate(time = row_number())
+
+  }
+
+  all_datasets[[i]] <- sv
+
+
+}
+
+all_datasets <- bind_rows(all_datasets)
+gridExtra::grid.arrange(grobs = list(
+  ggplot(all_datasets, aes(year, abundance, color = site_name)) +
+    geom_line() +
+    theme_bw() +
+    facet_wrap(vars(site_name), scales = "free", ncol = 1) +
+    ggtitle("Abundance"
+    ) +
+    theme(legend.position = "top"),
+  ggplot(all_datasets, aes(year, energy, color = site_name)) +
+    geom_line() +
+    theme_bw() +
+    facet_wrap(vars(site_name), scales = "free", ncol = 1) +
+    ggtitle("Energy") +
+    theme(legend.position = "top")),
+  ncol = 2
+)
+
+```
+
+```{r breakpoints fxns}
+source(here::here("stories", "datasets", "fxns.R"))
+
+```
+
+```{r multiple datasets}
+
+abund_mods <- list()
+
+for(i in 1:nrow(datasets)) {
+  thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "abundance", all_datasets = all_datasets)
+
+  abund_mods[[i]] <- summarize_breakpoints(thisdat, fit_breakpoints(thisdat))
+}
+
+abund_mods <- dplyr::bind_rows(abund_mods)
+
+ggplot(abund_mods, aes(time, response, color = monotonic)) +
+  geom_line() +
+  geom_point(aes(time, fitted)) +
+  facet_wrap(vars(site_name), scales = "free")
+
+
+
+energy_mods <- list()
+
+for(i in 1:nrow(datasets)) {
+  thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "energy", all_datasets = all_datasets)
+
+  energy_mods[[i]] <- summarize_breakpoints(thisdat, fit_breakpoints(thisdat))
+}
+
+energy_mods <- dplyr::bind_rows(energy_mods)
+
+ggplot(energy_mods, aes(time, response, color = monotonic)) +
+  geom_line() +
+  geom_point(aes(time, fitted)) +
+  facet_wrap(vars(site_name), scales = "free")
+
+all_mods <- bind_rows(energy_mods, abund_mods) %>%
+  mutate(site_curr = paste0(as.character(site_name), currency))
+```
+
+### Monotonic and net change
+
+```{r monotonic net}
+
+m_nc <- filter(all_mods, monotonic, net_change != 1)
+
+ggplot(m_nc, aes(time, response)) +
+  geom_line() +
+  geom_point(aes(time, fitted)) +
+  theme_bw() +
+  facet_wrap(vars(site_curr), scales = "free")
+
+
+```
+
+### Monotonic and no net change
+
+```{r monotonic no net}
+
+m_nzero <- filter(all_mods, monotonic, net_change == 1) %>%
+  group_by(site_curr) %>%
+  mutate(cv = sd(response) / mean(response)) %>%
+  ungroup()
+
+ggplot(m_nzero, aes(time, response)) +
+  geom_line() +
+  geom_point(aes(time, fitted)) +
+  theme_bw() +
+  facet_wrap(vars(site_curr), scales = "free")
+
+
+```
+
+### Turnpoints and net change
+
+
+```{r turns net, fig.dim = c(6,12)}
+
+t_nc <- filter(all_mods, !monotonic, net_change != 1)
+
+ggplot(t_nc, aes(time, response)) +
+  geom_line() +
+  geom_point(aes(time, fitted)) +
+  theme_bw() +
+  facet_wrap(vars(site_curr), scales = "free", ncol = 2)
+
+
+```
+
+
+<!-- ## Comparison to first/last 5 years -->
+
+
+<!-- ```{r get first and last five years} -->
+
+
+<!-- all_datasets_caps <- all_datasets %>% -->
+<!--   group_by(site_name) %>% -->
+<!--   mutate(time_step = row_number()) %>% -->
+<!--   mutate(ntimesteps = max(time_step)) %>% -->
+<!--   mutate(first_fifth = 5, -->
+<!--          last_fifth = ntimesteps - 4) %>% -->
+<!--   mutate(in_beginning = time_step <= first_fifth, -->
+<!--          in_end = time_step >= last_fifth) %>% -->
+<!--   mutate(in_cap = (in_beginning + in_end) > 0) %>% -->
+<!--   mutate(which_cap = ifelse(in_beginning, 1, ifelse(in_end, 2, NA))) %>% -->
+<!--   ungroup() -->
+
+<!-- ggplot(all_datasets_caps, aes(year, abundance, color = in_cap)) + -->
+<!--   geom_point() + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(site_name), scales = "free") -->
+
+<!-- ggplot(all_datasets_caps, aes(year, energy, color = in_cap)) + -->
+<!--   geom_point() + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(site_name), scales = "free") -->
+
+
+
+<!-- all_caps <- lapply(unique(all_datasets$site_name), FUN = filter_caps, datasets_to_pass = all_datasets_caps) -->
+
+<!-- all_caps_comparisons <- lapply(all_caps, FUN = compare_caps) -->
+
+
+<!-- all_caps_energy <- lapply(unique(all_datasets$site_name), FUN = filter_caps, datasets_to_pass = all_datasets_caps, currency = "energy") -->
+
+<!-- all_caps_energy_comparisons <- lapply(all_caps_energy, FUN = compare_caps) -->
+
+<!-- all_caps_comparisons <- bind_rows(all_caps_comparisons) -->
+<!-- all_caps_energy_comparisons <- bind_rows(all_caps_energy_comparisons) -->
+
+<!-- all_caps_comparisons <- bind_rows(all_caps_comparisons, all_caps_energy_comparisons) -->
+
+<!-- #all_datasets <- left_join(all_datasets, all_caps_comparisons) -->
+
+<!-- ggplot(all_caps_comparisons, aes(which_cap, mean, color = pval < .05)) + -->
+<!--   geom_point() + -->
+<!--   geom_errorbar(aes(ymin = response_lower, ymax = response_upper)) + -->
+<!--   facet_grid(rows = vars(currency), cols = vars(site_name), scales = "free") + -->
+<!--   theme_bw() -->
+
+<!-- ggplot(all_caps_comparisons, aes(which_cap, mean, color = wilcox_pval < .05)) + -->
+<!--   geom_point() + -->
+<!--   geom_errorbar(aes(ymin = response_lower, ymax = response_upper)) + -->
+<!--   facet_grid(rows = vars(currency), cols = vars(site_name), scales = "free") + -->
+<!--   theme_bw() -->
+
+<!-- ``` -->
+
+<!-- ### Net change via lm -->
+
+<!-- ```{r select lm fit} -->
+
+<!-- abund_slope_plots <- list() -->
+
+<!-- for(i in 1:nrow(datasets)) { -->
+<!--   thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "abundance", all_datasets = all_datasets) -->
+
+<!--   abund_slope_plots[[i]] <- plot_lm_change(thisdat) -->
+<!-- } -->
+
+<!-- gridExtra::grid.arrange(grobs = abund_slope_plots) -->
+
+
+
+<!-- energy_slope_plots <- list() -->
+
+<!-- for(i in 1:nrow(datasets)) { -->
+<!--   thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "energy", all_datasets = all_datasets) -->
+
+<!--   energy_slope_plots[[i]] <- plot_lm_change(thisdat) -->
+<!-- } -->
+
+<!-- gridExtra::grid.arrange(grobs = energy_slope_plots) -->
+<!-- ``` -->
+
+
+<!-- ```{r select lm fit with p} -->
+
+<!-- abund_slope_plots_p <- list() -->
+
+<!-- for(i in 1:nrow(datasets)) { -->
+<!--   thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "abundance", all_datasets = all_datasets) -->
+
+<!--   abund_slope_plots_p[[i]] <- plot_lm_change(thisdat, use_p = T) -->
+<!-- } -->
+
+<!-- gridExtra::grid.arrange(grobs = abund_slope_plots_p) -->
+
+
+
+<!-- energy_slope_plots_p <- list() -->
+
+<!-- for(i in 1:nrow(datasets)) { -->
+<!--   thisdat <- subset_all_datasets(site = datasets$dataset_name[i], curr = "energy", all_datasets = all_datasets) -->
+
+<!--   energy_slope_plots_p[[i]] <- plot_lm_change(thisdat, use_p=T) -->
+<!-- } -->
+
+<!-- gridExtra::grid.arrange(grobs = energy_slope_plots_p) -->
+<!-- ``` -->
+
