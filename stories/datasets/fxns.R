@@ -70,10 +70,25 @@ summarize_breakpoints <- function(dat, breakpoints_fit) {
     sum(changes$neg_or_0) == nrow(changes)
   )
 
-  dat$m <- (dat$fitted[ nrow(dat)] - dat$fitted[ 1]) / (dat$time[nrow(dat)] - dat$time[1])
 
-  dat$b <- dat$fitted[1]
 
+  first_five <- dat$response[1:5]
+  last_five <- dat$response[(nrow(dat)-4):nrow(dat)]
+
+  dat$cap_ratio <- mean(last_five) / mean(first_five)
+
+  while(any(first_five %in% last_five)) {
+    first_five <- first_five + rnorm(n = 5,
+                                     0, .05)
+    last_five <- last_five + rnorm(n = 5,
+                                   0, .05)
+  }
+
+  dat$cap_p_wilcox <- wilcox.test(first_five, last_five)$p.value
+
+  dat$lm_ratio<- get_lm_change(thisdat)
+
+  dat$lm_p_ratio<- get_lm_change(thisdat, use_p = T)
   return(dat)
 
 }

@@ -34,37 +34,16 @@ The 2x2:
 
 ```{r loading some real datasets, fig.dim = c(6, 24)}
 
-datasets <- data.frame(
-  dataset_name = c("rockies",
-                   "hartland",
-                   "alberta",
-                   "cochise_birds",
-                   "salamonie",
-                   "tilden",
-                   #"gainesville",
-                   #"gainesville_nooutlier",
-                   "portal_rats",
-                   "mccoy",
-                   "cranbury"),
-  rtrg_code = c("rtrg_304_17",
-                "rtrg_102_18",
-                "rtrg_105_4",
-                "rtrg_133_6",
-                "rtrg_19_35",
-                "rtrg_172_14",
-                #"rtrg_113_25",
-                #"rtrg_113_25",
+site_names <- list.files(path = "C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\isd_data", pattern = "ibd_isd_bbs_", full.names = F)
+site_names <- substr(site_names, 18, nchar(site_names))
+site_names <- substr(site_names, 1, nchar(site_names) - 4)
 
-                NA,
-                "rtrg_63_25",
-                "rtrg_26_59")
+datasets <- data.frame(
+  dataset_name = site_names,
+  rtrg_code = paste0("rtrg_", site_names)
 )
 
-if(params$this_dataset != "all") {
-  datasets <- datasets %>%
-    filter(dataset_name == params$this_dataset)
 
-}
 all_datasets <- list()
 
 
@@ -125,22 +104,7 @@ for(i in 1:nrow(datasets)) {
 }
 
 all_datasets <- bind_rows(all_datasets)
-gridExtra::grid.arrange(grobs = list(
-  ggplot(all_datasets, aes(year, abundance, color = site_name)) +
-    geom_line() +
-    theme_bw() +
-    facet_wrap(vars(site_name), scales = "free", ncol = 1) +
-    ggtitle("Abundance"
-    ) +
-    theme(legend.position = "top"),
-  ggplot(all_datasets, aes(year, energy, color = site_name)) +
-    geom_line() +
-    theme_bw() +
-    facet_wrap(vars(site_name), scales = "free", ncol = 1) +
-    ggtitle("Energy") +
-    theme(legend.position = "top")),
-  ncol = 2
-)
+
 
 ```
 
@@ -160,11 +124,11 @@ for(i in 1:nrow(datasets)) {
 }
 
 abund_mods <- dplyr::bind_rows(abund_mods)
-
-ggplot(abund_mods, aes(time, response, color = monotonic)) +
-  geom_line() +
-  geom_point(aes(time, fitted)) +
-  facet_wrap(vars(site_name), scales = "free")
+# 
+# ggplot(abund_mods, aes(time, response, color = monotonic)) +
+#   geom_line() +
+#   geom_point(aes(time, fitted)) +
+#   facet_wrap(vars(site_name), scales = "free")
 
 
 
@@ -177,78 +141,80 @@ for(i in 1:nrow(datasets)) {
 }
 
 energy_mods <- dplyr::bind_rows(energy_mods)
-
-ggplot(energy_mods, aes(time, response, color = monotonic)) +
-  geom_line() +
-  geom_point(aes(time, fitted)) +
-  facet_wrap(vars(site_name), scales = "free")
+# 
+# ggplot(energy_mods, aes(time, response, color = monotonic)) +
+#   geom_line() +
+#   geom_point(aes(time, fitted)) +
+#   facet_wrap(vars(site_name), scales = "free")
 
 all_mods <- bind_rows(energy_mods, abund_mods) %>%
-  mutate(site_curr = paste0(as.character(site_name), currency))
+  mutate(site_curr = paste0(as.character(site_name), currency)) %>%
+  mutate(cap_change = cap_p_wilcox <= 0.05,
+         lm_change = lm_p_ratio != 1)
 ```
 
-### Monotonic and net change
+<!-- ### Monotonic and net change -->
 
-```{r monotonic net}
+<!-- ```{r monotonic net} -->
 
-m_nc <- filter(all_mods, monotonic, net_change != 1)
+<!-- m_nc <- filter(all_mods, monotonic, net_change != 1) -->
 
-ggplot(m_nc, aes(time, response)) +
-  geom_line() +
-  geom_point(aes(time, fitted)) +
-  theme_bw() +
-  facet_wrap(vars(site_curr), scales = "free")
-
-
-```
-
-### Monotonic and no net change
-
-```{r monotonic no net}
-
-m_nzero <- filter(all_mods, monotonic, net_change == 1) %>%
-  group_by(site_curr) %>%
-  mutate(cv = sd(response) / mean(response)) %>%
-  ungroup()
-
-ggplot(m_nzero, aes(time, response)) +
-  geom_line() +
-  geom_point(aes(time, fitted)) +
-  theme_bw() +
-  facet_wrap(vars(site_curr), scales = "free")
+<!-- ggplot(m_nc, aes(time, response)) + -->
+<!--   geom_line() + -->
+<!--   geom_point(aes(time, fitted)) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(site_curr), scales = "free") -->
 
 
-```
+<!-- ``` -->
 
-### Turnpoints and net change
+<!-- ### Monotonic and no net change -->
 
+<!-- ```{r monotonic no net} -->
 
-```{r turns net}
+<!-- m_nzero <- filter(all_mods, monotonic, net_change == 1) %>% -->
+<!--   group_by(site_curr) %>% -->
+<!--   mutate(cv = sd(response) / mean(response)) %>% -->
+<!--   ungroup() -->
 
-t_nc <- filter(all_mods, !monotonic, net_change != 1)
-
-ggplot(t_nc, aes(time, response)) +
-  geom_line() +
-  geom_point(aes(time, fitted)) +
-  theme_bw() +
-  facet_wrap(vars(site_curr), scales = "free")
-
-
-ggplot(t_nc, aes(time, response, color = cap_p_wilcox <= .05)) +
-  geom_line() +
-  geom_point(aes(time, fitted)) +
-  theme_bw() +
-  facet_wrap(vars(site_curr), scales = "free")
+<!-- ggplot(m_nzero, aes(time, response)) + -->
+<!--   geom_line() + -->
+<!--   geom_point(aes(time, fitted)) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(site_curr), scales = "free") -->
 
 
+<!-- ``` -->
 
-ggplot(t_nc, aes(time, response, color = lm_p_ratio != 1)) +
-  geom_line() +
-  geom_point(aes(time, fitted)) +
-  theme_bw() +
-  facet_wrap(vars(site_curr), scales = "free")
+<!-- ### Turnpoints and net change -->
 
-```
+
+<!-- ```{r turns net} -->
+
+<!-- t_nc <- filter(all_mods, !monotonic, net_change != 1) -->
+
+<!-- ggplot(t_nc, aes(time, response)) + -->
+<!--   geom_line() + -->
+<!--   geom_point(aes(time, fitted)) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(site_curr), scales = "free") -->
+
+
+<!-- ggplot(t_nc, aes(time, response, color = cap_p_wilcox <= .05)) + -->
+<!--   geom_line() + -->
+<!--   geom_point(aes(time, fitted)) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(site_curr), scales = "free") -->
+
+
+
+<!-- ggplot(t_nc, aes(time, response, color = lm_p_ratio != 1)) + -->
+<!--   geom_line() + -->
+<!--   geom_point(aes(time, fitted)) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(site_curr), scales = "free") -->
+
+<!-- ``` -->
 
 
 ### Histograms
@@ -263,11 +229,71 @@ mod_summary <- all_mods %>%
 ggplot(mod_summary, aes(x = cap_ratio)) +
   geom_histogram() +
   theme_bw() +
-  facet_wrap(vars(monotonic), scales = "free")
+  facet_wrap(vars(currency, monotonic), scales = "free")
 
 ggplot(mod_summary, aes(x = lm_ratio)) + 
  geom_histogram() +
   theme_bw() +
-  facet_wrap(vars(monotonic), scales = "free")
+  facet_wrap(vars(currency, monotonic), scales = "free")
 ```
 
+```{r summary}
+
+mod_summary_summary <- mod_summary %>%
+  group_by(currency) %>%
+  mutate(total_n_sites = dplyr::n(),
+         currency_n_monotonic = sum(monotonic)) %>%
+  ungroup() %>%
+  group_by(currency, monotonic) %>%
+  mutate(n_cap_change = sum(cap_change),
+         n_lm_change = sum(lm_change),
+         n_sites = n()) %>%
+  ungroup() %>%
+  select(currency, currency_n_monotonic, total_n_sites, monotonic, n_cap_change, n_lm_change, n_sites) %>%
+  distinct() %>%
+  mutate(prop_cap_change = n_cap_change/n_sites,
+         prop_lm_change = n_lm_change / n_sites,
+         prop_monotonic = currency_n_monotonic / total_n_sites)
+mod_summary_summary
+
+```
+
+# Abundance
+
+## Monotonics
+
+```{r plot abundance, fig.dim = c(2,2)}
+abund_monotonics <- filter(mod_summary, currency == "abundance", monotonic)
+for(i in 1:nrow(abund_monotonics)) {
+  thisdat <- filter(all_mods, site_curr == abund_monotonics$site_curr[i])
+  
+  thiscolor <- ifelse(abund_monotonics$lm_change[i], "red", "blue")
+  thisshape <- ifelse(abund_monotonics$cap_change[i], 1, 5)
+  
+  
+  print(ggplot(thisdat, aes(x = time, y = response)) +
+    geom_line(color = thiscolor) +
+    geom_point(aes(time, fitted), color = thiscolor, shape = thisshape) +
+    theme_bw())
+}
+
+```
+
+
+## Turns
+
+```{r plot abundance turns, fig.dim = c(2,2)}
+abund_turns <- filter(mod_summary, currency == "abundance", !monotonic)
+for(i in 1:nrow(abund_turns)) {
+  thisdat <- filter(all_mods, site_curr == abund_turns$site_curr[i])
+  
+  thiscolor <- ifelse(abund_turns$lm_change[i], "red", "blue")
+    thisshape <- ifelse(abund_monotonics$cap_change[i], 1, 5)
+
+  print(ggplot(thisdat, aes(x = time, y = response)) +
+    geom_line(color = thiscolor) +
+    geom_point(aes(time, fitted), color = thiscolor, shape = thisshape) +
+    theme_bw())
+}
+
+```
