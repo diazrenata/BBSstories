@@ -1,6 +1,8 @@
 ---
 title: "Interpreting breakpoint fits"
-output: github_document
+output: 
+    github_document:
+       df_print: kable
 params:
  this_dataset: ["all"]
 ---
@@ -150,91 +152,128 @@ energy_mods <- dplyr::bind_rows(energy_mods)
 all_mods <- bind_rows(energy_mods, abund_mods) %>%
   mutate(site_curr = paste0(as.character(site_name), currency)) %>%
   mutate(cap_change = cap_p_wilcox <= 0.05,
-         lm_change = lm_p_ratio != 1)
+         lm_change = lm_p_ratio != 1) %>%
+  mutate(cap_increase = ifelse(cap_change, cap_ratio > 1, FALSE),
+         cap_decrease = ifelse(cap_change, cap_ratio < 1, FALSE),
+         lm_increase = ifelse(lm_change, lm_ratio > 1, FALSE),
+         lm_decrease =ifelse(lm_change, lm_ratio < 1, FALSE))
 ```
+### Barplots
 
-<!-- ### Monotonic and net change -->
-
-<!-- ```{r monotonic net} -->
-
-<!-- m_nc <- filter(all_mods, monotonic, net_change != 1) -->
-
-<!-- ggplot(m_nc, aes(time, response)) + -->
-<!--   geom_line() + -->
-<!--   geom_point(aes(time, fitted)) + -->
-<!--   theme_bw() + -->
-<!--   facet_wrap(vars(site_curr), scales = "free") -->
+```{r barplots}
 
 
-<!-- ``` -->
+mod_summary <- all_mods %>%
+  select(-time, -response, -fitted, -breakpoints) %>%
+  distinct() %>%
+  mutate(cap_lm_agree = cap_change == lm_change)
 
-<!-- ### Monotonic and no net change -->
-
-<!-- ```{r monotonic no net} -->
-
-<!-- m_nzero <- filter(all_mods, monotonic, net_change == 1) %>% -->
-<!--   group_by(site_curr) %>% -->
-<!--   mutate(cv = sd(response) / mean(response)) %>% -->
-<!--   ungroup() -->
-
-<!-- ggplot(m_nzero, aes(time, response)) + -->
-<!--   geom_line() + -->
-<!--   geom_point(aes(time, fitted)) + -->
-<!--   theme_bw() + -->
-<!--   facet_wrap(vars(site_curr), scales = "free") -->
+ggplot(filter(mod_summary, currency == "abundance"), aes(x = monotonic, group = cap_change, fill = cap_change)) +
+  geom_bar(position = "dodge") + 
+  theme_bw() +
+  ggtitle("Abundance")
 
 
-<!-- ``` -->
-
-<!-- ### Turnpoints and net change -->
-
-
-<!-- ```{r turns net} -->
-
-<!-- t_nc <- filter(all_mods, !monotonic, net_change != 1) -->
-
-<!-- ggplot(t_nc, aes(time, response)) + -->
-<!--   geom_line() + -->
-<!--   geom_point(aes(time, fitted)) + -->
-<!--   theme_bw() + -->
-<!--   facet_wrap(vars(site_curr), scales = "free") -->
+ggplot(filter(mod_summary, currency == "abundance"), aes(x = monotonic, group = lm_change, fill = lm_change)) +
+  geom_bar(position = "dodge") + 
+  theme_bw() +
+  ggtitle("Abundance")
 
 
-<!-- ggplot(t_nc, aes(time, response, color = cap_p_wilcox <= .05)) + -->
-<!--   geom_line() + -->
-<!--   geom_point(aes(time, fitted)) + -->
-<!--   theme_bw() + -->
-<!--   facet_wrap(vars(site_curr), scales = "free") -->
+ggplot(filter(mod_summary, currency == "energy"), aes(x = monotonic, group = cap_change, fill = cap_change)) +
+  geom_bar(position = "dodge") + 
+  theme_bw() +
+  ggtitle("Energy")
+
+
+ggplot(filter(mod_summary, currency == "energy"), aes(x = monotonic, group = lm_change, fill = lm_change)) +
+  geom_bar(position = "dodge") + 
+  theme_bw() +
+  ggtitle("Energy")
+
+
+filter(mod_summary, currency == "abundance", monotonic) %>%
+  summarize(n_lm_increase = sum(lm_increase),
+            n_cap_increase = sum(cap_increase),
+            n_lm_decrease = sum(lm_decrease),
+            n_cap_decrease = sum(cap_decrease),
+            n_lm_change = sum(lm_change),
+            n_cap_change = sum(cap_change))
+
+
+filter(mod_summary, currency == "abundance", !monotonic) %>%
+  summarize(n_lm_increase = sum(lm_increase),
+            n_cap_increase = sum(cap_increase),
+            n_lm_decrease = sum(lm_decrease),
+            n_cap_decrease = sum(cap_decrease),
+            n_lm_change = sum(lm_change),
+            n_cap_change = sum(cap_change))
 
 
 
-<!-- ggplot(t_nc, aes(time, response, color = lm_p_ratio != 1)) + -->
-<!--   geom_line() + -->
-<!--   geom_point(aes(time, fitted)) + -->
-<!--   theme_bw() + -->
-<!--   facet_wrap(vars(site_curr), scales = "free") -->
+filter(mod_summary, currency == "energy", monotonic) %>%
+  summarize(n_lm_increase = sum(lm_increase),
+            n_cap_increase = sum(cap_increase),
+            n_lm_decrease = sum(lm_decrease),
+            n_cap_decrease = sum(cap_decrease),
+            n_lm_change = sum(lm_change),
+            n_cap_change = sum(cap_change))
 
-<!-- ``` -->
 
+filter(mod_summary, currency == "energy", !monotonic) %>%
+  summarize(n_lm_increase = sum(lm_increase),
+            n_cap_increase = sum(cap_increase),
+            n_lm_decrease = sum(lm_decrease),
+            n_cap_decrease = sum(cap_decrease),
+            n_lm_change = sum(lm_change),
+            n_cap_change = sum(cap_change))
+```
 
 ### Histograms
 
 
 ```{r hists}
 
-mod_summary <- all_mods %>%
-  select(-time, -response, -fitted, -breakpoints) %>%
-  distinct()
+mod_summary <- mod_summary %>%
+  mutate(monotonic_word = ifelse(monotonic, "monotonic", "turn"))
 
-ggplot(mod_summary, aes(x = cap_ratio)) +
+ggplot(filter(mod_summary, currency == "abundance"), aes(x = cap_ratio)) +
   geom_histogram() +
   theme_bw() +
-  facet_wrap(vars(currency, monotonic), scales = "free")
+  facet_wrap(vars(cap_change, monotonic_word), scales = "free") +
+  ggtitle("Abundance")
 
-ggplot(mod_summary, aes(x = lm_ratio)) + 
+ggplot(filter(mod_summary, currency == "abundance"), aes(x = lm_ratio)) + 
  geom_histogram() +
   theme_bw() +
-  facet_wrap(vars(currency, monotonic), scales = "free")
+  facet_wrap(vars(lm_change, monotonic_word), scales = "free") +
+    ggtitle("Abundance")
+
+
+ggplot(filter(mod_summary, currency == "energy"), aes(x = cap_ratio)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(cap_change, monotonic_word), scales = "free") +
+  ggtitle("Energy")
+
+ggplot(filter(mod_summary, currency == "energy"), aes(x = lm_ratio)) + 
+ geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(lm_change, monotonic_word), scales = "free") +
+    ggtitle("Energy")
+
+
+
+ggplot(filter(mod_summary, currency == "abundance"), aes(x = monotonic, y = cv, color = cap_change)) + 
+ geom_boxplot() +
+  theme_bw() +
+  ggtitle("Abundance")
+
+
+ggplot(filter(mod_summary, currency == "energy"), aes(x = monotonic, y = cv, color = cap_change)) + 
+ geom_boxplot() +
+  theme_bw() +
+  ggtitle("Energy")
 ```
 
 ```{r summary}
@@ -254,7 +293,7 @@ mod_summary_summary <- mod_summary %>%
   mutate(prop_cap_change = n_cap_change/n_sites,
          prop_lm_change = n_lm_change / n_sites,
          prop_monotonic = currency_n_monotonic / total_n_sites)
-mod_summary_summary
+print(mod_summary_summary)
 
 ```
 
@@ -295,5 +334,28 @@ for(i in 1:nrow(abund_turns)) {
     geom_point(aes(time, fitted), color = thiscolor, shape = thisshape) +
     theme_bw())
 }
+
+```
+
+
+### E v N
+
+```{r e v n}
+
+mod_summary <- mod_summary %>%
+  mutate(cap_p_ratio = ifelse(cap_p_wilcox, cap_ratio, 1)) %>%
+  select(site_name, currency, cap_ratio, lm_ratio) %>%
+  tidyr::pivot_wider(id_cols = site_name, names_from = currency, values_from = c(cap_ratio, lm_ratio))
+
+ggplot(mod_summary, aes(cap_ratio_abundance, cap_ratio_energy)) +
+  geom_point() +
+  theme_bw() +
+  geom_abline(slope = 1, intercept= 0)
+
+
+ggplot(mod_summary, aes(lm_ratio_abundance, lm_ratio_energy)) +
+  geom_point() +
+  theme_bw() +
+  geom_abline(slope = 1, intercept= 0)
 
 ```

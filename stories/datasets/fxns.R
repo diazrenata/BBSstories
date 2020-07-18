@@ -89,6 +89,8 @@ summarize_breakpoints <- function(dat, breakpoints_fit) {
   dat$lm_ratio<- get_lm_change(thisdat)
 
   dat$lm_p_ratio<- get_lm_change(thisdat, use_p = T)
+
+  dat$cv <- sd(dat$response) / mean(dat$response)
   return(dat)
 
 }

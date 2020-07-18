@@ -257,7 +257,7 @@ The 2x2:
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](fit_taxonomy_scale_files/figure-gfm/hists-2.png)<!-- -->
+![](fit_taxonomy_scale_files/figure-gfm/hists-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/hists-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/hists-4.png)<!-- -->
 
     ## # A tibble: 4 x 10
     ##   currency currency_n_mono~ total_n_sites monotonic n_cap_change n_lm_change
