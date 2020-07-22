@@ -45,115 +45,6 @@ The 2x2:
 
 ### Illustration via a few real datasets
 
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-
     ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
     ## value with ties
     
@@ -169,200 +60,123 @@ The 2x2:
     ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
     ## value with ties
 
-<!-- ### Monotonic and net change -->
+### Grouped by turns/no
 
-<!-- ```{r monotonic net} -->
+![](fit_taxonomy_scale_files/figure-gfm/group%20by%20turns-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/group%20by%20turns-2.png)<!-- -->
 
-<!-- m_nc <- filter(all_mods, monotonic, net_change != 1) -->
+    ## # A tibble: 6 x 7
+    ##   currency monotonic n_mono_or_turns lm_change_descr~ n_lm_change_des~
+    ##   <chr>    <lgl>               <int> <chr>                       <int>
+    ## 1 abundan~ FALSE                  65 decrease                       24
+    ## 2 abundan~ FALSE                  65 increase                       11
+    ## 3 abundan~ FALSE                  65 no trend                       30
+    ## 4 abundan~ TRUE                   43 decrease                       16
+    ## 5 abundan~ TRUE                   43 increase                        7
+    ## 6 abundan~ TRUE                   43 no trend                       20
+    ## # ... with 2 more variables: lm_change_word <chr>, n_trend_or_no <int>
 
-<!-- ggplot(m_nc, aes(time, response)) + -->
+### Grouped by trend
 
-<!--   geom_line() + -->
+![](fit_taxonomy_scale_files/figure-gfm/group%20by%20trend-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/group%20by%20trend-2.png)<!-- -->
 
-<!--   geom_point(aes(time, fitted)) + -->
+    ## # A tibble: 6 x 5
+    ##   currency  lm_change_description n_trend_type monotonic n_monotonic_trend
+    ##   <chr>     <chr>                        <int> <lgl>                 <int>
+    ## 1 abundance decrease                        40 FALSE                    24
+    ## 2 abundance decrease                        40 TRUE                     16
+    ## 3 abundance increase                        18 FALSE                    11
+    ## 4 abundance increase                        18 TRUE                      7
+    ## 5 abundance no trend                        50 FALSE                    30
+    ## 6 abundance no trend                        50 TRUE                     20
 
-<!--   theme_bw() + -->
+![](fit_taxonomy_scale_files/figure-gfm/group%20by%20trend-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/group%20by%20trend-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/group%20by%20trend-5.png)<!-- -->
 
-<!--   facet_wrap(vars(site_curr), scales = "free") -->
+    ## # A tibble: 6 x 5
+    ##   currency  cap_change_description n_trend_type monotonic n_monotonic_trend
+    ##   <chr>     <chr>                         <int> <lgl>                 <int>
+    ## 1 abundance decrease                         28 FALSE                    16
+    ## 2 abundance decrease                         28 TRUE                     12
+    ## 3 abundance increase                         15 FALSE                    11
+    ## 4 abundance increase                         15 TRUE                      4
+    ## 5 abundance no change                        65 FALSE                    38
+    ## 6 abundance no change                        65 TRUE                     27
 
-<!-- ``` -->
-
-<!-- ### Monotonic and no net change -->
-
-<!-- ```{r monotonic no net} -->
-
-<!-- m_nzero <- filter(all_mods, monotonic, net_change == 1) %>% -->
-
-<!--   group_by(site_curr) %>% -->
-
-<!--   mutate(cv = sd(response) / mean(response)) %>% -->
-
-<!--   ungroup() -->
-
-<!-- ggplot(m_nzero, aes(time, response)) + -->
-
-<!--   geom_line() + -->
-
-<!--   geom_point(aes(time, fitted)) + -->
-
-<!--   theme_bw() + -->
-
-<!--   facet_wrap(vars(site_curr), scales = "free") -->
-
-<!-- ``` -->
-
-<!-- ### Turnpoints and net change -->
-
-<!-- ```{r turns net} -->
-
-<!-- t_nc <- filter(all_mods, !monotonic, net_change != 1) -->
-
-<!-- ggplot(t_nc, aes(time, response)) + -->
-
-<!--   geom_line() + -->
-
-<!--   geom_point(aes(time, fitted)) + -->
-
-<!--   theme_bw() + -->
-
-<!--   facet_wrap(vars(site_curr), scales = "free") -->
-
-<!-- ggplot(t_nc, aes(time, response, color = cap_p_wilcox <= .05)) + -->
-
-<!--   geom_line() + -->
-
-<!--   geom_point(aes(time, fitted)) + -->
-
-<!--   theme_bw() + -->
-
-<!--   facet_wrap(vars(site_curr), scales = "free") -->
-
-<!-- ggplot(t_nc, aes(time, response, color = lm_p_ratio != 1)) + -->
-
-<!--   geom_line() + -->
-
-<!--   geom_point(aes(time, fitted)) + -->
-
-<!--   theme_bw() + -->
-
-<!--   facet_wrap(vars(site_curr), scales = "free") -->
-
-<!-- ``` -->
-
-### Histograms
+## Distributions of slopes
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](fit_taxonomy_scale_files/figure-gfm/hists-1.png)<!-- -->
+![](fit_taxonomy_scale_files/figure-gfm/slopes-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/slopes-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/slopes-3.png)<!-- -->
 
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](fit_taxonomy_scale_files/figure-gfm/hists-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/hists-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/hists-4.png)<!-- -->
-
-    ## # A tibble: 4 x 10
-    ##   currency currency_n_mono~ total_n_sites monotonic n_cap_change n_lm_change
-    ##   <chr>               <int>         <int> <lgl>            <int>       <int>
-    ## 1 energy                 47           108 FALSE               13          18
-    ## 2 energy                 47           108 TRUE                15          18
-    ## 3 abundan~               43           108 TRUE                16          20
-    ## 4 abundan~               43           108 FALSE               28          30
-    ## # ... with 4 more variables: n_sites <int>, prop_cap_change <dbl>,
-    ## #   prop_lm_change <dbl>, prop_monotonic <dbl>
-
-# Abundance
+# The actual time series
 
 ## Monotonics
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-23.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-24.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-25.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-26.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-27.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-28.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-29.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-30.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-31.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-32.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-33.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-34.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-35.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-36.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-37.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-38.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-39.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-40.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-41.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-42.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance-43.png)<!-- -->
+### No significant trend
+
+#### Steps
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-7.png)<!-- -->
+
+#### “Static”
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-15.png)<!-- -->
+
+### Inscreasing
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-8.png)<!-- -->
+
+### Decreasing
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-17.png)<!-- -->
 
 ## Turns
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-23.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-24.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-25.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-26.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-27.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-28.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-29.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-30.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-31.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-32.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-33.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-34.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-35.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-36.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-37.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-38.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-39.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-40.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-41.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-42.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-43.png)<!-- -->
+### No significant trend
 
-    ## Warning: Removed 41 rows containing missing values (geom_point).
+#### Steps
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-44.png)<!-- -->
+![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-23.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-24.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-25.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-26.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-27.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-28.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-29.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-30.png)<!-- -->
 
-    ## Warning: Removed 32 rows containing missing values (geom_point).
+    ## Warning: Removed 1 rows containing non-finite values (stat_boxplot).
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-45.png)<!-- -->
+    ## Warning: Removed 1 rows containing missing values (geom_point).
 
-    ## Warning: Removed 22 rows containing missing values (geom_point).
+![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-31.png)<!-- -->
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-46.png)<!-- -->
+### Increasing
 
-    ## Warning: Removed 24 rows containing missing values (geom_point).
+![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-12.png)<!-- -->
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-47.png)<!-- -->
+### Decreasing
 
-    ## Warning: Removed 18 rows containing missing values (geom_point).
+![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-23.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-24.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-25.png)<!-- -->
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-48.png)<!-- -->
+<!-- ### E v N -->
 
-    ## Warning: Removed 11 rows containing missing values (geom_point).
+<!-- ```{r e v n} -->
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-49.png)<!-- -->
+<!-- mod_summary_long <- mod_summary %>% -->
 
-    ## Warning: Removed 32 rows containing missing values (geom_point).
+<!--   mutate(cap_p_ratio = ifelse(cap_p_wilcox, cap_ratio, 1)) %>% -->
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-50.png)<!-- -->
+<!--   select(site_name, currency, cap_ratio, lm_ratio) %>% -->
 
-    ## Warning: Removed 22 rows containing missing values (geom_point).
+<!--   tidyr::pivot_wider(id_cols = site_name, names_from = currency, values_from = c(cap_ratio, lm_ratio)) -->
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-51.png)<!-- -->
+<!-- ggplot(mod_summary_long, aes(cap_ratio_abundance, cap_ratio_energy)) + -->
 
-    ## Warning: Removed 21 rows containing missing values (geom_point).
+<!--   geom_point() + -->
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-52.png)<!-- -->
+<!--   theme_bw() + -->
 
-    ## Warning: Removed 17 rows containing missing values (geom_point).
+<!--   geom_abline(slope = 1, intercept= 0) -->
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-53.png)<!-- -->
+<!-- ggplot(mod_summary_long, aes(lm_ratio_abundance, lm_ratio_energy)) + -->
 
-    ## Warning: Removed 18 rows containing missing values (geom_point).
+<!--   geom_point() + -->
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-54.png)<!-- -->
+<!--   theme_bw() + -->
 
-    ## Warning: Removed 27 rows containing missing values (geom_point).
+<!--   geom_abline(slope = 1, intercept= 0) -->
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-55.png)<!-- -->
-
-    ## Warning: Removed 16 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-56.png)<!-- -->
-
-    ## Warning: Removed 24 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-57.png)<!-- -->
-
-    ## Warning: Removed 34 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-58.png)<!-- -->
-
-    ## Warning: Removed 47 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-59.png)<!-- -->
-
-    ## Warning: Removed 17 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-60.png)<!-- -->
-
-    ## Warning: Removed 31 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-61.png)<!-- -->
-
-    ## Warning: Removed 28 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-62.png)<!-- -->
-
-    ## Warning: Removed 25 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-63.png)<!-- -->
-
-    ## Warning: Removed 22 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-64.png)<!-- -->
-
-    ## Warning: Removed 16 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abundance%20turns-65.png)<!-- -->
+<!-- ``` -->
