@@ -179,6 +179,7 @@ all_mods <- bind_rows(energy_mods, abund_mods) %>%
 
 
 mod_summary <- all_mods %>%
+  filter(currency == "abundance") %>%
   select(-time, -response, -fitted, -breakpoints) %>%
   distinct() %>%
   mutate(cap_lm_agree = cap_change == lm_change)
@@ -291,6 +292,14 @@ print(abundance_summary3)
 ggplot(filter(mod_summary, lm_change), aes(lm_p_ratio)) +
   geom_histogram() +
 #  facet_wrap(vars(lm_change_word)) +
+  theme_bw() +
+  geom_vline(xintercept = 1)
+
+
+
+ggplot(filter(mod_summary, lm_change), aes(lm_p_ratio)) +
+  geom_histogram() +
+  facet_wrap(vars(lm_change_word)) +
   theme_bw() +
   geom_vline(xintercept = 1)
 
@@ -539,25 +548,378 @@ ggplot(cvs, aes(x = 1, y=cv)) +
   ylim(0,1)
 ```
 
+# Energy
+### Grouped by turns/no
 
-<!-- ### E v N -->
-
-<!-- ```{r e v n} -->
-
-<!-- mod_summary_long <- mod_summary %>% -->
-<!--   mutate(cap_p_ratio = ifelse(cap_p_wilcox, cap_ratio, 1)) %>% -->
-<!--   select(site_name, currency, cap_ratio, lm_ratio) %>% -->
-<!--   tidyr::pivot_wider(id_cols = site_name, names_from = currency, values_from = c(cap_ratio, lm_ratio)) -->
-
-<!-- ggplot(mod_summary_long, aes(cap_ratio_abundance, cap_ratio_energy)) + -->
-<!--   geom_point() + -->
-<!--   theme_bw() + -->
-<!--   geom_abline(slope = 1, intercept= 0) -->
+```{r energy group by turns}
 
 
-<!-- ggplot(mod_summary_long, aes(lm_ratio_abundance, lm_ratio_energy)) + -->
-<!--   geom_point() + -->
-<!--   theme_bw() + -->
-<!--   geom_abline(slope = 1, intercept= 0) -->
+mod_summary <- all_mods %>%
+  filter(currency == "energy") %>%
+  select(-time, -response, -fitted, -breakpoints) %>%
+  distinct() %>%
+  mutate(cap_lm_agree = cap_change == lm_change)
 
-<!-- ``` -->
+ggplot(filter(mod_summary, currency == "energy"), aes(x = monotonic)) +
+  geom_bar(position = "dodge") +
+  theme_bw() +
+  ggtitle("Energy")
+
+ggplot(filter(mod_summary, currency == "energy"), aes(x = lm_change_word, group = lm_change_description, fill = lm_change_description)) +
+  geom_bar(position = "stack") + 
+  theme_bw() +
+  ggtitle("Energy") +
+  scale_fill_viridis_d() +
+  theme(legend.position = "top")
+
+
+energy_summary <- mod_summary %>%
+  filter(currency == "energy") %>%
+  group_by(monotonic) %>%
+  mutate(n_mono_or_turns = dplyr::n()) %>%
+  ungroup() %>%
+  group_by(monotonic, lm_change_word) %>%
+  mutate(n_trend_or_no = dplyr::n()) %>%
+  ungroup() %>%
+  group_by(monotonic, lm_change_description) %>%
+  mutate(n_lm_change_description = dplyr::n()) %>%
+  ungroup() %>%
+  select(currency, monotonic, n_mono_or_turns,lm_change_description, n_lm_change_description, lm_change_word, n_trend_or_no) %>%
+  distinct() %>%
+  arrange(monotonic, lm_change_description)
+  
+print(energy_summary)
+
+```
+
+### Grouped by trend
+
+
+```{r energy group by trend}
+ggplot(filter(mod_summary, currency == "energy"), aes(x = lm_change_description)) +
+  geom_bar(position = "dodge") +
+  theme_bw() +
+  ggtitle("Energy by lm() slope")
+
+ggplot(filter(mod_summary, currency == "energy"), aes(x = lm_change_description, group = monotonic_word, fill = monotonic_word)) +
+  geom_bar(position = "stack") + 
+  theme_bw() +
+  ggtitle("Energy by lm() slope") +
+  scale_fill_viridis_d()+
+  theme(legend.position = "top")
+
+
+energy_summary2 <- mod_summary %>%
+  filter(currency == "energy") %>%
+  group_by(lm_change_description) %>%
+  mutate(n_trend_type = dplyr::n()) %>%
+  ungroup() %>%
+  group_by(monotonic, lm_change_description) %>%
+  mutate(n_monotonic_trend = dplyr::n()) %>%
+  ungroup() %>%
+  select(currency, lm_change_description, n_trend_type,monotonic, n_monotonic_trend) %>%
+  distinct() %>%
+  arrange(lm_change_description, monotonic)
+  
+print(energy_summary2)
+
+
+ggplot(filter(mod_summary, currency == "energy"), aes(x = cap_change_description)) +
+  geom_bar(position = "dodge") +
+  theme_bw() +
+  ggtitle("Energy by beginning-end comparison")
+
+
+ggplot(filter(mod_summary, currency == "energy"), aes(x = cap_change_description, group = monotonic_word, fill = monotonic_word)) +
+  geom_bar(position = "stack") + 
+  theme_bw() +
+  ggtitle("Energy by beginning-end comparison") +
+  scale_fill_viridis_d()+
+  theme(legend.position = "top")
+
+ggplot(filter(mod_summary, currency == "energy"), aes(x = cap_change_description, group = monotonic_cap_steps, fill = monotonic_cap_steps)) +
+  geom_bar(position = "stack") + 
+  theme_bw() +
+  ggtitle("Energy by beginning-end comparison") +
+  scale_fill_viridis_d()+
+  theme(legend.position = "top")
+
+
+
+energy_summary3 <- mod_summary %>%
+  filter(currency == "energy") %>%
+  group_by(cap_change_description) %>%
+  mutate(n_trend_type = dplyr::n()) %>%
+  ungroup() %>%
+  group_by(monotonic, cap_change_description) %>%
+  mutate(n_monotonic_trend = dplyr::n()) %>%
+  ungroup() %>%
+  select(currency, cap_change_description, n_trend_type,monotonic, n_monotonic_trend) %>%
+  distinct() %>%
+  arrange(cap_change_description, monotonic)
+  
+print(energy_summary3)
+```
+
+## Distributions of slopes
+
+```{r energy slopes}
+
+ggplot(filter(mod_summary, lm_change), aes(lm_p_ratio)) +
+  geom_histogram() +
+#  facet_wrap(vars(lm_change_word)) +
+  theme_bw() +
+  geom_vline(xintercept = 1)
+
+
+
+ggplot(filter(mod_summary, lm_change), aes(lm_p_ratio)) +
+  geom_histogram() +
+  facet_wrap(vars(lm_change_word)) +
+  theme_bw() +
+  geom_vline(xintercept = 1)
+
+ggplot(mod_summary, aes(x = lm_change, y = cv, color = monotonic_word)) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(legend.position = "top")
+
+
+ggplot(mod_summary, aes(x = lm_change, y = cv, color = monotonic_lm_steps)) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(legend.position = "top")
+
+```
+
+# The actual time series
+
+## Monotonics
+
+### No significant trend
+
+#### Steps
+
+```{r plot energy monot flat steps, fig.dim = c(2,2)}
+energy_monotonics <- filter(mod_summary, currency == "energy", monotonic, !lm_change, nbp > 0)
+for(i in 1:nrow(energy_monotonics)) {
+  thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
+
+  thiscolor <- ifelse(energy_monotonics$lm_change[i], "red", "blue")
+
+
+  print(ggplot(thisdat, aes(x = time, y = response)) +
+    geom_line(color = thiscolor, size = 3, alpha = .3) +
+    geom_line(aes(time, fitted), color = thiscolor, linetype = 4, size = 2) +
+    theme_bw() +
+      ggtitle(thisdat$site_name[1]))
+}
+
+cvs <- energy_monotonics %>%
+  select(site_name, cv) %>%
+  distinct()
+
+ggplot(cvs, aes(x = 1, y=cv)) +
+  geom_boxplot() +
+  geom_point() +
+  theme_bw() +
+  ggtitle("Coeff of var") +
+  ylim(0,1)
+
+```
+
+
+#### "Static"
+
+```{r plot energy monot flat no steps, fig.dim = c(2,2)}
+energy_monotonics <- filter(mod_summary, currency == "energy", monotonic, !lm_change, nbp == 0)
+for(i in 1:nrow(energy_monotonics)) {
+  thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
+
+  thiscolor <- ifelse(energy_monotonics$lm_change[i], "red", "blue")
+  thisshape <- ifelse(energy_monotonics$cap_change[i], 1, 5)
+
+
+  print(ggplot(thisdat, aes(x = time, y = response)) +
+    geom_line(color = thiscolor, size = 3, alpha = .3) +
+    geom_line(aes(time, fitted), color = thiscolor, linetype = 4, size = 2) +
+    theme_bw() +
+      ggtitle(thisdat$site_name[1]))
+}
+
+
+cvs <- energy_monotonics %>%
+  select(site_name, cv) %>%
+  distinct()
+
+ggplot(cvs, aes(x = 1, y=cv)) +
+  geom_boxplot() +
+  geom_point() +
+  theme_bw() +
+  ggtitle("Coeff of var") +
+  ylim(0,1)
+
+```
+
+
+### Inscreasing
+
+```{r plot energy monot inc, fig.dim = c(2,2)}
+energy_monotonics <- filter(mod_summary, currency == "energy", monotonic, lm_change, lm_increase)
+for(i in 1:nrow(energy_monotonics)) {
+  thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
+
+  thiscolor <- ifelse(energy_monotonics$lm_change[i], "red", "blue")
+  thisshape <- ifelse(energy_monotonics$cap_change[i], 1, 5)
+
+
+  print(ggplot(thisdat, aes(x = time, y = response)) +
+    geom_line(color = thiscolor, size = 3, alpha = .3) +
+    geom_line(aes(time, fitted), color = thiscolor, linetype = 4, size = 2) +
+    theme_bw() +
+      ggtitle(thisdat$site_name[1]))
+}
+
+
+cvs <- energy_monotonics %>%
+  select(site_name, cv) %>%
+  distinct()
+
+ggplot(cvs, aes(x = 1, y=cv)) +
+  geom_boxplot() +
+  geom_point() +
+  theme_bw() +
+  ggtitle("Coeff of var") +
+  ylim(0,1)
+```
+
+### Decreasing
+
+```{r plot energy monot dec, fig.dim = c(2,2)}
+energy_monotonics <- filter(mod_summary, currency == "energy", monotonic, lm_change, lm_decrease)
+for(i in 1:nrow(energy_monotonics)) {
+  thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
+
+  thiscolor <- ifelse(energy_monotonics$lm_change[i], "red", "blue")
+  thisshape <- ifelse(energy_monotonics$cap_change[i], 1, 5)
+
+
+  print(ggplot(thisdat, aes(x = time, y = response)) +
+     geom_line(color = thiscolor, size = 3, alpha = .3) +
+    geom_line(aes(time, fitted), color = thiscolor, linetype = 4, size = 2) +
+    theme_bw() +
+      ggtitle(thisdat$site_name[1]))
+}
+
+
+cvs <- energy_monotonics %>%
+  select(site_name, cv) %>%
+  distinct()
+
+ggplot(cvs, aes(x = 1, y=cv)) +
+  geom_boxplot() +
+  geom_point() +
+  theme_bw() +
+  ggtitle("Coeff of var") +
+  ylim(0,1)
+```
+
+## Turns
+
+### No significant trend
+
+#### Steps
+
+```{r plot energy turns no trend, fig.dim = c(2,2)}
+energy_monotonics <- filter(mod_summary, currency == "energy", !monotonic, !lm_change, nbp > 0)
+for(i in 1:nrow(energy_monotonics)) {
+  thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
+
+  thiscolor <- ifelse(energy_monotonics$lm_change[i], "red", "blue")
+  thisshape <- ifelse(energy_monotonics$cap_change[i], 1, 5)
+
+
+  print(ggplot(thisdat, aes(x = time, y = response)) +
+    geom_line(color = thiscolor, size = 3, alpha = .3) +
+    geom_line(aes(time, fitted), color = thiscolor, linetype = 4, size = 2) +
+    theme_bw() +
+      ggtitle(thisdat$site_name[1]))
+}
+
+
+
+cvs <- energy_monotonics %>%
+  select(site_name, cv) %>%
+  distinct()
+
+ggplot(cvs, aes(x = 1, y=cv)) +
+  geom_boxplot() +
+  geom_point() +
+  theme_bw() +
+  ggtitle("Coeff of var") +
+  ylim(0,1)
+
+```
+
+
+### Increasing
+
+```{r plot energy turns inc, fig.dim = c(2,2)}
+energy_monotonics <- filter(mod_summary, currency == "energy", !monotonic, lm_change, lm_increase)
+for(i in 1:nrow(energy_monotonics)) {
+  thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
+
+  thiscolor <- ifelse(energy_monotonics$lm_change[i], "red", "blue")
+  thisshape <- ifelse(energy_monotonics$cap_change[i], 1, 5)
+
+
+  print(ggplot(thisdat, aes(x = time, y = response)) +
+     geom_line(color = thiscolor, size = 3, alpha = .3) +
+    geom_line(aes(time, fitted), color = thiscolor, linetype = 4, size = 2) +
+    theme_bw() +
+      ggtitle(thisdat$site_name[1]))
+}
+
+
+cvs <- energy_monotonics %>%
+  select(site_name, cv) %>%
+  distinct()
+
+ggplot(cvs, aes(x = 1, y=cv)) +
+  geom_boxplot() +
+  geom_point() +
+  theme_bw() +
+  ggtitle("Coeff of var") +
+  ylim(0,1)
+```
+
+### Decreasing
+
+```{r plot energy turns dec, fig.dim = c(2,2)}
+energy_monotonics <- filter(mod_summary, currency == "energy", !monotonic, lm_change, lm_decrease)
+for(i in 1:nrow(energy_monotonics)) {
+  thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
+
+  thiscolor <- ifelse(energy_monotonics$lm_change[i], "red", "blue")
+  thisshape <- ifelse(energy_monotonics$cap_change[i], 1, 5)
+
+
+  print(ggplot(thisdat, aes(x = time, y = response)) +
+    geom_line(color = thiscolor, size = 3, alpha = .3) +
+    geom_line(aes(time, fitted), color = thiscolor, linetype = 4, size = 2) +
+    theme_bw() +
+      ggtitle(thisdat$site_name[1]))
+}
+
+
+cvs <- energy_monotonics %>%
+  select(site_name, cv) %>%
+  distinct()
+
+ggplot(cvs, aes(x = 1, y=cv)) +
+  geom_boxplot() +
+  geom_point() +
+  theme_bw() +
+  ggtitle("Coeff of var") +
+  ylim(0,1)
+```

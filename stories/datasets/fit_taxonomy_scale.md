@@ -105,7 +105,11 @@ The 2x2:
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](fit_taxonomy_scale_files/figure-gfm/slopes-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/slopes-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/slopes-3.png)<!-- -->
+![](fit_taxonomy_scale_files/figure-gfm/slopes-1.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](fit_taxonomy_scale_files/figure-gfm/slopes-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/slopes-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/slopes-4.png)<!-- -->
 
 # The actual time series
 
@@ -151,32 +155,93 @@ The 2x2:
 
 ![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-23.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-24.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-25.png)<!-- -->
 
-<!-- ### E v N -->
+# Energy
 
-<!-- ```{r e v n} -->
+### Grouped by turns/no
 
-<!-- mod_summary_long <- mod_summary %>% -->
+![](fit_taxonomy_scale_files/figure-gfm/energy%20group%20by%20turns-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20group%20by%20turns-2.png)<!-- -->
 
-<!--   mutate(cap_p_ratio = ifelse(cap_p_wilcox, cap_ratio, 1)) %>% -->
+    ## # A tibble: 6 x 7
+    ##   currency monotonic n_mono_or_turns lm_change_descr~ n_lm_change_des~
+    ##   <chr>    <lgl>               <int> <chr>                       <int>
+    ## 1 energy   FALSE                  61 decrease                       15
+    ## 2 energy   FALSE                  61 increase                       11
+    ## 3 energy   FALSE                  61 no trend                       35
+    ## 4 energy   TRUE                   47 decrease                       10
+    ## 5 energy   TRUE                   47 increase                       13
+    ## 6 energy   TRUE                   47 no trend                       24
+    ## # ... with 2 more variables: lm_change_word <chr>, n_trend_or_no <int>
 
-<!--   select(site_name, currency, cap_ratio, lm_ratio) %>% -->
+### Grouped by trend
 
-<!--   tidyr::pivot_wider(id_cols = site_name, names_from = currency, values_from = c(cap_ratio, lm_ratio)) -->
+![](fit_taxonomy_scale_files/figure-gfm/energy%20group%20by%20trend-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20group%20by%20trend-2.png)<!-- -->
 
-<!-- ggplot(mod_summary_long, aes(cap_ratio_abundance, cap_ratio_energy)) + -->
+    ## # A tibble: 6 x 5
+    ##   currency lm_change_description n_trend_type monotonic n_monotonic_trend
+    ##   <chr>    <chr>                        <int> <lgl>                 <int>
+    ## 1 energy   decrease                        25 FALSE                    15
+    ## 2 energy   decrease                        25 TRUE                     10
+    ## 3 energy   increase                        24 FALSE                    11
+    ## 4 energy   increase                        24 TRUE                     13
+    ## 5 energy   no trend                        59 FALSE                    35
+    ## 6 energy   no trend                        59 TRUE                     24
 
-<!--   geom_point() + -->
+![](fit_taxonomy_scale_files/figure-gfm/energy%20group%20by%20trend-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20group%20by%20trend-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20group%20by%20trend-5.png)<!-- -->
 
-<!--   theme_bw() + -->
+    ## # A tibble: 6 x 5
+    ##   currency cap_change_description n_trend_type monotonic n_monotonic_trend
+    ##   <chr>    <chr>                         <int> <lgl>                 <int>
+    ## 1 energy   decrease                         17 FALSE                     9
+    ## 2 energy   decrease                         17 TRUE                      8
+    ## 3 energy   increase                         11 FALSE                     4
+    ## 4 energy   increase                         11 TRUE                      7
+    ## 5 energy   no change                        80 FALSE                    48
+    ## 6 energy   no change                        80 TRUE                     32
 
-<!--   geom_abline(slope = 1, intercept= 0) -->
+## Distributions of slopes
 
-<!-- ggplot(mod_summary_long, aes(lm_ratio_abundance, lm_ratio_energy)) + -->
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-<!--   geom_point() + -->
+![](fit_taxonomy_scale_files/figure-gfm/energy%20slopes-1.png)<!-- -->
 
-<!--   theme_bw() + -->
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-<!--   geom_abline(slope = 1, intercept= 0) -->
+![](fit_taxonomy_scale_files/figure-gfm/energy%20slopes-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20slopes-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20slopes-4.png)<!-- -->
 
-<!-- ``` -->
+# The actual time series
+
+## Monotonics
+
+### No significant trend
+
+#### Steps
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20steps-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20steps-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20steps-3.png)<!-- -->
+
+#### “Static”
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-23.png)<!-- -->
+
+### Inscreasing
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-14.png)<!-- -->
+
+### Decreasing
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-11.png)<!-- -->
+
+## Turns
+
+### No significant trend
+
+#### Steps
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-23.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-24.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-25.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-26.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-27.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-28.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-29.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-30.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-31.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-32.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-33.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-34.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-35.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-36.png)<!-- -->
+
+### Increasing
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-12.png)<!-- -->
+
+### Decreasing
+
+![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-16.png)<!-- -->
