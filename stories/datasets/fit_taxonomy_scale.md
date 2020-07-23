@@ -94,12 +94,12 @@ The 2x2:
     ## # A tibble: 6 x 5
     ##   currency  cap_change_description n_trend_type monotonic n_monotonic_trend
     ##   <chr>     <chr>                         <int> <lgl>                 <int>
-    ## 1 abundance decrease                         28 FALSE                    16
-    ## 2 abundance decrease                         28 TRUE                     12
+    ## 1 abundance decrease                         29 FALSE                    17
+    ## 2 abundance decrease                         29 TRUE                     12
     ## 3 abundance increase                         15 FALSE                    11
     ## 4 abundance increase                         15 TRUE                      4
-    ## 5 abundance no change                        65 FALSE                    38
-    ## 6 abundance no change                        65 TRUE                     27
+    ## 5 abundance no change                        64 FALSE                    37
+    ## 6 abundance no change                        64 TRUE                     27
 
 ## Distributions of slopes
 
@@ -245,3 +245,17 @@ The 2x2:
 ### Decreasing
 
 ![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-16.png)<!-- -->
+
+# E in comparison to N
+
+    ##  [1] "site_name"              "currency"               "nbp"                   
+    ##  [4] "has_slope"              "net_change"             "monotonic"             
+    ##  [7] "cap_ratio"              "cap_p_wilcox"           "lm_ratio"              
+    ## [10] "lm_p_ratio"             "cv"                     "site_curr"             
+    ## [13] "cap_change"             "lm_change"              "monotonic_word"        
+    ## [16] "monotonic_lm_steps"     "monotonic_cap_steps"    "cap_increase"          
+    ## [19] "cap_decrease"           "lm_increase"            "lm_decrease"           
+    ## [22] "lm_change_word"         "lm_change_description"  "cap_change_word"       
+    ## [25] "cap_change_description" "cap_lm_agree"
+
+![](fit_taxonomy_scale_files/figure-gfm/e%20v%20n-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/e%20v%20n-2.png)<!-- -->

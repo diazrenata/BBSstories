@@ -923,3 +923,33 @@ ggplot(cvs, aes(x = 1, y=cv)) +
   ggtitle("Coeff of var") +
   ylim(0,1)
 ```
+
+# E in comparison to N
+
+```{r e v n}
+a_summary <-all_mods %>%
+  filter(currency == "abundance") %>%
+  select(-time, -response, -fitted, -breakpoints) %>%
+  distinct() %>%
+  mutate(cap_lm_agree = cap_change == lm_change)
+
+colnames(a_summary)
+
+both_summary <- bind_rows(a_summary, mod_summary) %>%
+  select(site_name, currency, lm_change_word, lm_change_description, cap_change_word, cap_change_description, monotonic_word) %>%
+  tidyr::pivot_wider(id_cols = site_name, names_from = currency, values_from = c(lm_change_word, lm_change_description, cap_change_word, cap_change_description, monotonic_word))
+
+
+ggplot(both_summary, aes(x = lm_change_description_energy, fill = lm_change_description_abundance)) +
+  geom_bar() +
+  theme_bw() +
+  scale_fill_viridis_d()
+
+
+ggplot(both_summary, aes(x = cap_change_description_energy, fill = cap_change_description_abundance)) +
+  geom_bar() +
+  theme_bw() +
+  scale_fill_viridis_d()
+
+
+```
