@@ -59,6 +59,114 @@ The 2x2:
     
     ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
     ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
+    
+    ## Warning in wilcox.test.default(first_five, last_five): cannot compute exact p-
+    ## value with ties
 
 ### Grouped by turns/no
 
@@ -67,12 +175,12 @@ The 2x2:
     ## # A tibble: 6 x 7
     ##   currency monotonic n_mono_or_turns lm_change_descr~ n_lm_change_des~
     ##   <chr>    <lgl>               <int> <chr>                       <int>
-    ## 1 abundan~ FALSE                  65 decrease                       24
-    ## 2 abundan~ FALSE                  65 increase                       11
-    ## 3 abundan~ FALSE                  65 no trend                       30
-    ## 4 abundan~ TRUE                   43 decrease                       16
-    ## 5 abundan~ TRUE                   43 increase                        7
-    ## 6 abundan~ TRUE                   43 no trend                       20
+    ## 1 abundan~ FALSE                 307 decrease                      109
+    ## 2 abundan~ FALSE                 307 increase                       67
+    ## 3 abundan~ FALSE                 307 no trend                      131
+    ## 4 abundan~ TRUE                  193 decrease                       78
+    ## 5 abundan~ TRUE                  193 increase                       33
+    ## 6 abundan~ TRUE                  193 no trend                       82
     ## # ... with 2 more variables: lm_change_word <chr>, n_trend_or_no <int>
 
 ### Grouped by trend
@@ -82,24 +190,24 @@ The 2x2:
     ## # A tibble: 6 x 5
     ##   currency  lm_change_description n_trend_type monotonic n_monotonic_trend
     ##   <chr>     <chr>                        <int> <lgl>                 <int>
-    ## 1 abundance decrease                        40 FALSE                    24
-    ## 2 abundance decrease                        40 TRUE                     16
-    ## 3 abundance increase                        18 FALSE                    11
-    ## 4 abundance increase                        18 TRUE                      7
-    ## 5 abundance no trend                        50 FALSE                    30
-    ## 6 abundance no trend                        50 TRUE                     20
+    ## 1 abundance decrease                       187 FALSE                   109
+    ## 2 abundance decrease                       187 TRUE                     78
+    ## 3 abundance increase                       100 FALSE                    67
+    ## 4 abundance increase                       100 TRUE                     33
+    ## 5 abundance no trend                       213 FALSE                   131
+    ## 6 abundance no trend                       213 TRUE                     82
 
 ![](fit_taxonomy_scale_files/figure-gfm/group%20by%20trend-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/group%20by%20trend-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/group%20by%20trend-5.png)<!-- -->
 
     ## # A tibble: 6 x 5
     ##   currency  cap_change_description n_trend_type monotonic n_monotonic_trend
     ##   <chr>     <chr>                         <int> <lgl>                 <int>
-    ## 1 abundance decrease                         29 FALSE                    17
-    ## 2 abundance decrease                         29 TRUE                     12
-    ## 3 abundance increase                         15 FALSE                    11
-    ## 4 abundance increase                         15 TRUE                      4
-    ## 5 abundance no change                        64 FALSE                    37
-    ## 6 abundance no change                        64 TRUE                     27
+    ## 1 abundance decrease                        118 FALSE                    69
+    ## 2 abundance decrease                        118 TRUE                     49
+    ## 3 abundance increase                         69 FALSE                    48
+    ## 4 abundance increase                         69 TRUE                     21
+    ## 5 abundance no change                       313 FALSE                   190
+    ## 6 abundance no change                       313 TRUE                    123
 
 ## Distributions of slopes
 
@@ -109,7 +217,11 @@ The 2x2:
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](fit_taxonomy_scale_files/figure-gfm/slopes-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/slopes-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/slopes-4.png)<!-- -->
+![](fit_taxonomy_scale_files/figure-gfm/slopes-2.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](fit_taxonomy_scale_files/figure-gfm/slopes-3.png)<!-- -->
 
 # The actual time series
 
@@ -119,19 +231,11 @@ The 2x2:
 
 #### Steps
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20steps-7.png)<!-- -->
-
 #### “Static”
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20flat%20no%20steps-15.png)<!-- -->
 
 ### Inscreasing
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20inc-8.png)<!-- -->
-
 ### Decreasing
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20monot%20dec-17.png)<!-- -->
 
 ## Turns
 
@@ -139,21 +243,9 @@ The 2x2:
 
 #### Steps
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-23.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-24.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-25.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-26.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-27.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-28.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-29.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-30.png)<!-- -->
-
-    ## Warning: Removed 1 rows containing non-finite values (stat_boxplot).
-
-    ## Warning: Removed 1 rows containing missing values (geom_point).
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20no%20trend-31.png)<!-- -->
-
 ### Increasing
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20inc-12.png)<!-- -->
-
 ### Decreasing
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-23.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-24.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20abund%20turns%20dec-25.png)<!-- -->
 
 # Energy
 
@@ -164,12 +256,12 @@ The 2x2:
     ## # A tibble: 6 x 7
     ##   currency monotonic n_mono_or_turns lm_change_descr~ n_lm_change_des~
     ##   <chr>    <lgl>               <int> <chr>                       <int>
-    ## 1 energy   FALSE                  61 decrease                       15
-    ## 2 energy   FALSE                  61 increase                       11
-    ## 3 energy   FALSE                  61 no trend                       35
-    ## 4 energy   TRUE                   47 decrease                       10
-    ## 5 energy   TRUE                   47 increase                       13
-    ## 6 energy   TRUE                   47 no trend                       24
+    ## 1 energy   FALSE                 262 decrease                       75
+    ## 2 energy   FALSE                 262 increase                       60
+    ## 3 energy   FALSE                 262 no trend                      127
+    ## 4 energy   TRUE                  238 decrease                       76
+    ## 5 energy   TRUE                  238 increase                       55
+    ## 6 energy   TRUE                  238 no trend                      107
     ## # ... with 2 more variables: lm_change_word <chr>, n_trend_or_no <int>
 
 ### Grouped by trend
@@ -179,24 +271,24 @@ The 2x2:
     ## # A tibble: 6 x 5
     ##   currency lm_change_description n_trend_type monotonic n_monotonic_trend
     ##   <chr>    <chr>                        <int> <lgl>                 <int>
-    ## 1 energy   decrease                        25 FALSE                    15
-    ## 2 energy   decrease                        25 TRUE                     10
-    ## 3 energy   increase                        24 FALSE                    11
-    ## 4 energy   increase                        24 TRUE                     13
-    ## 5 energy   no trend                        59 FALSE                    35
-    ## 6 energy   no trend                        59 TRUE                     24
+    ## 1 energy   decrease                       151 FALSE                    75
+    ## 2 energy   decrease                       151 TRUE                     76
+    ## 3 energy   increase                       115 FALSE                    60
+    ## 4 energy   increase                       115 TRUE                     55
+    ## 5 energy   no trend                       234 FALSE                   127
+    ## 6 energy   no trend                       234 TRUE                    107
 
 ![](fit_taxonomy_scale_files/figure-gfm/energy%20group%20by%20trend-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20group%20by%20trend-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20group%20by%20trend-5.png)<!-- -->
 
     ## # A tibble: 6 x 5
     ##   currency cap_change_description n_trend_type monotonic n_monotonic_trend
     ##   <chr>    <chr>                         <int> <lgl>                 <int>
-    ## 1 energy   decrease                         17 FALSE                     9
-    ## 2 energy   decrease                         17 TRUE                      8
-    ## 3 energy   increase                         11 FALSE                     4
-    ## 4 energy   increase                         11 TRUE                      7
-    ## 5 energy   no change                        80 FALSE                    48
-    ## 6 energy   no change                        80 TRUE                     32
+    ## 1 energy   decrease                         93 FALSE                    49
+    ## 2 energy   decrease                         93 TRUE                     44
+    ## 3 energy   increase                         71 FALSE                    33
+    ## 4 energy   increase                         71 TRUE                     38
+    ## 5 energy   no change                       336 FALSE                   180
+    ## 6 energy   no change                       336 TRUE                    156
 
 ## Distributions of slopes
 
@@ -206,7 +298,11 @@ The 2x2:
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](fit_taxonomy_scale_files/figure-gfm/energy%20slopes-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20slopes-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20slopes-4.png)<!-- -->
+![](fit_taxonomy_scale_files/figure-gfm/energy%20slopes-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/energy%20slopes-3.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](fit_taxonomy_scale_files/figure-gfm/energy%20slopes-4.png)<!-- -->
 
 # The actual time series
 
@@ -216,19 +312,11 @@ The 2x2:
 
 #### Steps
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20steps-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20steps-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20steps-3.png)<!-- -->
-
 #### “Static”
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20flat%20no%20steps-23.png)<!-- -->
 
 ### Inscreasing
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20inc-14.png)<!-- -->
-
 ### Decreasing
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20monot%20dec-11.png)<!-- -->
 
 ## Turns
 
@@ -236,15 +324,9 @@ The 2x2:
 
 #### Steps
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-16.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-17.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-18.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-19.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-20.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-21.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-22.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-23.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-24.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-25.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-26.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-27.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-28.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-29.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-30.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-31.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-32.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-33.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-34.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-35.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20no%20trend-36.png)<!-- -->
-
 ### Increasing
 
-![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20inc-12.png)<!-- -->
-
 ### Decreasing
-
-![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-2.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-3.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-4.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-5.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-6.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-7.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-8.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-9.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-10.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-11.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-12.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-13.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-14.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-15.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/plot%20energy%20turns%20dec-16.png)<!-- -->
 
 # E in comparison to N
 
@@ -259,3 +341,118 @@ The 2x2:
     ## [25] "cap_change_description" "cap_lm_agree"
 
 ![](fit_taxonomy_scale_files/figure-gfm/e%20v%20n-1.png)<!-- -->![](fit_taxonomy_scale_files/figure-gfm/e%20v%20n-2.png)<!-- -->
+
+    ## `summarise()` regrouping output by 'monotonic_word_abundance' (override with `.groups` argument)
+
+<div class="kable-table">
+
+| monotonic\_word\_abundance | monotonic\_word\_energy |   n |
+| :------------------------- | :---------------------- | --: |
+| monotonic                  | monotonic               | 152 |
+| monotonic                  | turns                   |  41 |
+| turns                      | monotonic               |  86 |
+| turns                      | turns                   | 221 |
+
+</div>
+
+For 30 communities, both TS are monotonic.
+
+For another 30, one is monotonic and one turns. Which is which is an
+even split.
+
+For the remaining 48, both have turns.
+
+Of those where both are monotonic:
+
+    ## `summarise()` regrouping output by 'lm_change_description_abundance' (override with `.groups` argument)
+
+<div class="kable-table">
+
+| lm\_change\_description\_abundance | lm\_change\_description\_energy |  n |   percent |
+| :--------------------------------- | :------------------------------ | -: | --------: |
+| decrease                           | decrease                        | 43 | 0.2828947 |
+| decrease                           | no trend                        | 18 | 0.1184211 |
+| increase                           | increase                        | 17 | 0.1118421 |
+| increase                           | no trend                        |  5 | 0.0328947 |
+| no trend                           | decrease                        |  8 | 0.0526316 |
+| no trend                           | increase                        | 13 | 0.0855263 |
+| no trend                           | no trend                        | 48 | 0.3157895 |
+
+</div>
+
+The two TS match for 22 of the 30 TS. That is 6 decreases, 5 increases,
+and 11 no changes.
+
+3 times, abundance decreases and E does not change.
+
+1 time, abundance does not change but E decreases.
+
+4 times, abundance does not change but E increases.
+
+Abundance never increases without E increasing.
+
+    ## `summarise()` regrouping output by 'lm_change_description_abundance' (override with `.groups` argument)
+
+<div class="kable-table">
+
+| lm\_change\_description\_abundance | lm\_change\_description\_energy |   n | percent |
+| :--------------------------------- | :------------------------------ | --: | ------: |
+| decrease                           | decrease                        | 135 |   0.270 |
+| decrease                           | increase                        |   2 |   0.004 |
+| decrease                           | no trend                        |  50 |   0.100 |
+| increase                           | increase                        |  76 |   0.152 |
+| increase                           | no trend                        |  24 |   0.048 |
+| no trend                           | decrease                        |  16 |   0.032 |
+| no trend                           | increase                        |  37 |   0.074 |
+| no trend                           | no trend                        | 160 |   0.320 |
+
+</div>
+
+Including turning ones:
+
+71 times they match. That is 21 decreases, 13 increases, and 37 no
+trends.
+
+2 times N decreases but E increases. 17 times N decreases and E does not
+change.
+
+4 times N does not change but E decreases. 9 times N does not change but
+E increases.
+
+5 times N increases and E does not change.
+
+    ## Joining, by = c("lm_change_description_abundance", "lm_change_description_energy")
+
+<div class="kable-table">
+
+| lm\_change\_description\_abundance | lm\_change\_description\_energy |   n | percent | n\_mono | percent\_mono |
+| :--------------------------------- | :------------------------------ | --: | ------: | ------: | ------------: |
+| decrease                           | increase                        |   2 |   0.004 |      NA |            NA |
+| no trend                           | decrease                        |  16 |   0.032 |       8 |     0.0526316 |
+| increase                           | no trend                        |  24 |   0.048 |       5 |     0.0328947 |
+| no trend                           | increase                        |  37 |   0.074 |      13 |     0.0855263 |
+| decrease                           | no trend                        |  50 |   0.100 |      18 |     0.1184211 |
+| increase                           | increase                        |  76 |   0.152 |      17 |     0.1118421 |
+| decrease                           | decrease                        | 135 |   0.270 |      43 |     0.2828947 |
+| no trend                           | no trend                        | 160 |   0.320 |      48 |     0.3157895 |
+
+</div>
+
+The above is really hard to interpret.
+
+    ## `summarise()` regrouping output by 'currency', 'monotonic_word', 'lm_change_description' (override with `.groups` argument)
+
+![](fit_taxonomy_scale_files/figure-gfm/long%20summary-1.png)<!-- -->
+
+    ## `summarise()` regrouping output by 'currency', 'monotonic_word' (override with `.groups` argument)
+
+<div class="kable-table">
+
+| currency  | monotonic\_word | prop\_this\_turn |
+| :-------- | :-------------- | ---------------: |
+| abundance | monotonic       |            0.386 |
+| abundance | turns           |            0.614 |
+| energy    | monotonic       |            0.476 |
+| energy    | turns           |            0.524 |
+
+</div>

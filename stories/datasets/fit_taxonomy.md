@@ -76,3 +76,13 @@ The 2x2:
 ### Turnpoints and net change
 
 ![](fit_taxonomy_files/figure-gfm/turns%20net-1.png)<!-- -->![](fit_taxonomy_files/figure-gfm/turns%20net-2.png)<!-- -->![](fit_taxonomy_files/figure-gfm/turns%20net-3.png)<!-- -->
+
+### Histograms
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](fit_taxonomy_files/figure-gfm/hists-1.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](fit_taxonomy_files/figure-gfm/hists-2.png)<!-- -->

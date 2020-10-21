@@ -41,6 +41,7 @@ The 2x2:
 site_names <- list.files(path = "C:\\Users\\diaz.renata\\Documents\\GitHub\\BBSsize\\analysis\\isd_data", pattern = "ibd_isd_bbs_", full.names = F)
 site_names <- substr(site_names, 18, nchar(site_names))
 site_names <- substr(site_names, 1, nchar(site_names) - 4)
+site_names <- site_names[1:500]
 
 datasets <- data.frame(
   dataset_name = site_names,
@@ -297,22 +298,26 @@ ggplot(filter(mod_summary, lm_change), aes(lm_p_ratio)) +
 
 
 
-ggplot(filter(mod_summary, lm_change), aes(lm_p_ratio)) +
-  geom_histogram() +
+ggplot(filter(mod_summary, lm_change, lm_change_word == "monotonic trend"), aes(lm_p_ratio)) +  geom_histogram() +
   facet_wrap(vars(lm_change_word)) +
   theme_bw() +
   geom_vline(xintercept = 1)
+# 
+# ggplot(mod_summary, aes(x = lm_change, y = cv, color = monotonic_word)) +
+#   geom_boxplot() +
+#   theme_bw() +
+#   theme(legend.position = "top")
+# 
+# 
+# ggplot(mod_summary, aes(x = lm_change, y = cv, color = monotonic_lm_steps)) +
+#   geom_boxplot() +
+#   theme_bw() +
+#   theme(legend.position = "top")
 
-ggplot(mod_summary, aes(x = lm_change, y = cv, color = monotonic_word)) +
-  geom_boxplot() +
+ggplot(filter(mod_summary, lm_change_word == "monotonic no trend"), aes(x = cv)) +
+  geom_histogram() +
   theme_bw() +
-  theme(legend.position = "top")
-
-
-ggplot(mod_summary, aes(x = lm_change, y = cv, color = monotonic_lm_steps)) +
-  geom_boxplot() +
-  theme_bw() +
-  theme(legend.position = "top")
+  ggtitle("Abundance")
 
 ```
 
@@ -324,7 +329,7 @@ ggplot(mod_summary, aes(x = lm_change, y = cv, color = monotonic_lm_steps)) +
 
 #### Steps
 
-```{r plot abund monot flat steps, fig.dim = c(2,2)}
+```{r plot abund monot flat steps, fig.dim = c(2,2), eval = F}
 abund_monotonics <- filter(mod_summary, currency == "abundance", monotonic, !lm_change, nbp > 0)
 for(i in 1:nrow(abund_monotonics)) {
   thisdat <- filter(all_mods, site_curr == abund_monotonics$site_curr[i])
@@ -355,7 +360,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 #### "Static"
 
-```{r plot abund monot flat no steps, fig.dim = c(2,2)}
+```{r plot abund monot flat no steps, fig.dim = c(2,2), eval = F}
 abund_monotonics <- filter(mod_summary, currency == "abundance", monotonic, !lm_change, nbp == 0)
 for(i in 1:nrow(abund_monotonics)) {
   thisdat <- filter(all_mods, site_curr == abund_monotonics$site_curr[i])
@@ -388,7 +393,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 ### Inscreasing
 
-```{r plot abund monot inc, fig.dim = c(2,2)}
+```{r plot abund monot inc, fig.dim = c(2,2), eval = F}
 abund_monotonics <- filter(mod_summary, currency == "abundance", monotonic, lm_change, lm_increase)
 for(i in 1:nrow(abund_monotonics)) {
   thisdat <- filter(all_mods, site_curr == abund_monotonics$site_curr[i])
@@ -419,7 +424,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 ### Decreasing
 
-```{r plot abund monot dec, fig.dim = c(2,2)}
+```{r plot abund monot dec, fig.dim = c(2,2), eval = F}
 abund_monotonics <- filter(mod_summary, currency == "abundance", monotonic, lm_change, lm_decrease)
 for(i in 1:nrow(abund_monotonics)) {
   thisdat <- filter(all_mods, site_curr == abund_monotonics$site_curr[i])
@@ -454,7 +459,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 #### Steps
 
-```{r plot abund turns no trend, fig.dim = c(2,2)}
+```{r plot abund turns no trend, fig.dim = c(2,2), eval = F}
 abund_monotonics <- filter(mod_summary, currency == "abundance", !monotonic, !lm_change, nbp > 0)
 for(i in 1:nrow(abund_monotonics)) {
   thisdat <- filter(all_mods, site_curr == abund_monotonics$site_curr[i])
@@ -488,7 +493,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 ### Increasing
 
-```{r plot abund turns inc, fig.dim = c(2,2)}
+```{r plot abund turns inc, fig.dim = c(2,2), eval = F}
 abund_monotonics <- filter(mod_summary, currency == "abundance", !monotonic, lm_change, lm_increase)
 for(i in 1:nrow(abund_monotonics)) {
   thisdat <- filter(all_mods, site_curr == abund_monotonics$site_curr[i])
@@ -519,7 +524,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 ### Decreasing
 
-```{r plot abund turns dec, fig.dim = c(2,2)}
+```{r plot abund turns dec, fig.dim = c(2,2), eval = F}
 abund_monotonics <- filter(mod_summary, currency == "abundance", !monotonic, lm_change, lm_decrease)
 for(i in 1:nrow(abund_monotonics)) {
   thisdat <- filter(all_mods, site_curr == abund_monotonics$site_curr[i])
@@ -673,7 +678,7 @@ ggplot(filter(mod_summary, lm_change), aes(lm_p_ratio)) +
 
 
 
-ggplot(filter(mod_summary, lm_change), aes(lm_p_ratio)) +
+ggplot(filter(mod_summary, lm_change, lm_change_word == "monotonic trend"), aes(lm_p_ratio)) +
   geom_histogram() +
   facet_wrap(vars(lm_change_word)) +
   theme_bw() +
@@ -685,11 +690,10 @@ ggplot(mod_summary, aes(x = lm_change, y = cv, color = monotonic_word)) +
   theme(legend.position = "top")
 
 
-ggplot(mod_summary, aes(x = lm_change, y = cv, color = monotonic_lm_steps)) +
-  geom_boxplot() +
+ggplot(filter(mod_summary, lm_change_word == "monotonic no trend"), aes(x = cv)) +
+  geom_histogram() +
   theme_bw() +
-  theme(legend.position = "top")
-
+  ggtitle("Energy")
 ```
 
 # The actual time series
@@ -700,7 +704,7 @@ ggplot(mod_summary, aes(x = lm_change, y = cv, color = monotonic_lm_steps)) +
 
 #### Steps
 
-```{r plot energy monot flat steps, fig.dim = c(2,2)}
+```{r plot energy monot flat steps, fig.dim = c(2,2), eval = F}
 energy_monotonics <- filter(mod_summary, currency == "energy", monotonic, !lm_change, nbp > 0)
 for(i in 1:nrow(energy_monotonics)) {
   thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
@@ -731,7 +735,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 #### "Static"
 
-```{r plot energy monot flat no steps, fig.dim = c(2,2)}
+```{r plot energy monot flat no steps, fig.dim = c(2,2), eval = F}
 energy_monotonics <- filter(mod_summary, currency == "energy", monotonic, !lm_change, nbp == 0)
 for(i in 1:nrow(energy_monotonics)) {
   thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
@@ -764,7 +768,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 ### Inscreasing
 
-```{r plot energy monot inc, fig.dim = c(2,2)}
+```{r plot energy monot inc, fig.dim = c(2,2), eval = F}
 energy_monotonics <- filter(mod_summary, currency == "energy", monotonic, lm_change, lm_increase)
 for(i in 1:nrow(energy_monotonics)) {
   thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
@@ -795,7 +799,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 ### Decreasing
 
-```{r plot energy monot dec, fig.dim = c(2,2)}
+```{r plot energy monot dec, fig.dim = c(2,2), eval = F}
 energy_monotonics <- filter(mod_summary, currency == "energy", monotonic, lm_change, lm_decrease)
 for(i in 1:nrow(energy_monotonics)) {
   thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
@@ -830,7 +834,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 #### Steps
 
-```{r plot energy turns no trend, fig.dim = c(2,2)}
+```{r plot energy turns no trend, fig.dim = c(2,2), eval = F}
 energy_monotonics <- filter(mod_summary, currency == "energy", !monotonic, !lm_change, nbp > 0)
 for(i in 1:nrow(energy_monotonics)) {
   thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
@@ -864,7 +868,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 ### Increasing
 
-```{r plot energy turns inc, fig.dim = c(2,2)}
+```{r plot energy turns inc, fig.dim = c(2,2), eval = F}
 energy_monotonics <- filter(mod_summary, currency == "energy", !monotonic, lm_change, lm_increase)
 for(i in 1:nrow(energy_monotonics)) {
   thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
@@ -895,7 +899,7 @@ ggplot(cvs, aes(x = 1, y=cv)) +
 
 ### Decreasing
 
-```{r plot energy turns dec, fig.dim = c(2,2)}
+```{r plot energy turns dec, fig.dim = c(2,2), eval = F}
 energy_monotonics <- filter(mod_summary, currency == "energy", !monotonic, lm_change, lm_decrease)
 for(i in 1:nrow(energy_monotonics)) {
   thisdat <- filter(all_mods, site_curr == energy_monotonics$site_curr[i])
@@ -951,5 +955,117 @@ ggplot(both_summary, aes(x = cap_change_description_energy, fill = cap_change_de
   theme_bw() +
   scale_fill_viridis_d()
 
+
+```
+
+```{r tables}
+
+turns_match <- both_summary %>%
+  group_by(monotonic_word_abundance,
+           monotonic_word_energy) %>%
+  summarize(n = dplyr::n())
+
+turns_match
+
+```
+
+For 30 communities, both TS are monotonic.
+
+For another 30, one is monotonic and one turns. Which is which is an even split.
+
+For the remaining 48, both have turns. 
+
+Of those where both are monotonic:
+
+```{r both monotonic}
+
+both_mono <- both_summary %>%
+  filter(monotonic_word_abundance == "monotonic",
+         monotonic_word_energy == "monotonic")
+
+just_mono <- both_mono %>%
+  group_by(lm_change_description_abundance,
+           lm_change_description_energy) %>%
+  summarize(n = dplyr::n())%>%
+  ungroup() %>%
+  mutate(percent = n / sum(n))
+
+just_mono
+
+```
+
+The two TS match for 22 of the 30 TS. That is 6 decreases, 5 increases, and 11 no changes. 
+
+3 times, abundance decreases and E does not change.
+
+1 time, abundance does not change but E decreases.
+
+4 times, abundance does not change but E increases. 
+
+Abundance never increases without E increasing. 
+
+```{r all not just mono}
+turns_and_mono <- both_summary %>%
+  group_by(lm_change_description_abundance,
+           lm_change_description_energy) %>%
+  summarize(n = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(percent = n / sum(n))
+
+turns_and_mono
+
+```
+
+Including turning ones:
+
+71 times they match. That is 21 decreases, 13 increases, and 37 no trends.
+
+2 times N decreases but E increases.
+17 times N decreases and E does not change.
+
+4 times N does not change but E decreases.
+9 times N does not change but E increases. 
+
+5 times N increases and E does not change.
+
+
+```{r comparing turns v just mono}
+
+everything <- left_join(turns_and_mono, rename(just_mono, n_mono=n, percent_mono=percent))
+
+everything %>%
+  arrange(percent)
+
+```
+
+The above is really hard to interpret. 
+
+```{r long summary, fig.dim = c(5,5)}
+
+long_summary <- bind_rows(a_summary, mod_summary) %>%
+  select(site_name, currency, lm_change_word, lm_change_description, cap_change_word, cap_change_description, monotonic_word) %>%
+  group_by(currency, monotonic_word) %>%
+  mutate(n_monotonic = dplyr::n()) %>%
+  ungroup() %>%
+  group_by(currency, monotonic_word, lm_change_description) %>%
+  summarize(n_this_outcome = dplyr::n(), 
+    percent_this_outcome = dplyr::n() / n_monotonic) %>%
+  ungroup() %>%
+  distinct()
+
+ggplot(filter(long_summary, monotonic_word == "monotonic"), aes(currency, percent_this_outcome, fill = lm_change_description)) +
+  geom_col(position = "dodge") +
+  facet_wrap(vars(monotonic_word)) +
+  scale_fill_viridis_d(end = .8) +
+  theme_bw() +
+  theme(legend.position = "top")
+
+long_summary %>%
+  group_by(currency) %>%
+  mutate(n_this_turn = sum(n_this_outcome)) %>%
+  ungroup() %>%
+  group_by(currency, monotonic_word) %>%
+  summarize(prop_this_turn = sum(n_this_outcome)/ n_this_turn) %>%
+  distinct()
 
 ```

@@ -48,6 +48,8 @@ ggplot(ibd_species, aes(x = log(mean_size))) +
   theme_bw()
 ```
 
+Oh what an interesting plot! 
+
 Here is how species richness, abundance, biomass, and energy have changed over those years:
 
 ```{r state variables}
