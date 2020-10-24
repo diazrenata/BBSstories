@@ -437,6 +437,65 @@ ds_deriv_results <- ds_derivs %>%
          deriv_net = ds_deriv_net,
          deriv_abs = ds_deriv_abs,
          species = "bannertail")
+#### ds samples from posterior ####
+
+ds_fd <- gratia:::fderiv(ds_mod, newdata = newd, eps = 1e-07, unconditional = FALSE)
+
+ds_Vb <- vcov(ds_mod, unconditional = FALSE)
+set.seed(1977)
+ds_sims <- MASS::mvrnorm(300, mu = coef(ds_mod), Sigma = ds_Vb)
+ds_X0 <- predict(ds_mod, newd, type = "lpmatrix")
+newd <- newd + 1e-07
+ds_X1 <- predict(ds_mod, newd, type = "lpmatrix")
+ds_Xp <- (ds_X1 - ds_X0) / 1e-07
+ds_derivs_draws <- ds_Xp %*% t(ds_sims)
+
+
+ds_derivs_draws <- as.data.frame(ds_derivs_draws)
+ds_derivs_draws$year <- newd$year
+ds_derivs_draws <- ds_derivs_draws %>%
+  tidyr::pivot_longer(-year, names_to = "draw", names_prefix = "V", values_to = "pred_deriv") %>%
+  mutate(draw = as.numeric(draw),
+         species = "bannertail")
+
+ds_deriv_draw_plot <- ggplot(filter(ds_derivs_draws, draw < 100), aes(year, pred_deriv, group = as.factor(draw), color =as.factor(draw))) +
+  geom_line(alpha = .2) +
+  theme_bw() +
+  geom_hline(yintercept = 0)  +
+  theme(legend.position = "none")
+
+
+ds_deriv_eps <- mean(newd$year[2:200] - newd$year[1:199])
+
+ds_deriv_net <- sum(ds_derivs$derivative) * ds_deriv_eps
+
+ds_deriv_abs <- sum(ds_derivs$abs_derivative) * ds_deriv_eps
+
+
+ds_deriv_draw_results <- ds_derivs_draws %>%
+  rename(derivative = pred_deriv) %>%
+  mutate(deriv_eps = ds_deriv_eps,
+         abs_derivative = abs(derivative)) %>%
+  group_by(draw) %>%
+  mutate(deriv_net = sum(derivative) * ds_deriv_eps,
+         deriv_abs = sum(abs_derivative) * ds_deriv_eps,
+         source = "sim") %>%
+  ungroup()
+
+all_ds_deriv <- bind_rows(ds_deriv_draw_results, mutate(ds_deriv_results, draw = -99, source = "fitted")) %>%
+  mutate(abs_v_net = deriv_abs / abs(deriv_net))
+
+ds_net_plot <- ggplot(all_ds_deriv, aes(source, y = deriv_net)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0)
+ds_abs_plot <- ggplot(all_ds_deriv, aes(source, y = deriv_abs)) +
+  geom_boxplot()
+ds_abs_v_net_plot <- ggplot(all_ds_deriv, aes(source, y = abs_v_net)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 1)
+
+gridExtra::grid.arrange(grobs = list(ds_real_plot, ds_fit_plot, ds_deriv_plot, ds_deriv_draw_plot), ncol = 1)
+gridExtra::grid.arrange(grobs = list(ds_net_plot, ds_abs_plot, ds_abs_v_net_plot), ncol = 3)
 
 #### all together ####
 
