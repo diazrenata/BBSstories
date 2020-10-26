@@ -20,6 +20,7 @@ ts <- ts %>%
   mutate(year = substr(year, 0, 4)) %>%
   mutate(year = as.numeric(year)) %>%
   filter(year > 1980) %>%
+  filter(year < 2019) %>%
   group_by(year) %>%
   summarize(total_abundance = sum(total_abund),
             bannertail = sum(DS),
@@ -87,6 +88,70 @@ pb_deriv_results <- pb_derivs %>%
          deriv_net = pb_deriv_net,
          deriv_abs = pb_deriv_abs,
          species = "baileys")
+
+
+#### pb samples from posterior ####
+
+newd <- with(pb_fit, data.frame(year = seq(min(year), max(year), length = 200)))
+
+pb_fd <- gratia:::fderiv(pb_mod, newdata = newd, eps = 1e-07, unconditional = FALSE)
+
+pb_Vb <- vcov(pb_mod, unconditional = FALSE)
+set.seed(1977)
+pb_sims <- MASS::mvrnorm(300, mu = coef(pb_mod), Sigma = pb_Vb)
+pb_X0 <- predict(pb_mod, newd, type = "lpmatrix")
+newd <- newd + 1e-07
+pb_X1 <- predict(pb_mod, newd, type = "lpmatrix")
+pb_Xp <- (pb_X1 - pb_X0) / 1e-07
+pb_derivs_draws <- pb_Xp %*% t(pb_sims)
+
+
+pb_derivs_draws <- as.data.frame(pb_derivs_draws)
+pb_derivs_draws$year <- newd$year
+pb_derivs_draws <- pb_derivs_draws %>%
+  tidyr::pivot_longer(-year, names_to = "draw", names_prefix = "V", values_to = "pred_deriv") %>%
+  mutate(draw = as.numeric(draw),
+         species = "baileys")
+
+pb_deriv_draw_plot <- ggplot(filter(pb_derivs_draws, draw < 100), aes(year, pred_deriv, group = as.factor(draw), color =as.factor(draw))) +
+  geom_line(alpha = .2) +
+  theme_bw() +
+  geom_hline(yintercept = 0)  +
+  theme(legend.position = "none")
+
+
+pb_deriv_eps <- mean(newd$year[2:200] - newd$year[1:199])
+
+pb_deriv_net <- sum(pb_derivs$derivative) * pb_deriv_eps
+
+pb_deriv_abs <- sum(pb_derivs$abs_derivative) * pb_deriv_eps
+
+
+pb_deriv_draw_results <- pb_derivs_draws %>%
+  rename(derivative = pred_deriv) %>%
+  mutate(deriv_eps = pb_deriv_eps,
+         abs_derivative = abs(derivative)) %>%
+  group_by(draw) %>%
+  mutate(deriv_net = sum(derivative) * pb_deriv_eps,
+         deriv_abs = sum(abs_derivative) * pb_deriv_eps,
+         source = "sim") %>%
+  ungroup()
+
+all_pb_deriv <- bind_rows(pb_deriv_draw_results, mutate(pb_deriv_results, draw = -99, source = "fitted")) %>%
+  mutate(abs_v_net = deriv_abs / abs(deriv_net))
+
+pb_net_plot <- ggplot(all_pb_deriv, aes(source, y = deriv_net)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0)
+pb_abs_plot <- ggplot(all_pb_deriv, aes(source, y = deriv_abs)) +
+  geom_boxplot()
+pb_abs_v_net_plot <- ggplot(all_pb_deriv, aes(source, y = abs_v_net)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 1)
+
+gridExtra::grid.arrange(grobs = list(pb_real_plot, pb_fit_plot, pb_deriv_plot, pb_deriv_draw_plot), ncol = 1)
+gridExtra::grid.arrange(grobs = list(pb_net_plot, pb_abs_plot, pb_abs_v_net_plot), ncol = 3)
+
 #### pp ####
 pp_real_plot <- ggplot(ts, aes(year, (pocketmouse))) + geom_line()
 
@@ -141,6 +206,66 @@ pp_deriv_results <- pp_derivs %>%
          deriv_net = pp_deriv_net,
          deriv_abs = pp_deriv_abs,
          species = "pocketmouse")
+#### pp samples from posterior ####
+
+pp_fd <- gratia:::fderiv(pp_mod, newdata = newd, eps = 1e-07, unconditional = FALSE)
+
+pp_Vb <- vcov(pp_mod, unconditional = FALSE)
+set.seed(1977)
+pp_sims <- MASS::mvrnorm(300, mu = coef(pp_mod), Sigma = pp_Vb)
+pp_X0 <- predict(pp_mod, newd, type = "lpmatrix")
+newd <- newd + 1e-07
+pp_X1 <- predict(pp_mod, newd, type = "lpmatrix")
+pp_Xp <- (pp_X1 - pp_X0) / 1e-07
+pp_derivs_draws <- pp_Xp %*% t(pp_sims)
+
+
+pp_derivs_draws <- as.data.frame(pp_derivs_draws)
+pp_derivs_draws$year <- newd$year
+pp_derivs_draws <- pp_derivs_draws %>%
+  tidyr::pivot_longer(-year, names_to = "draw", names_prefix = "V", values_to = "pred_deriv") %>%
+  mutate(draw = as.numeric(draw),
+         species = "pocketmouse")
+
+pp_deriv_draw_plot <- ggplot(filter(pp_derivs_draws, draw < 100), aes(year, pred_deriv, group = as.factor(draw), color =as.factor(draw))) +
+  geom_line(alpha = .2) +
+  theme_bw() +
+  geom_hline(yintercept = 0)  +
+  theme(legend.position = "none")
+
+
+pp_deriv_eps <- mean(newd$year[2:200] - newd$year[1:199])
+
+pp_deriv_net <- sum(pp_derivs$derivative) * pp_deriv_eps
+
+pp_deriv_abs <- sum(pp_derivs$abs_derivative) * pp_deriv_eps
+
+
+pp_deriv_draw_results <- pp_derivs_draws %>%
+  rename(derivative = pred_deriv) %>%
+  mutate(deriv_eps = pp_deriv_eps,
+         abs_derivative = abs(derivative)) %>%
+  group_by(draw) %>%
+  mutate(deriv_net = sum(derivative) * pp_deriv_eps,
+         deriv_abs = sum(abs_derivative) * pp_deriv_eps,
+         source = "sim") %>%
+  ungroup()
+
+all_pp_deriv <- bind_rows(pp_deriv_draw_results, mutate(pp_deriv_results, draw = -99, source = "fitted")) %>%
+  mutate(abs_v_net = deriv_abs / abs(deriv_net))
+
+pp_net_plot <- ggplot(all_pp_deriv, aes(source, y = deriv_net)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0)
+pp_abs_plot <- ggplot(all_pp_deriv, aes(source, y = deriv_abs)) +
+  geom_boxplot()
+pp_abs_v_net_plot <- ggplot(all_pp_deriv, aes(source, y = abs_v_net)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 1)
+
+gridExtra::grid.arrange(grobs = list(pp_real_plot, pp_fit_plot, pp_deriv_plot, pp_deriv_draw_plot), ncol = 1)
+gridExtra::grid.arrange(grobs = list(pp_net_plot, pp_abs_plot, pp_abs_v_net_plot), ncol = 3)
+
 
 #### merriams ####
 dm_real_plot <- ggplot(ts, aes(year, (merriami))) + geom_line()
@@ -197,6 +322,67 @@ dm_deriv_results <- dm_derivs %>%
          deriv_abs = dm_deriv_abs,
          species = "merriami")
 
+#### dm samples from posterior ####
+
+dm_fd <- gratia:::fderiv(dm_mod, newdata = newd, eps = 1e-07, unconditional = FALSE)
+
+dm_Vb <- vcov(dm_mod, unconditional = FALSE)
+set.seed(1977)
+dm_sims <- MASS::mvrnorm(300, mu = coef(dm_mod), Sigma = dm_Vb)
+dm_X0 <- predict(dm_mod, newd, type = "lpmatrix")
+newd <- newd + 1e-07
+dm_X1 <- predict(dm_mod, newd, type = "lpmatrix")
+dm_Xp <- (dm_X1 - dm_X0) / 1e-07
+dm_derivs_draws <- dm_Xp %*% t(dm_sims)
+
+
+dm_derivs_draws <- as.data.frame(dm_derivs_draws)
+dm_derivs_draws$year <- newd$year
+dm_derivs_draws <- dm_derivs_draws %>%
+  tidyr::pivot_longer(-year, names_to = "draw", names_prefix = "V", values_to = "pred_deriv") %>%
+  mutate(draw = as.numeric(draw),
+         species = "merriami")
+
+dm_deriv_draw_plot <- ggplot(filter(dm_derivs_draws, draw < 100), aes(year, pred_deriv, group = as.factor(draw), color =as.factor(draw))) +
+  geom_line(alpha = .2) +
+  theme_bw() +
+  geom_hline(yintercept = 0)  +
+  theme(legend.position = "none")
+
+
+dm_deriv_eps <- mean(newd$year[2:200] - newd$year[1:199])
+
+dm_deriv_net <- sum(dm_derivs$derivative) * dm_deriv_eps
+
+dm_deriv_abs <- sum(dm_derivs$abs_derivative) * dm_deriv_eps
+
+
+dm_deriv_draw_results <- dm_derivs_draws %>%
+  rename(derivative = pred_deriv) %>%
+  mutate(deriv_eps = dm_deriv_eps,
+         abs_derivative = abs(derivative)) %>%
+  group_by(draw) %>%
+  mutate(deriv_net = sum(derivative) * dm_deriv_eps,
+         deriv_abs = sum(abs_derivative) * dm_deriv_eps,
+         source = "sim") %>%
+  ungroup()
+
+all_dm_deriv <- bind_rows(dm_deriv_draw_results, mutate(dm_deriv_results, draw = -99, source = "fitted")) %>%
+  mutate(abs_v_net = deriv_abs / abs(deriv_net))
+
+dm_net_plot <- ggplot(all_dm_deriv, aes(source, y = deriv_net)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0)
+dm_abs_plot <- ggplot(all_dm_deriv, aes(source, y = deriv_abs)) +
+  geom_boxplot()
+dm_abs_v_net_plot <- ggplot(all_dm_deriv, aes(source, y = abs_v_net)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 1)
+
+gridExtra::grid.arrange(grobs = list(dm_real_plot, dm_fit_plot, dm_deriv_plot, dm_deriv_draw_plot), ncol = 1)
+gridExtra::grid.arrange(grobs = list(dm_net_plot, dm_abs_plot, dm_abs_v_net_plot), ncol = 3)
+
+
 #### spectabs ####
 ds_real_plot <- ggplot(ts, aes(year, (bannertail))) + geom_line()
 
@@ -251,10 +437,69 @@ ds_deriv_results <- ds_derivs %>%
          deriv_net = ds_deriv_net,
          deriv_abs = ds_deriv_abs,
          species = "bannertail")
+#### ds samples from posterior ####
+
+ds_fd <- gratia:::fderiv(ds_mod, newdata = newd, eps = 1e-07, unconditional = FALSE)
+
+ds_Vb <- vcov(ds_mod, unconditional = FALSE)
+set.seed(1977)
+ds_sims <- MASS::mvrnorm(300, mu = coef(ds_mod), Sigma = ds_Vb)
+ds_X0 <- predict(ds_mod, newd, type = "lpmatrix")
+newd <- newd + 1e-07
+ds_X1 <- predict(ds_mod, newd, type = "lpmatrix")
+ds_Xp <- (ds_X1 - ds_X0) / 1e-07
+ds_derivs_draws <- ds_Xp %*% t(ds_sims)
+
+
+ds_derivs_draws <- as.data.frame(ds_derivs_draws)
+ds_derivs_draws$year <- newd$year
+ds_derivs_draws <- ds_derivs_draws %>%
+  tidyr::pivot_longer(-year, names_to = "draw", names_prefix = "V", values_to = "pred_deriv") %>%
+  mutate(draw = as.numeric(draw),
+         species = "bannertail")
+
+ds_deriv_draw_plot <- ggplot(filter(ds_derivs_draws, draw < 100), aes(year, pred_deriv, group = as.factor(draw), color =as.factor(draw))) +
+  geom_line(alpha = .2) +
+  theme_bw() +
+  geom_hline(yintercept = 0)  +
+  theme(legend.position = "none")
+
+
+ds_deriv_eps <- mean(newd$year[2:200] - newd$year[1:199])
+
+ds_deriv_net <- sum(ds_derivs$derivative) * ds_deriv_eps
+
+ds_deriv_abs <- sum(ds_derivs$abs_derivative) * ds_deriv_eps
+
+
+ds_deriv_draw_results <- ds_derivs_draws %>%
+  rename(derivative = pred_deriv) %>%
+  mutate(deriv_eps = ds_deriv_eps,
+         abs_derivative = abs(derivative)) %>%
+  group_by(draw) %>%
+  mutate(deriv_net = sum(derivative) * ds_deriv_eps,
+         deriv_abs = sum(abs_derivative) * ds_deriv_eps,
+         source = "sim") %>%
+  ungroup()
+
+all_ds_deriv <- bind_rows(ds_deriv_draw_results, mutate(ds_deriv_results, draw = -99, source = "fitted")) %>%
+  mutate(abs_v_net = deriv_abs / abs(deriv_net))
+
+ds_net_plot <- ggplot(all_ds_deriv, aes(source, y = deriv_net)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0)
+ds_abs_plot <- ggplot(all_ds_deriv, aes(source, y = deriv_abs)) +
+  geom_boxplot()
+ds_abs_v_net_plot <- ggplot(all_ds_deriv, aes(source, y = abs_v_net)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 1)
+
+gridExtra::grid.arrange(grobs = list(ds_real_plot, ds_fit_plot, ds_deriv_plot, ds_deriv_draw_plot), ncol = 1)
+gridExtra::grid.arrange(grobs = list(ds_net_plot, ds_abs_plot, ds_abs_v_net_plot), ncol = 3)
 
 #### all together ####
 
-all_deriv_results <- bind_rows(list(pb_deriv_results, pp_deriv_results, dm_deriv_results, ds_deriv_results))
+all_deriv_results <- bind_rows(list(pp_deriv_results, pp_deriv_results, dm_deriv_results, ds_deriv_results))
 
 all_deriv_results <- all_deriv_results %>%
   mutate(deriv_abs_v_net = deriv_abs / (abs(deriv_net))) %>%
@@ -294,7 +539,7 @@ deriv_hist_plot <- ggplot(all_deriv_results, aes(x = abs_derivative, fill = spec
 
 
 
-gridExtra::grid.arrange(grobs = list(all_real_plot, all_deriv_plot, net_change_plot, deriv_hist_plot, prop_not0_plot), ncol = 1)
+gridExtra::grid.arrange(grobs = list(all_real_plot, all_deriv_plot, net_change_plot, prop_not0_plot), ncol = 1)
 
 ggplot(all_deriv_results, aes(deriv_net, deriv_abs_v_net, size = prop_not_zero, color = species)) +
   scale_size_continuous(range = c(1, 7)) +
