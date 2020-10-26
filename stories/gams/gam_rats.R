@@ -264,7 +264,8 @@ all_deriv_results <- all_deriv_results %>%
   group_by(species) %>%
   mutate(prop_not_zero = mean(deriv_not_zero),
          prop_increasing = mean(derivative > 0),
-         prop_decreasing = mean(derivative < 0))
+         prop_decreasing = mean(derivative < 0),
+         sum_not_zero = sum(deriv_not_zero))
 
 
 all_real_plot <- ggplot(filter(ts_long, species != "total_abundance"), aes(year, value, color= species)) +
@@ -295,6 +296,17 @@ deriv_hist_plot <- ggplot(all_deriv_results, aes(x = abs_derivative, fill = spec
 
 gridExtra::grid.arrange(grobs = list(all_real_plot, all_deriv_plot, net_change_plot, deriv_hist_plot, prop_not0_plot), ncol = 1)
 
+ggplot(all_deriv_results, aes(deriv_net, deriv_abs_v_net, size = prop_not_zero, color = species)) +
+  scale_size_continuous(range = c(1, 7)) +
+  geom_point(aes(deriv_net, deriv_abs_v_net),  color = "white", size = 7) +
+  geom_point()
+
+
+
+# deriv_net tells you whether it changed overall. nvalues per nsims; CI for this value might be a good way of assessing **overall** change
+# deriv_abs_v_net: if >>>> 1, tells you there was a lot of up and down; might scale weirdly if net is large. nvalues per nsims.
+# the histograms are hard to read but are me trying to get at this intution around, short extreme change vs. steady gradual change. what do the magnitude of slope values mean for different species/TS? could be nhistograms per nsims.
+# the %not zero bar plots show, for how MUCH of the TS are we seeing the confidence interval not include zero? this amounts to periods of sustained and fairly strong change. you can, I think, achieve net change on average but never have the CI not include zero. there is only one of these per fit.
 
 ### can I get draws for the derivatives direct from posterior?
 #
