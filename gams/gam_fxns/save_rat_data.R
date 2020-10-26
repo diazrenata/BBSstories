@@ -1,3 +1,7 @@
+# Save annual abundances for Portal rodents from 1980-2018.
+# Based on code I wrote for EVS lab. Hence the cute species names. Adding a few more species for fun & breadth.
+# Note this is sitewide....not split by plot or treatment. So for methods development only, as toy but realistic timeseries.
+
 library(dplyr)
 
 raw_portal_data <- portalr::abundance(time = "date")
@@ -9,7 +13,7 @@ abundance_ts <- data.frame(
 
 
 spectab_ts <- raw_portal_data %>%
-  select(censusdate, DS, PP, DM, PB)
+  select(censusdate, DS, PP, DM, PB, DO, PE, PF)
 
 
 ts <- left_join(abundance_ts, spectab_ts)
@@ -24,5 +28,8 @@ ts <- ts %>%
             bannertail = sum(DS),
             merriami = sum(DM),
             pocketmouse = sum(PP),
-            baileys = sum(PB))
+            baileys = sum(PB),
+            ord = sum(DO),
+            cactus = sum(PE),
+            silky = sum(PF))
 write.csv(ts, file = here::here("gams", "rat_data.csv"), row.names = F)

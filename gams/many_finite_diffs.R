@@ -70,7 +70,7 @@ one_fd <- get_one_fd(pb_mod, EPS, seed)
 
 ggplot(one_fd, aes(year, derivative)) + geom_point()
 
-many_fd <- lapply(seeds[1:5000], FUN = get_one_fd, model = pb_mod, eps = EPS)
+many_fd <- lapply(seeds[1:200], FUN = get_one_fd, model = pb_mod, eps = EPS)
 
 many_fd <- bind_rows(many_fd)
 
@@ -80,30 +80,51 @@ ggplot(many_fd, aes(year, derivative, group = seed)) + geom_line(alpha = .2) + t
 
 # HUH SO APPARENTLY THIS WORKS
 
-pp_mod <-  gam(((pocketmouse)) ~ s(year, k =  5), data = ts, method = "REML", family = "poisson")
 
-many_pp_fd <- lapply(seeds[1:5000], FUN = get_one_fd, model = pp_mod, eps = EPS)
+# Cross checking that this agrees with derivative() if you use the Gaussian
 
-many_pp_fd <- bind_rows(many_pp_fd)
+pb_g_mod <- gam(baileys ~ s(year, k = 5), data = ts, method = "REML", family = "gaussian")
 
-many_pp_fd <- mutate(many_pp_fd, seed = as.character(seed))
+# We can try numerous finite differences on fits?
+set.seed(1977)
+EPS <- 1
+NSAMPLES <- 10000
+seeds <- sample.int(n = 5 * NSAMPLES, size = NSAMPLES, replace = F)
+seed <- seeds[1]
 
-ggplot(many_pp_fd, aes(year, derivative, group = seed)) + geom_line(alpha = .2) + theme(legend.position = "none")
+pb_g_finitedifs <- lapply(seeds[1:1000], FUN = get_one_fd, model = pb_g_mod, eps = EPS)
+
+pb_g_finitedifs <- bind_rows(pb_g_finitedifs)
+
+pb_g_finitedifs <- mutate(pb_g_finitedifs, seed = as.character(seed))
+
+ggplot(pb_g_finitedifs, aes(year, derivative, group = seed)) + geom_line(alpha = .2) + theme(legend.position = "none")
+
+pb_g_derivs <- derivatives(pb_g_mod)
 
 
-dm_mod <-  gam(((merriami)) ~ s(year, k = 3), data = ts, method = "REML", family = "poisson")
+ggplot(pb_g_finitedifs, aes(year, derivative, group = seed)) + geom_line(alpha = .2) + theme(legend.position = "none") +
+  geom_line(data = pb_g_derivs, aes(data, derivative), color = "red")
 
-dm_fit <- add_fitted(select(ts, year, merriami), dm_mod)
 
-ggplot(dm_fit, aes(year, (merriami))) +
+# this appears to match. I'm not sure what my expectation would be w.r.t. whether the standard errors should match, because derivatives is working somehow simultaneously? but we can try.
+
+pb_g_finitedifs <- pb_g_finitedifs %>%
+  group_by(year) %>%
+  mutate(upper = quantile(derivative, probs = .975),
+         lower = quantile(derivative, probs = .025),
+         mean = mean(derivative))
+
+
+ggplot(pb_g_finitedifs, aes(year, upper)) +
   geom_line() +
-  geom_line(aes(year, .value))
+  geom_line(aes(year, lower)) +
+  geom_line(aes(year, mean)) +
+  geom_line(data = pb_g_derivs, aes(data, derivative), color = "red") +
+  geom_line(data = pb_g_derivs, aes(data, lower), color = "red") +
+  geom_line(data = pb_g_derivs, aes(data, upper), color = "red")
 
-many_dm_fd <- lapply(seeds[1:5000], FUN = get_one_fd, model = dm_mod, eps = EPS)
 
-many_dm_fd <- bind_rows(many_dm_fd)
+# well that is PERFECT
 
-many_dm_fd <- mutate(many_dm_fd, seed = as.character(seed))
-
-ggplot(many_dm_fd, aes(year, derivative, group = seed)) + geom_line(alpha = .2) + theme(legend.position = "none")
 

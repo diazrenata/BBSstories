@@ -1,0 +1,78 @@
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+
+ts <- read.csv(here::here("gams", "rat_data.csv"))
+
+ts_long <- ts %>%
+  tidyr::pivot_longer(-year, names_to = "species", values_to = "abundance") %>%
+  filter(species != "total_abundance")
+
+unique_species <- unique(ts_long$species)
+
+species_dfs <- lapply(unique_species, FUN = function(species_name, full_ts) return(filter(full_ts, species == species_name)), full_ts = ts_long)
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+
+set.seed(1977)
+species_mods <- lapply(species_dfs, mod_wrapper)
+species_fits <- lapply(species_mods, fit_wrapper)
+species_derivs <- lapply(species_mods, deriv_wrapper, seed_seed = NULL)
+species_deriv_summaries <- lapply(species_derivs, derivs_summary)
+species_sign_summaries <- lapply(species_derivs, sign_summary)
+
+fits <- bind_rows(species_fits)
+
+derivs <- bind_rows(species_deriv_summaries)
+
+ggplot(ts_long, aes(year, abundance, color = species)) +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(species))
+
+ggplot(fits, aes(year, abundance, color = species)) +
+  geom_point() +
+  theme_bw() +
+  geom_line(aes(year, fitted_abundance, color = species)) +
+  facet_wrap(vars(species), scales = "free_y")
+
+ggplot(derivs, aes(species, net_change, color = species)) +
+  geom_boxplot() +
+  theme_bw()+
+  geom_hline(yintercept = 0)
+
+ggplot(derivs, aes(species, abs_v_net_change, color = species)) +
+  geom_boxplot() +
+  theme_bw()+
+  geom_hline(yintercept = 0)
+
+derivs_means <- derivs %>%
+  group_by(species) %>%
+  summarize(mean_net_change = mean(net_change),
+         mean_abs_change = mean(abs_change),
+         mean_abs_v_net = log(mean(exp(abs_v_net_change))))
+
+ggplot(derivs_means, aes(mean_net_change, mean_abs_v_net, color = species)) +
+  geom_point(size = 5) +
+  theme_bw() +
+  geom_label(aes(mean_net_change, mean_abs_v_net, label = species), nudge_y = .5)
+
+signs <- bind_rows(species_sign_summaries)
+
+swap_na <- function(val) {
+  ifelse(is.na(val), 0, val)
+}
+
+signs <- signs%>%
+  mutate_at(vars(positive, negative, zero), swap_na)
+
+ggplot(signs, aes(zero, positive, color = species)) +
+  geom_point(size = 5) +
+  theme_bw() +
+  geom_label(aes(zero, positive, label = species), nudge_x = .2) +
+  xlim(0,1) +
+  ylim(0,1)
+
+
+
