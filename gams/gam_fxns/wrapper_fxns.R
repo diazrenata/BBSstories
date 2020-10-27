@@ -12,6 +12,10 @@ mod_wrapper <- function(ts, response_variable = c("abundance", "energy", "biomas
     dplyr::rename(dependent = response,
                   identifier = ts_id)
 
+  if(response %in% c("energy", "biomass")) {
+    ts$dependent <- round(ts$dependent)
+  }
+
   ts_mod <- gam(dependent ~ s(year, k = k), data = ts, method = "REML", family = "poisson")
 
   ts_mod$identifier <- ts$identifier[1]

@@ -47,3 +47,46 @@ derivplot
 gridExtra::grid.arrange(grobs = list(netchangeplot, netpercentplot, absvnetplot), nrow = 1)
 
 ```
+
+```{r energy}
+
+ts$energy <- round(ts$energy)
+
+e_mod <- gam(energy ~ s(year, k = 5), data = filter(ts, site_name == "hartland"), method = "REML", family = "poisson")
+
+e_mod$identifier <- "hartland"
+
+
+
+e_fit <- fit_wrapper(e_mod)
+
+e_derivs <- deriv_wrapper(e_mod)
+
+e_deriv_summary <- derivs_summary(e_derivs)
+
+efitplot <- ggplot(e_fit, aes(year, energy)) + 
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+
+
+ederivplot <- ggplot(filter(e_derivs, seed %in% unique(e_derivs$seed)[1:100]), aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1) +
+  geom_line(aes(year, mean), color = "red") +
+  geom_line(aes(year, upper), color = "purple") +
+  geom_line(aes(year, lower), color = "purple")
+
+enetpercentplot <- ggplot(e_deriv_summary, aes(net_percent_of_start)) +
+  geom_histogram()
+enetchangeplot <- ggplot(e_deriv_summary, aes(net_change)) +
+  geom_histogram()
+eabsvnetplot <- ggplot(e_deriv_summary, aes(abs_v_net_change)) +
+  geom_histogram()
+
+efitplot
+ederivplot
+gridExtra::grid.arrange(grobs = list(enetchangeplot, enetpercentplot, eabsvnetplot), nrow = 1)
+
+
+
+
+```
