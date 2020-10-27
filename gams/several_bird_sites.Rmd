@@ -1,0 +1,78 @@
+
+```{r}
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+
+ts <- read.csv(here::here("gams", "working_datasets.csv"))
+
+unique_sites <- unique(ts$site_name)
+
+site_dfs <- lapply(unique_sites, FUN = function(site, full_ts) return(filter(full_ts, site_name == site)), full_ts = ts)
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+```
+
+```{r}
+set.seed(1977)
+abund_mods <- lapply(site_dfs, mod_wrapper, response_variable = "abundance", k = 5, identifier = "site_name")
+abund_fits <- lapply(abund_mods, fit_wrapper)
+abund_derivs <- lapply(abund_mods, deriv_wrapper, seed_seed = NULL)
+abund_deriv_summaries <- lapply(abund_derivs, derivs_summary)
+abund_sign_summaries <- lapply(abund_derivs, sign_summary)
+
+fits <- bind_rows(abund_fits)
+
+derivs_summaries <- bind_rows(abund_deriv_summaries)
+
+ggplot(ts, aes(year, abundance, color = site_name)) +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(site_name))
+
+ggplot(fits, aes(year, dependent, color = identifier)) +
+  geom_point() +
+  theme_bw() +
+  geom_line(aes(year, fitted_value, color = identifier)) +
+  facet_wrap(vars(identifier), scales = "free_y")
+
+ggplot(derivs_summaries, aes(identifier, net_change, color = identifier)) +
+  geom_boxplot() +
+  theme_bw()+
+  geom_hline(yintercept = 0)
+
+ggplot(derivs_summaries, aes(identifier, abs_v_net_change, color = identifier)) +
+  geom_boxplot() +
+  theme_bw()+
+  geom_hline(yintercept = 0)
+
+derivs_means <- derivs_summaries %>%
+  group_by(identifier) %>%
+  summarize(mean_net_change = mean(net_change),
+         mean_abs_change = mean(abs_change),
+         mean_abs_v_net = log(mean(exp(abs_v_net_change))))
+
+ggplot(derivs_means, aes(mean_net_change, mean_abs_v_net, color = identifier)) +
+  geom_point(size = 5) +
+  theme_bw() +
+  geom_label(aes(mean_net_change, mean_abs_v_net, label = identifier), nudge_y = .5)
+
+abund_sign_summaries <- bind_rows(abund_sign_summaries)
+
+swap_na <- function(val) {
+  ifelse(is.na(val), 0, val)
+}
+
+abund_sign_summaries <- abund_sign_summaries%>%
+  mutate_at(vars(positive, negative, zero), swap_na)
+
+ggplot(abund_sign_summaries, aes(zero, positive, color = identifier)) +
+  geom_point(size = 5) +
+  theme_bw() +
+  geom_label(aes(zero, positive, label = identifier), nudge_x = .2) +
+  xlim(0,1) +
+  ylim(0,1)
+
+```
+
