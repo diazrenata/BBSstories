@@ -26,7 +26,9 @@ get_one_fd <- function(model, eps = 1e-02, seed) {
     year = this_years,
     derivative = this_fd,
     seed = seed,
-    eps = eps
+    eps = eps,
+    first_value = this_sim$fitted[1],
+    last_value = this_sim$fitted[nrow(this_sim)]
   ))
 
 }

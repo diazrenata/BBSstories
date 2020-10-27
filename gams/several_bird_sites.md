@@ -1,10 +1,22 @@
----
-title: "Several birds"
-output: github_document
----
+Several birds
+================
 
-```{r}
+``` r
 library(dplyr)
+```
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
 library(gratia)
 library(ggplot2)
 load_mgcv()
@@ -18,17 +30,57 @@ site_dfs <- lapply(unique_sites, FUN = function(site, full_ts) return(filter(ful
 source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
 ```
 
-```{r}
+``` r
 knitr::opts_chunk$set(echo = FALSE)
 
 
 set.seed(1977)
 abund_mods <- lapply(site_dfs, mod_wrapper, response_variable = "abundance", k = 5, identifier = "site_name")
+```
+
+    ## Note: Using an external vector in selections is ambiguous.
+    ## ℹ Use `all_of(response)` instead of `response` to silence this message.
+    ## ℹ See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+    ## This message is displayed once per session.
+
+    ## Note: Using an external vector in selections is ambiguous.
+    ## ℹ Use `all_of(ts_id)` instead of `ts_id` to silence this message.
+    ## ℹ See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+    ## This message is displayed once per session.
+
+``` r
 abund_fits <- lapply(abund_mods, fit_wrapper)
 abund_derivs <- lapply(abund_mods, deriv_wrapper, seed_seed = NULL)
 abund_deriv_summaries <- lapply(abund_derivs, derivs_summary)
-abund_sign_summaries <- lapply(abund_derivs, sign_summary)
+```
 
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+
+``` r
+abund_sign_summaries <- lapply(abund_derivs, sign_summary)
+```
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+``` r
 fits <- bind_rows(abund_fits)
 
 derivs <- bind_rows(abund_derivs)
@@ -39,30 +91,50 @@ ggplot(ts, aes(year, abundance, color = site_name)) +
   geom_line() +
   theme_bw() +
   facet_wrap(vars(site_name), scales = "free")
+```
 
+![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+``` r
 ggplot(fits, aes(year, dependent, color = identifier)) +
   geom_point() +
   theme_bw() +
   geom_line(aes(year, fitted_value, color = identifier)) +
   facet_wrap(vars(identifier), scales = "free")
+```
 
+![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
+
+``` r
 ggplot(derivs, aes(year, derivative, group = seed, color = identifier)) +
   geom_line(alpha = .05) +
   geom_line(aes(year, mean)) +
   geom_line(aes(year, upper)) +
   geom_line(aes(year, lower)) +
   facet_wrap(vars(identifier), scales = "free")
+```
 
+![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
+
+``` r
 ggplot(derivs_summaries, aes(identifier, net_percent_of_start, color = identifier)) +
   geom_boxplot() +
   theme_bw()+
   geom_hline(yintercept = 0)
+```
 
+![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-4.png)<!-- -->
+
+``` r
 ggplot(derivs_summaries, aes(identifier, abs_v_net_change, color = identifier)) +
   geom_boxplot() +
   theme_bw()+
   geom_hline(yintercept = 0)
+```
 
+![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-5.png)<!-- -->
+
+``` r
 derivs_means <- derivs_summaries %>%
   group_by(identifier) %>%
   summarize(mean_net_change = mean(net_change),
@@ -73,7 +145,11 @@ derivs_means <- derivs_summaries %>%
          abs_v_net_97p5 = log(quantile(exp(abs_v_net_change), probs = .975)),
          net_percent_2p5 = log(quantile(exp(net_percent_of_start), probs = .025)),
          net_percent_97p5 = log(quantile(exp(net_percent_of_start), probs = .975)))
+```
 
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+``` r
 ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identifier)) +
   geom_point(size = 5) +
   geom_errorbar(aes(x = mean_net_percent_change, ymin = abs_v_net_2p5, ymax = abs_v_net_97p5)) +
@@ -82,6 +158,11 @@ ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identi
   #geom_label(aes(mean_net_percent_change, mean_abs_v_net, label = identifier), nudge_y = .5)
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0)
+```
+
+![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-6.png)<!-- -->
+
+``` r
 # 
 # abund_sign_summaries <- bind_rows(abund_sign_summaries)
 # 
@@ -98,6 +179,4 @@ ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identi
 #   geom_label(aes(zero, positive, label = identifier), nudge_x = .2) +
 #   xlim(0,1) +
 #   ylim(0,1)
-
 ```
-

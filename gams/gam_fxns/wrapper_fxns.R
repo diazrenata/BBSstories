@@ -56,10 +56,11 @@ derivs_summary <- function(derivs_df) {
 
 
   derivs_summary <- derivs_df %>%
-    group_by(seed, identifier) %>%
+    group_by(seed, identifier, first_value) %>%
     summarize(net_change = sum(increment),
               abs_change = sum(abs_increment)) %>%
-    mutate(abs_v_net_change = log(abs(abs_change / net_change)))
+    mutate(abs_v_net_change = log(abs(abs_change / net_change)),
+           net_percent_of_start = (net_change) / first_value)
 
   return(derivs_summary)
 }

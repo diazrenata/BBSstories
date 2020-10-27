@@ -1,0 +1,49 @@
+```{r}
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+
+ts <- read.csv(here::here("gams", "working_datasets.csv"))
+
+unique_sites <- unique(ts$site_name)
+
+site_dfs <- lapply(unique_sites, FUN = function(site, full_ts) return(filter(full_ts, site_name == site)), full_ts = ts)
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+```
+
+```{r hartland}
+
+this_site <- "hartland"
+
+mod <- mod_wrapper(filter(ts, site_name == "hartland"), response_variable = "abundance", identifier = "site_name", k = 5)
+
+fit <- fit_wrapper(mod)
+
+derivs <- deriv_wrapper(mod)
+
+deriv_summary <- derivs_summary(derivs)
+
+fitplot <- ggplot(fit, aes(year, dependent)) + 
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+
+derivplot <- ggplot(filter(derivs, seed %in% unique(derivs$seed)[1:100]), aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1) +
+  geom_line(aes(year, mean), color = "red") +
+  geom_line(aes(year, upper), color = "purple") +
+  geom_line(aes(year, lower), color = "purple")
+
+netpercentplot <- ggplot(deriv_summary, aes(net_percent_of_start)) +
+  geom_histogram()
+netchangeplot <- ggplot(deriv_summary, aes(net_change)) +
+  geom_histogram()
+absvnetplot <- ggplot(deriv_summary, aes(abs_v_net_change)) +
+  geom_histogram()
+
+fitplot
+derivplot
+gridExtra::grid.arrange(grobs = list(netchangeplot, netpercentplot, absvnetplot), nrow = 1)
+
+```
