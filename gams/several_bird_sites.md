@@ -18,6 +18,11 @@ library(dplyr)
 
 ``` r
 library(gratia)
+```
+
+    ## Warning: package 'gratia' was built under R version 4.0.3
+
+``` r
 library(ggplot2)
 load_mgcv()
 
@@ -39,18 +44,18 @@ abund_mods <- lapply(site_dfs, mod_wrapper, response_variable = "abundance", k =
 ```
 
     ## Note: Using an external vector in selections is ambiguous.
-    ## ℹ Use `all_of(response)` instead of `response` to silence this message.
-    ## ℹ See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+    ## i Use `all_of(response)` instead of `response` to silence this message.
+    ## i See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
     ## This message is displayed once per session.
 
     ## Note: Using an external vector in selections is ambiguous.
-    ## ℹ Use `all_of(ts_id)` instead of `ts_id` to silence this message.
-    ## ℹ See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+    ## i Use `all_of(ts_id)` instead of `ts_id` to silence this message.
+    ## i See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
     ## This message is displayed once per session.
 
 ``` r
 abund_fits <- lapply(abund_mods, fit_wrapper)
-abund_derivs <- lapply(abund_mods, deriv_wrapper, seed_seed = NULL)
+abund_derivs <- lapply(abund_mods, deriv_wrapper, seed_seed = NULL, ndraws = 500)
 abund_deriv_summaries <- lapply(abund_derivs, derivs_summary)
 ```
 
@@ -113,58 +118,57 @@ derivplot <- ggplot(derivs, aes(year, derivative, group = seed, color = identifi
   geom_line(aes(year, upper)) +
   geom_line(aes(year, lower)) +
   facet_wrap(vars(identifier), scales = "free")
-derivplot
-```
-
-![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
-
-``` r
+#derivplot
 ggplot(derivs_summaries, aes(identifier, net_percent_of_start, color = identifier)) +
   geom_boxplot() +
   theme_bw()+
   geom_hline(yintercept = 0)
 ```
 
-![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-4.png)<!-- -->
+![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
 
 ``` r
-ggplot(derivs_summaries, aes(identifier, abs_v_net_change, color = identifier)) +
-  geom_boxplot() +
-  theme_bw()+
-  geom_hline(yintercept = 0)
-```
+# 
+# ggplot(derivs_summaries, aes(identifier, abs_v_net_change, color = identifier)) +
+#   geom_boxplot() +
+#   theme_bw()+
+#   geom_hline(yintercept = 0)
 
-![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-5.png)<!-- -->
-
-``` r
 derivs_means <- derivs_summaries %>%
   group_by(identifier) %>%
   summarize(mean_net_change = mean(net_change),
             mean_net_percent_change = mean(net_percent_of_start),
+            mean_abs_percent_change = mean(abs_percent_of_start),
          mean_abs_change = mean(abs_change),
          mean_abs_v_net = log(mean(exp(abs_v_net_change))),
          abs_v_net_2p5 = log(quantile(exp(abs_v_net_change), probs = .025)),
          abs_v_net_97p5 = log(quantile(exp(abs_v_net_change), probs = .975)),
          net_percent_2p5 = log(quantile(exp(net_percent_of_start), probs = .025)),
-         net_percent_97p5 = log(quantile(exp(net_percent_of_start), probs = .975)))
+         net_percent_97p5 = log(quantile(exp(net_percent_of_start), probs = .975)),
+         abs_percent_2p5 = log(quantile(exp(abs_percent_of_start), probs = .025)),
+         abs_percent_97p5 = log(quantile(exp(abs_percent_of_start), probs = .975)))
 ```
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
 ``` r
-mean_plot <- ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identifier)) +
-  geom_point(size = 5) +
-  geom_errorbar(aes(x = mean_net_percent_change, ymin = abs_v_net_2p5, ymax = abs_v_net_97p5)) +
-    geom_errorbarh(aes(y = mean_abs_v_net, xmin = net_percent_2p5, xmax = net_percent_97p5)) +
+mean_plot <- ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_percent_change, color = identifier)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(x = mean_net_percent_change, ymin = abs_percent_2p5, ymax = abs_percent_97p5)) +
+   geom_errorbarh(aes(y = mean_abs_percent_change, xmin = net_percent_2p5, xmax = net_percent_97p5)) +
   theme_bw() +
-  #geom_label(aes(mean_net_percent_change, mean_abs_v_net, label = identifier), nudge_y = .5)
+#geom_label(aes(mean_net_percent_change, mean_abs_percent_change, label = identifier), nudge_x = -.5, nudge_y = .3) +
   geom_hline(yintercept = 0) +
-  geom_vline(xintercept = 0)
+  geom_vline(xintercept = 0) +
+  geom_abline(slope = 1, intercept = 0) +
+  geom_abline(slope = -1, intercept = 0) +
+  xlim(-2.5, 2.5) +
+  ylim(0,2.5)
 
 mean_plot
 ```
 
-![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-6.png)<!-- -->
+![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-4.png)<!-- -->
 
 ``` r
 # 
@@ -205,10 +209,10 @@ mean_plot
     ## `summarise()` ungrouping output (override with `.groups` argument)
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
-![](several_bird_sites_files/figure-gfm/energy-1.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-2.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-3.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-4.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-5.png)<!-- -->
+![](several_bird_sites_files/figure-gfm/energy-1.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-2.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-3.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-4.png)<!-- -->
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
-![](several_bird_sites_files/figure-gfm/energy-6.png)<!-- -->
+![](several_bird_sites_files/figure-gfm/energy-5.png)<!-- -->
 
-![](several_bird_sites_files/figure-gfm/energy%20v%20abund-1.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy%20v%20abund-2.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy%20v%20abund-3.png)<!-- -->
+![](several_bird_sites_files/figure-gfm/energy%20v%20abund-1.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy%20v%20abund-2.png)<!-- -->

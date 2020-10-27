@@ -36,11 +36,11 @@ fit_wrapper <- function(mod) {
 
 }
 
-deriv_wrapper <- function(mod, seed_seed = NULL) {
+deriv_wrapper <- function(mod, seed_seed = NULL, ndraws = 1000) {
 
 
   if(is.null(seed_seed)) {
-    seed_seed = sample.int(n = 1000, size = 1)
+    seed_seed = sample.int(n = ndraws, size = 1)
   }
 
   ts_derivs <- get_many_fd(mod, eps = .1, seed_seed = seed_seed)
@@ -64,7 +64,8 @@ derivs_summary <- function(derivs_df) {
     summarize(net_change = sum(increment),
               abs_change = sum(abs_increment)) %>%
     mutate(abs_v_net_change = log(abs(abs_change / net_change)),
-           net_percent_of_start = (net_change) / first_value)
+           net_percent_of_start = (net_change) / first_value,
+           abs_percent_of_start = abs_change / first_value)
 
   return(derivs_summary)
 }
