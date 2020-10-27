@@ -96,22 +96,24 @@ ggplot(ts, aes(year, abundance, color = site_name)) +
 ![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
-ggplot(fits, aes(year, dependent, color = identifier)) +
+fitplot <- ggplot(fits, aes(year, dependent, color = identifier)) +
   geom_point() +
   theme_bw() +
   geom_line(aes(year, fitted_value, color = identifier)) +
   facet_wrap(vars(identifier), scales = "free")
+fitplot
 ```
 
 ![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
 
 ``` r
-ggplot(derivs, aes(year, derivative, group = seed, color = identifier)) +
+derivplot <- ggplot(derivs, aes(year, derivative, group = seed, color = identifier)) +
   geom_line(alpha = .05) +
   geom_line(aes(year, mean)) +
   geom_line(aes(year, upper)) +
   geom_line(aes(year, lower)) +
   facet_wrap(vars(identifier), scales = "free")
+derivplot
 ```
 
 ![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
@@ -150,7 +152,7 @@ derivs_means <- derivs_summaries %>%
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
 ``` r
-ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identifier)) +
+mean_plot <- ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identifier)) +
   geom_point(size = 5) +
   geom_errorbar(aes(x = mean_net_percent_change, ymin = abs_v_net_2p5, ymax = abs_v_net_97p5)) +
     geom_errorbarh(aes(y = mean_abs_v_net, xmin = net_percent_2p5, xmax = net_percent_97p5)) +
@@ -158,6 +160,8 @@ ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identi
   #geom_label(aes(mean_net_percent_change, mean_abs_v_net, label = identifier), nudge_y = .5)
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0)
+
+mean_plot
 ```
 
 ![](several_bird_sites_files/figure-gfm/unnamed-chunk-2-6.png)<!-- -->
@@ -180,3 +184,31 @@ ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identi
 #   xlim(0,1) +
 #   ylim(0,1)
 ```
+
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+    ## `summarise()` regrouping output by 'seed', 'identifier' (override with `.groups` argument)
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+![](several_bird_sites_files/figure-gfm/energy-1.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-2.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-3.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-4.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy-5.png)<!-- -->
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+![](several_bird_sites_files/figure-gfm/energy-6.png)<!-- -->
+
+![](several_bird_sites_files/figure-gfm/energy%20v%20abund-1.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy%20v%20abund-2.png)<!-- -->![](several_bird_sites_files/figure-gfm/energy%20v%20abund-3.png)<!-- -->

@@ -40,19 +40,19 @@ ggplot(ts, aes(year, abundance, color = site_name)) +
   theme_bw() +
   facet_wrap(vars(site_name), scales = "free")
 
-ggplot(fits, aes(year, dependent, color = identifier)) +
+fitplot <- ggplot(fits, aes(year, dependent, color = identifier)) +
   geom_point() +
   theme_bw() +
   geom_line(aes(year, fitted_value, color = identifier)) +
   facet_wrap(vars(identifier), scales = "free")
-
-ggplot(derivs, aes(year, derivative, group = seed, color = identifier)) +
+fitplot
+derivplot <- ggplot(derivs, aes(year, derivative, group = seed, color = identifier)) +
   geom_line(alpha = .05) +
   geom_line(aes(year, mean)) +
   geom_line(aes(year, upper)) +
   geom_line(aes(year, lower)) +
   facet_wrap(vars(identifier), scales = "free")
-
+derivplot
 ggplot(derivs_summaries, aes(identifier, net_percent_of_start, color = identifier)) +
   geom_boxplot() +
   theme_bw()+
@@ -74,7 +74,7 @@ derivs_means <- derivs_summaries %>%
          net_percent_2p5 = log(quantile(exp(net_percent_of_start), probs = .025)),
          net_percent_97p5 = log(quantile(exp(net_percent_of_start), probs = .975)))
 
-ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identifier)) +
+mean_plot <- ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identifier)) +
   geom_point(size = 5) +
   geom_errorbar(aes(x = mean_net_percent_change, ymin = abs_v_net_2p5, ymax = abs_v_net_97p5)) +
     geom_errorbarh(aes(y = mean_abs_v_net, xmin = net_percent_2p5, xmax = net_percent_97p5)) +
@@ -82,6 +82,8 @@ ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identi
   #geom_label(aes(mean_net_percent_change, mean_abs_v_net, label = identifier), nudge_y = .5)
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0)
+
+mean_plot
 # 
 # abund_sign_summaries <- bind_rows(abund_sign_summaries)
 # 
@@ -100,4 +102,80 @@ ggplot(derivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identi
 #   ylim(0,1)
 
 ```
+
+```{r energy}
+
+set.seed(1977)
+energy_mods <- lapply(site_dfs, mod_wrapper, response_variable = "energy", k = 5, identifier = "site_name")
+energy_fits <- lapply(energy_mods, fit_wrapper)
+energy_derivs <- lapply(energy_mods, deriv_wrapper, seed_seed = NULL)
+energy_deriv_summaries <- lapply(energy_derivs, derivs_summary)
+energy_sign_summaries <- lapply(energy_derivs, sign_summary)
+
+efits <- bind_rows(energy_fits)
+
+ederivs <- bind_rows(energy_derivs)
+
+ederivs_summaries <- bind_rows(energy_deriv_summaries)
+
+ggplot(ts, aes(year, energy, color = site_name)) +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(vars(site_name), scales = "free")
+
+efitplot <- ggplot(efits, aes(year, dependent, color = identifier)) +
+  geom_point() +
+  theme_bw() +
+  geom_line(aes(year, fitted_value, color = identifier)) +
+  facet_wrap(vars(identifier), scales = "free")
+efitplot
+ederivplot <- ggplot(ederivs, aes(year, derivative, group = seed, color = identifier)) +
+  geom_line(alpha = .05) +
+  geom_line(aes(year, mean)) +
+  geom_line(aes(year, upper)) +
+  geom_line(aes(year, lower)) +
+  facet_wrap(vars(identifier), scales = "free")
+ederivplot
+ggplot(ederivs_summaries, aes(identifier, net_percent_of_start, color = identifier)) +
+  geom_boxplot() +
+  theme_bw()+
+  geom_hline(yintercept = 0)
+
+ggplot(ederivs_summaries, aes(identifier, abs_v_net_change, color = identifier)) +
+  geom_boxplot() +
+  theme_bw()+
+  geom_hline(yintercept = 0)
+
+ederivs_means <- ederivs_summaries %>%
+  group_by(identifier) %>%
+  summarize(mean_net_change = mean(net_change),
+            mean_net_percent_change = mean(net_percent_of_start),
+         mean_abs_change = mean(abs_change),
+         mean_abs_v_net = log(mean(exp(abs_v_net_change))),
+         abs_v_net_2p5 = log(quantile(exp(abs_v_net_change), probs = .025)),
+         abs_v_net_97p5 = log(quantile(exp(abs_v_net_change), probs = .975)),
+         net_percent_2p5 = log(quantile(exp(net_percent_of_start), probs = .025)),
+         net_percent_97p5 = log(quantile(exp(net_percent_of_start), probs = .975)))
+
+emean_plot <- ggplot(ederivs_means, aes(mean_net_percent_change, mean_abs_v_net, color = identifier)) +
+  geom_point(size = 5) +
+  geom_errorbar(aes(x = mean_net_percent_change, ymin = abs_v_net_2p5, ymax = abs_v_net_97p5)) +
+    geom_errorbarh(aes(y = mean_abs_v_net, xmin = net_percent_2p5, xmax = net_percent_97p5)) +
+  theme_bw() +
+  #geom_label(aes(mean_net_percent_change, mean_abs_v_net, label = identifier), nudge_y = .5)
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
+emean_plot
+```
+
+
+```{r energy v abund, fig.dim = c(12,4)}
+
+gridExtra::grid.arrange(grobs = list(fitplot, efitplot), nrow = 1)
+gridExtra::grid.arrange(grobs = list(derivplot, ederivplot), nrow = 1)
+gridExtra::grid.arrange(grobs = list(mean_plot, emean_plot), nrow = 1)
+
+
+```
+
 
