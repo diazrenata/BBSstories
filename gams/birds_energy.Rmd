@@ -277,3 +277,418 @@ ggplot(scaled_summaries, aes(mean(net_percent_of_start_abundance), mean(net_perc
 - Unclear what the magnitude means when you have a scaled response variable.
 - Does however put the derivatives on the same scale so you can compare them a little more directly.
 
+### Rescaling just E
+
+```{r just e}
+
+hartland_mean_perc_e <- sum(birds$energy) / sum(birds$abundance)
+
+birds <- birds %>% 
+  mutate(rescaled_energy = energy / hartland_mean_perc_e)
+
+
+ggplot(birds, aes(year, energy)) +
+  geom_line()
+ggplot(birds, aes(year, rescaled_energy)) +
+  geom_line() +
+  geom_line(aes(year, abundance, color = "abund"))
+
+birds_rs <- birds %>%
+  mutate(energy = rescaled_energy)
+
+re_e_mod <- mod_wrapper(birds_rs, response_variable = "energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(birds_rs, response_variable = "abundance", identifier = "site_name", k = 5)
+
+re_e_fit <- fit_wrapper(re_e_mod)
+n_fit <- fit_wrapper(n_mod)
+
+re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 100, seed_seed = 1977)
+n_derivs <- deriv_wrapper(n_mod, ndraws = 100, seed_seed = 1977)
+
+re_e_derivs_summary <- derivs_summary(re_e_derivs) %>%
+  mutate(currency = "energy")
+n_derivs_summary <- derivs_summary(n_derivs) %>%
+  mutate(currency = "abundance")
+# 
+# e_v_n_summary <- bind_rows(e_derivs_summary, n_derivs_summary) %>%
+#   group_by(currency) %>%
+#   summarize_at(vars(net_change, abs_change, abs_v_net_change, net_percent_of_start, abs_percent_of_start), .funs = mean)
+
+re_e_v_n_summary <- bind_rows(re_e_derivs_summary, n_derivs_summary) %>%
+  tidyr::pivot_wider(id_cols = seed, names_from = currency, values_from = c(net_change, abs_change, abs_v_net_change, net_percent_of_start, abs_percent_of_start))
+
+ggplot(re_e_v_n_summary, aes(mean(net_percent_of_start_abundance), mean(net_percent_of_start_energy))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)+
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0)
+
+
+
+
+ggplot(re_e_fit, aes(year, dependent)) +
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+
+ggplot(re_e_derivs, aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1)
+
+
+ggplot(n_fit, aes(year, dependent)) +
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+ggplot(n_derivs, aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1)
+
+
+both_derivs <- bind_rows(energy = re_e_derivs, abund= n_derivs, .id = "currency")
+
+ggplot(filter(both_derivs, currency == "energy"), aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1) +
+  geom_line(data = filter(both_derivs, currency == "abund"), inherit.aes = T, alpha = .1, color = "green")
+  
+both_derivs %>%
+  group_by(currency, seed) %>%
+  summarize(sd = sd(derivative),
+            cv = sd(derivative) / mean(derivative)) %>%
+  ungroup() %>%
+  group_by(currency) %>%
+  summarize(mean_cv = mean(cv),
+            mean_sd = mean(sd))
+```
+
+#### With portal
+
+```{r just e portal}
+
+rats <- filter(ts, site_name == "portal_rats")
+
+portal_mean_perc_e <- sum(rats$energy) / sum(rats$abundance)
+
+rats <- rats %>% 
+  mutate(rescaled_energy = energy / portal_mean_perc_e)
+
+
+ggplot(rats, aes(year, energy)) +
+  geom_line()
+ggplot(rats, aes(year, rescaled_energy)) +
+  geom_line() +
+  geom_line(aes(year, abundance, color = "abund"))
+
+rats_rs <- rats %>%
+  mutate(energy = rescaled_energy)
+
+re_e_mod <- mod_wrapper(rats_rs, response_variable = "energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(rats_rs, response_variable = "abundance", identifier = "site_name", k = 5)
+
+re_e_fit <- fit_wrapper(re_e_mod)
+n_fit <- fit_wrapper(n_mod)
+
+re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 100, seed_seed = 1977)
+n_derivs <- deriv_wrapper(n_mod, ndraws = 100, seed_seed = 1977)
+
+re_e_derivs_summary <- derivs_summary(re_e_derivs) %>%
+  mutate(currency = "energy")
+n_derivs_summary <- derivs_summary(n_derivs) %>%
+  mutate(currency = "abundance")
+# 
+# e_v_n_summary <- bind_rows(e_derivs_summary, n_derivs_summary) %>%
+#   group_by(currency) %>%
+#   summarize_at(vars(net_change, abs_change, abs_v_net_change, net_percent_of_start, abs_percent_of_start), .funs = mean)
+
+re_e_v_n_summary <- bind_rows(re_e_derivs_summary, n_derivs_summary) %>%
+  tidyr::pivot_wider(id_cols = seed, names_from = currency, values_from = c(net_change, abs_change, abs_v_net_change, net_percent_of_start, abs_percent_of_start))
+
+ggplot(re_e_v_n_summary, aes(mean(net_percent_of_start_abundance), mean(net_percent_of_start_energy))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)+
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0)
+
+
+
+
+ggplot(re_e_fit, aes(year, dependent)) +
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+
+ggplot(re_e_derivs, aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1)
+
+
+ggplot(n_fit, aes(year, dependent)) +
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+ggplot(n_derivs, aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1)
+
+
+both_derivs <- bind_rows(energy = re_e_derivs, abund= n_derivs, .id = "currency")
+
+ggplot(filter(both_derivs, currency == "energy"), aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1) +
+  geom_line(data = filter(both_derivs, currency == "abund"), inherit.aes = T, alpha = .1, color = "green")
+  
+
+both_derivs %>%
+  group_by(currency, seed) %>%
+  summarize(sd = sd(derivative),
+            cv = sd(derivative) / mean(derivative)) %>%
+  ungroup() %>%
+  group_by(currency) %>%
+  summarize(mean_cv = mean(cv),
+            mean_sd = mean(sd))
+```
+
+
+#### With alberta (tracks)
+
+```{r just e alberta}
+
+alberta <- filter(ts, site_name == "alberta")
+
+alberta_mean_perc_e <- sum(alberta$energy) / sum(alberta$abundance)
+
+alberta <- alberta %>% 
+  mutate(rescaled_energy = energy / alberta_mean_perc_e)
+
+
+ggplot(alberta, aes(year, energy)) +
+  geom_line()
+ggplot(alberta, aes(year, rescaled_energy)) +
+  geom_line() +
+  geom_line(aes(year, abundance, color = "abund"))
+
+alberta_rs <- alberta %>%
+  mutate(energy = rescaled_energy)
+
+re_e_mod <- mod_wrapper(alberta_rs, response_variable = "energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(alberta_rs, response_variable = "abundance", identifier = "site_name", k = 5)
+
+re_e_fit <- fit_wrapper(re_e_mod)
+n_fit <- fit_wrapper(n_mod)
+
+re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 100, seed_seed = 1977)
+n_derivs <- deriv_wrapper(n_mod, ndraws = 100, seed_seed = 1977)
+
+re_e_derivs_summary <- derivs_summary(re_e_derivs) %>%
+  mutate(currency = "energy")
+n_derivs_summary <- derivs_summary(n_derivs) %>%
+  mutate(currency = "abundance")
+# 
+# e_v_n_summary <- bind_rows(e_derivs_summary, n_derivs_summary) %>%
+#   group_by(currency) %>%
+#   summarize_at(vars(net_change, abs_change, abs_v_net_change, net_percent_of_start, abs_percent_of_start), .funs = mean)
+
+re_e_v_n_summary <- bind_rows(re_e_derivs_summary, n_derivs_summary) %>%
+  tidyr::pivot_wider(id_cols = seed, names_from = currency, values_from = c(net_change, abs_change, abs_v_net_change, net_percent_of_start, abs_percent_of_start))
+
+ggplot(re_e_v_n_summary, aes((net_percent_of_start_abundance), (net_percent_of_start_energy))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)+
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0)
+
+
+
+
+ggplot(re_e_fit, aes(year, dependent)) +
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+
+ggplot(re_e_derivs, aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1)
+
+
+ggplot(n_fit, aes(year, dependent)) +
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+ggplot(n_derivs, aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1)
+
+
+both_derivs <- bind_rows(energy = re_e_derivs, abund= n_derivs, .id = "currency")
+
+ggplot(filter(both_derivs, currency == "energy"), aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1) +
+  geom_line(data = filter(both_derivs, currency == "abund"), inherit.aes = T, alpha = .1, color = "green")
+  
+both_derivs %>%
+  group_by(currency, seed) %>%
+  summarize(sd = sd(derivative),
+            cv = sd(derivative) / mean(derivative)) %>%
+  ungroup() %>%
+  group_by(currency) %>%
+  summarize(mean_cv = mean(cv),
+            mean_sd = mean(sd))
+```
+
+#### With tilden 
+
+```{r just e tilden}
+
+tilden <- filter(ts, site_name == "tilden")
+
+tilden_mean_perc_e <- sum(tilden$energy) / sum(tilden$abundance)
+
+tilden <- tilden %>% 
+  mutate(rescaled_energy = energy / tilden_mean_perc_e)
+
+
+ggplot(tilden, aes(year, energy)) +
+  geom_line()
+ggplot(tilden, aes(year, rescaled_energy)) +
+  geom_line() +
+  geom_line(aes(year, abundance, color = "abund"))
+
+tilden_rs <- tilden %>%
+  mutate(energy = rescaled_energy)
+
+re_e_mod <- mod_wrapper(tilden_rs, response_variable = "energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(tilden_rs, response_variable = "abundance", identifier = "site_name", k = 5)
+
+re_e_fit <- fit_wrapper(re_e_mod)
+n_fit <- fit_wrapper(n_mod)
+
+re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 100, seed_seed = 1977)
+n_derivs <- deriv_wrapper(n_mod, ndraws = 100, seed_seed = 1977)
+
+re_e_derivs_summary <- derivs_summary(re_e_derivs) %>%
+  mutate(currency = "energy")
+n_derivs_summary <- derivs_summary(n_derivs) %>%
+  mutate(currency = "abundance")
+# 
+# e_v_n_summary <- bind_rows(e_derivs_summary, n_derivs_summary) %>%
+#   group_by(currency) %>%
+#   summarize_at(vars(net_change, abs_change, abs_v_net_change, net_percent_of_start, abs_percent_of_start), .funs = mean)
+
+re_e_v_n_summary <- bind_rows(re_e_derivs_summary, n_derivs_summary) %>%
+  tidyr::pivot_wider(id_cols = seed, names_from = currency, values_from = c(net_change, abs_change, abs_v_net_change, net_percent_of_start, abs_percent_of_start))
+
+ggplot(re_e_v_n_summary, aes((net_percent_of_start_abundance), (net_percent_of_start_energy))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)+
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0)
+
+
+
+
+ggplot(re_e_fit, aes(year, dependent)) +
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+
+ggplot(re_e_derivs, aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1)
+
+
+ggplot(n_fit, aes(year, dependent)) +
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+ggplot(n_derivs, aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1)
+
+
+both_derivs <- bind_rows(energy = re_e_derivs, abund= n_derivs, .id = "currency")
+
+ggplot(filter(both_derivs, currency == "energy"), aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1) +
+  geom_line(data = filter(both_derivs, currency == "abund"), inherit.aes = T, alpha = .1, color = "green")
+
+
+both_derivs %>%
+  group_by(currency, seed) %>%
+  summarize(sd = sd(derivative),
+            cv = sd(derivative) / mean(derivative)) %>%
+  ungroup() %>%
+  group_by(currency) %>%
+  summarize(mean_cv = mean(cv),
+            mean_sd = mean(sd))
+```
+
+
+#### With mccoy
+
+```{r just e mccoy}
+
+mccoy <- filter(ts, site_name == "mccoy")
+
+mccoy_mean_perc_e <- sum(mccoy$energy) / sum(mccoy$abundance)
+
+mccoy <- mccoy %>% 
+  mutate(rescaled_energy = energy / mccoy_mean_perc_e)
+
+
+ggplot(mccoy, aes(year, energy)) +
+  geom_line()
+ggplot(mccoy, aes(year, rescaled_energy)) +
+  geom_line() +
+  geom_line(aes(year, abundance, color = "abund"))
+
+mccoy_rs <- mccoy %>%
+  mutate(energy = rescaled_energy)
+
+re_e_mod <- mod_wrapper(mccoy_rs, response_variable = "energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(mccoy_rs, response_variable = "abundance", identifier = "site_name", k = 5)
+
+re_e_fit <- fit_wrapper(re_e_mod)
+n_fit <- fit_wrapper(n_mod)
+
+re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 100, seed_seed = 1977)
+n_derivs <- deriv_wrapper(n_mod, ndraws = 100, seed_seed = 1977)
+
+re_e_derivs_summary <- derivs_summary(re_e_derivs) %>%
+  mutate(currency = "energy")
+n_derivs_summary <- derivs_summary(n_derivs) %>%
+  mutate(currency = "abundance")
+# 
+# e_v_n_summary <- bind_rows(e_derivs_summary, n_derivs_summary) %>%
+#   group_by(currency) %>%
+#   summarize_at(vars(net_change, abs_change, abs_v_net_change, net_percent_of_start, abs_percent_of_start), .funs = mean)
+
+re_e_v_n_summary <- bind_rows(re_e_derivs_summary, n_derivs_summary) %>%
+  tidyr::pivot_wider(id_cols = seed, names_from = currency, values_from = c(net_change, abs_change, abs_v_net_change, net_percent_of_start, abs_percent_of_start))
+
+ggplot(re_e_v_n_summary, aes((net_percent_of_start_abundance), (net_percent_of_start_energy))) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1)+
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0)
+
+
+
+
+ggplot(re_e_fit, aes(year, dependent)) +
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+
+ggplot(re_e_derivs, aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1)
+
+
+ggplot(n_fit, aes(year, dependent)) +
+  geom_point() +
+  geom_line(aes(year, fitted_value))
+ggplot(n_derivs, aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1)
+
+
+both_derivs <- bind_rows(energy = re_e_derivs, abund= n_derivs, .id = "currency")
+
+ggplot(filter(both_derivs, currency == "energy"), aes(year, derivative, group = seed)) +
+  geom_line(alpha = .1) +
+  geom_line(data = filter(both_derivs, currency == "abund"), inherit.aes = T, alpha = .1, color = "green")
+
+both_derivs %>%
+  group_by(currency, seed) %>%
+  summarize(sd = sd(derivative),
+            cv = sd(derivative) / mean(derivative)) %>%
+  ungroup() %>%
+  group_by(currency) %>%
+  summarize(mean_cv = mean(cv),
+            mean_sd = mean(sd))
+  
+```
+
+* you don't want cv or sd of derivatives. you maybe want the cv of the fitted/predicted estimates.
+* contrive nulls: one where e exactly tracks n (amplifying the same size structure); one where the ss trades off such that e does not change while n does
