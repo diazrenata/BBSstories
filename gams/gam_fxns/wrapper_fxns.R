@@ -3,7 +3,7 @@ source(here::here("gams", "gam_fxns", "fd_fxns.R"))
 # Given a TS, fit a Poisson GAM with k = 5
 # Extract the derivatives
 
-mod_wrapper <- function(ts, response_variable = c("abundance", "energy", "biomass"), identifier = c("species", "site_name"), k = 3) {
+mod_wrapper <- function(ts, response_variable = c("abundance", "energy", "biomass", "mean_e"), identifier = c("species", "site_name"), k = 3) {
 
   response <- (match.arg(response_variable))
   ts_id <- match.arg(identifier)
@@ -16,8 +16,11 @@ mod_wrapper <- function(ts, response_variable = c("abundance", "energy", "biomas
     ts$dependent <- round(ts$dependent)
   }
 
+  if(response != "mean_e") {
   ts_mod <- gam(dependent ~ s(year, k = k), data = ts, method = "REML", family = "poisson")
-
+  } else {
+    ts_mod <- gam(dependent ~ s(year, k = k), data = ts, method = "REML")
+  }
   ts_mod$identifier <- ts$identifier[1]
 
 
@@ -40,10 +43,10 @@ deriv_wrapper <- function(mod, seed_seed = NULL, ndraws = 1000) {
 
 
   if(is.null(seed_seed)) {
-    seed_seed = sample.int(n = ndraws, size = 1)
+    seed_seed = sample.int(n = 100000, size = 1)
   }
 
-  ts_derivs <- get_many_fd(mod, eps = .1, seed_seed = seed_seed)
+  ts_derivs <- get_many_fd(mod, eps = .1, nsamples = ndraws, seed_seed = seed_seed)
 
   ts_derivs$identifier <- mod$identifier
 

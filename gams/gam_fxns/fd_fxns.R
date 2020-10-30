@@ -43,6 +43,7 @@ get_one_fd <- function(model, eps = 1e-02, seed) {
 # seed_seed: set the seed TO USE TO DRAW THE SEEDS TO PASS TO get_one_fd.
 
 get_many_fd <- function(model, eps = 1e-02, nsamples = 200, seed_seed = 1977) {
+
   set.seed(seed_seed)
   seeds <- sample.int(n = 5 * nsamples, size = nsamples, replace = F)
 
