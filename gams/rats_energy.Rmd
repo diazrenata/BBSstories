@@ -1,0 +1,511 @@
+---
+title: "Rats - energy v abundance"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.dim = c(5,3))
+
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+
+ts <- read.csv(here::here("gams", "working_datasets.csv"))
+
+unique_sites <- unique(ts$site_name)
+
+site_dfs <- lapply(unique_sites, FUN = function(site, full_ts) return(filter(full_ts, site_name == site)), full_ts = ts)
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+```
+
+#### With portal
+
+```{r just e portal, echo = F}
+
+rats <- filter(ts, site_name == "portal_rats")
+
+portal_mean_perc_e <- sum(rats$energy) / sum(rats$abundance)
+
+rats <- rats %>% 
+  mutate(rescaled_energy = energy / portal_mean_perc_e)
+
+rats_rs <- rats %>%
+  mutate(energy = rescaled_energy)
+
+rats_long <- rats_rs %>%
+  select(year, energy, abundance) %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
+
+ggplot(rats_long, aes(year, value, color = currency)) +
+  geom_line() +
+  theme_bw() +
+  scale_color_viridis_d()
+
+```
+
+
+* This is energy rescaled to be on a similar scale to abundance.
+* They **kind of** track, but note:
+    * Abundance starts lower and ends higher than energy
+    * There is decoupling in the late 90s
+    
+
+```{r}
+re_e_mod <- mod_wrapper(rats_rs, response_variable = "energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(rats_rs, response_variable = "abundance", identifier = "site_name", k = 5)
+
+year_rows <- rats_rs %>%
+  select(year) %>%
+  mutate(row = row_number())
+
+e_samples <- fitted_samples(re_e_mod, n = 100, seed = 1994) %>%
+  left_join(year_rows) %>%
+  group_by(year) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup() %>%
+  mutate(currency = "energy")
+
+
+n_samples <- fitted_samples(n_mod, n = 100, seed = 1994) %>%
+  left_join(year_rows) %>%
+  group_by(year) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup() %>%
+  mutate(currency = "abundance")
+
+joint_samples <- bind_rows(e_samples, n_samples) %>%
+  select(year, currency, mean, upper, lower) %>%
+  distinct()
+
+ggplot(joint_samples, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+
+```
+
+* The GAM fits picked right up on the divergence in energy and abundance. They fit a U-shape to energy and a more monotonic increase to abundance.
+
+
+```{r}
+re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 100, seed_seed = 1977) %>%
+  mutate(currency = "energy")
+n_derivs <- deriv_wrapper(n_mod, ndraws = 100, seed_seed = 1977) %>%
+  mutate(currency = "abundance")
+
+joint_derivs <- bind_rows(re_e_derivs, n_derivs) %>%
+  select(year, upper, lower, mean, currency) %>%
+  distinct()
+
+ggplot(joint_derivs, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Derivatives for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0)
+```
+
+
+* The derivatives also differ. Energy decreases and then increases, while abundance consistently increases. 
+
+
+```{r}
+
+start_row <- min(e_samples$row)
+end_row <- max(e_samples$row)
+
+e_sample_summary <- e_samples %>% 
+  filter(row %in% c(start_row, end_row)) %>%
+  mutate(order = ifelse(row == start_row, "start", "end")) %>%
+  select(order, draw, fitted) %>%
+  tidyr::pivot_wider(id_cols = draw, names_from = order, values_from = fitted) %>%
+  mutate(net_change = end - start) %>%
+  mutate(net_percent_of_start = (abs(net_change) / start) * (net_change / abs(net_change))) %>%
+  mutate(currency = "energy")
+n_sample_summary <- n_samples %>% 
+  filter(row %in% c(start_row, end_row)) %>%
+  mutate(order = ifelse(row == start_row, "start", "end")) %>%
+  select(order, draw, fitted) %>%
+  tidyr::pivot_wider(id_cols = draw, names_from = order, values_from = fitted) %>%
+  mutate(net_change = end - start) %>%
+  mutate(net_percent_of_start = (abs(net_change) / start) * (net_change / abs(net_change))) %>%
+  mutate(currency = "abundance")
+
+joint_sample_summary <- bind_rows(e_sample_summary, n_sample_summary)
+
+ggplot(joint_sample_summary, aes(currency, net_percent_of_start, color = currency)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  scale_color_viridis_d()
+
+sample_cv_summary <- bind_rows(n_samples, e_samples) %>%
+  group_by(draw, currency) %>%
+  summarize(mean = mean(fitted),
+            sd = sd(fitted),
+            cv = abs(sd(fitted) / mean(fitted))) %>%
+  tidyr::pivot_longer(c(mean, sd, cv), names_to = "metric", values_to = "value")
+
+```
+
+* Leading to an average ~90% increase in abundance, and an average ~20% increase in energy. Note that energy sometimes crosses 0 in the estimated increase.
+
+# Scenarios
+
+## Energy tracks abundance
+
+Here we want to see what happens if energy tracks abundance.
+
+Let's say that the total energy use at each timestep is simply the mean metabolic rate * the number of individuals at that timestep.
+
+```{r}
+
+rats <- filter(ts, site_name == "portal_rats")
+
+portal_mean_perc_e <- sum(rats$energy) / sum(rats$abundance)
+
+rats_e_tracks <- rats %>% 
+  mutate(energy = abundance * portal_mean_perc_e)
+
+portal_mean_perc_e <- sum(rats_e_tracks$energy) / sum(rats_e_tracks$abundance)
+
+rats_e_tracks <- rats_e_tracks %>%
+  mutate(energy = energy / portal_mean_perc_e)
+
+rats_e_tracks_long <- rats_e_tracks %>%
+  select(year, energy, abundance) %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
+
+ggplot(rats_e_tracks_long, aes(year, value, color = currency)) +
+  geom_line() +
+  theme_bw() +
+  scale_color_viridis_d()
+
+```
+
+Well then they are just exactly the same, and that's no fun.
+
+Let's then imagine that the individual metabolisms at each time step are drawn from the overall individual energy distribution.
+
+```{r}
+
+individual_rats <- portalr::summarise_individual_rodents(clean = TRUE, type = "Granivores", time = "date", length = "Longterm")
+
+ibd <- individual_rats %>%
+  filter(year %in% c(1978:2002), !is.na(wgt), treatment == "control") %>%
+  mutate(six_mo = ifelse(month > 6, 2, 1)) %>%
+  mutate(year_six_mo = (year * 10) + six_mo) %>%
+  mutate(bmr = 5.69 * (wgt ^ .75)) %>%
+  select(year_six_mo, species, wgt, bmr) %>%
+  rename(year= year_six_mo,
+         id = species,
+         ind_size = wgt,
+         ind_b = bmr) %>%
+  mutate(id = as.character(id))
+
+ggplot(ibd, aes(ind_b)) +
+  geom_density() +
+  geom_vline(xintercept = portal_mean_perc_e) +
+  geom_vline(xintercept = mean(ibd$ind_b))
+
+tracking_ibd <- list() 
+
+set.seed(1977)
+
+for(i in 1:nrow(rats_e_tracks)) {
+  tracking_ibd[[i]] <- data.frame(
+    year = rats_e_tracks$year[i],
+    abundance = rats_e_tracks$abundance[i],
+    ind_b = sample(ibd$ind_b, size = rats_e_tracks$abundance[i], replace = F)
+  )
+}
+
+rats_e_tracks <- bind_rows(tracking_ibd) %>%
+  group_by(year) %>%
+  summarize(abundance = mean(abundance),
+            energy = sum(ind_b))
+
+portal_mean_perc_e <- sum(rats_e_tracks$energy) / sum(rats_e_tracks$abundance)
+
+rats_e_tracks <- rats_e_tracks %>%
+  mutate(energy = energy / portal_mean_perc_e) %>%
+  mutate(site_name = "portal_rats_e_tracks")
+
+rats_e_tracks_long <- rats_e_tracks %>%
+  select(year, energy, abundance) %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
+
+ggplot(rats_e_tracks_long, aes(year, value, color = currency)) +
+  geom_line() +
+  theme_bw() +
+  scale_color_viridis_d()
+```
+
+
+* Now they track pretty closely, but there's at least some wiggle.
+
+```{r}
+re_e_mod <- mod_wrapper(rats_e_tracks, response_variable = "energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(rats_e_tracks, response_variable = "abundance", identifier = "site_name", k = 5)
+
+year_rows <- rats_e_tracks %>%
+  select(year) %>%
+  mutate(row = row_number())
+
+e_samples <- fitted_samples(re_e_mod, n = 100, seed = 1994) %>%
+  left_join(year_rows) %>%
+  group_by(year) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup() %>%
+  mutate(currency = "energy")
+
+
+n_samples <- fitted_samples(n_mod, n = 100, seed = 1994) %>%
+  left_join(year_rows) %>%
+  group_by(year) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup() %>%
+  mutate(currency = "abundance")
+
+joint_samples <- bind_rows(e_samples, n_samples) %>%
+  select(year, currency, mean, upper, lower) %>%
+  distinct()
+
+ggplot(joint_samples, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+
+```
+
+* The GAMs are near-identical.
+
+```{r}
+re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 100, seed_seed = 1977) %>%
+  mutate(currency = "energy")
+n_derivs <- deriv_wrapper(n_mod, ndraws = 100, seed_seed = 1977) %>%
+  mutate(currency = "abundance")
+
+joint_derivs <- bind_rows(re_e_derivs, n_derivs) %>%
+  select(year, upper, lower, mean, currency) %>%
+  distinct()
+
+ggplot(joint_derivs, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Derivatives for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0)
+```
+
+
+* So are the derivatives...
+
+```{r}
+
+start_row <- min(e_samples$row)
+end_row <- max(e_samples$row)
+
+e_sample_summary <- e_samples %>% 
+  filter(row %in% c(start_row, end_row)) %>%
+  mutate(order = ifelse(row == start_row, "start", "end")) %>%
+  select(order, draw, fitted) %>%
+  tidyr::pivot_wider(id_cols = draw, names_from = order, values_from = fitted) %>%
+  mutate(net_change = end - start) %>%
+  mutate(net_percent_of_start = (abs(net_change) / start) * (net_change / abs(net_change))) %>%
+  mutate(currency = "energy")
+n_sample_summary <- n_samples %>% 
+  filter(row %in% c(start_row, end_row)) %>%
+  mutate(order = ifelse(row == start_row, "start", "end")) %>%
+  select(order, draw, fitted) %>%
+  tidyr::pivot_wider(id_cols = draw, names_from = order, values_from = fitted) %>%
+  mutate(net_change = end - start) %>%
+  mutate(net_percent_of_start = (abs(net_change) / start) * (net_change / abs(net_change))) %>%
+  mutate(currency = "abundance")
+
+joint_sample_summary <- bind_rows(e_sample_summary, n_sample_summary)
+
+ggplot(joint_sample_summary, aes(currency, net_percent_of_start, color = currency)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  scale_color_viridis_d()
+
+sample_cv_summary <- bind_rows(n_samples, e_samples) %>%
+  group_by(draw, currency) %>%
+  summarize(mean = mean(fitted),
+            sd = sd(fitted),
+            cv = abs(sd(fitted) / mean(fitted))) %>%
+  tidyr::pivot_longer(c(mean, sd, cv), names_to = "metric", values_to = "value")
+
+```
+
+And the net change.
+
+
+## Energy trades off to stay constant
+
+Here we want to see what happens if the mean body size trades off to maintain a near-constant energy use regardless of abundance.
+
+```{r}
+
+set.seed(1994)
+
+energy_val <- sample(rats$energy, size = 1)
+
+rats_e_trades <- rats %>%
+  mutate(energy = rnorm(n = nrow(rats), mean = energy_val, sd = .25 * energy_val)) %>%
+  mutate(mean_e = energy/abundance)
+
+portal_mean_perc_e <- sum(rats_e_trades$energy) / sum(rats_e_trades$abundance)
+
+rats_e_trades <- rats_e_trades %>%
+  mutate(energy = energy / portal_mean_perc_e) %>%
+  mutate(site_name = "portal_rats_e_trades")
+
+rats_e_trades_long <- rats_e_trades %>%
+  select(year, energy, abundance) %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
+
+ggplot(rats_e_trades_long, aes(year, value, color = currency)) +
+  geom_line() +
+  theme_bw() +
+  scale_color_viridis_d()
+
+ggplot(rats_e_trades, aes(year, mean_e)) +
+  geom_line() +
+  geom_line(data = rats, aes(year, mean_energy), color = "blue")
+
+```
+
+
+* We've allowed substantial variation around a constant mean for energy, making it more variable even than the real mean_e. 
+
+```{r}
+re_e_mod <- mod_wrapper(rats_e_trades, response_variable = "energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(rats_e_trades, response_variable = "abundance", identifier = "site_name", k = 5)
+
+year_rows <- rats_e_trades %>%
+  select(year) %>%
+  mutate(row = row_number())
+
+e_samples <- fitted_samples(re_e_mod, n = 100, seed = 1994) %>%
+  left_join(year_rows) %>%
+  group_by(year) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup() %>%
+  mutate(currency = "energy")
+
+
+n_samples <- fitted_samples(n_mod, n = 100, seed = 1994) %>%
+  left_join(year_rows) %>%
+  group_by(year) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup() %>%
+  mutate(currency = "abundance")
+
+joint_samples <- bind_rows(e_samples, n_samples) %>%
+  select(year, currency, mean, upper, lower) %>%
+  distinct()
+
+ggplot(joint_samples, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+
+```
+
+* Interestingly - the GAM again fits a little bit of a U to energy. **We contrived it to be constant** but it has some shape that just happened via samples from a normal.
+
+
+```{r}
+re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 100, seed_seed = 1977) %>%
+  mutate(currency = "energy")
+n_derivs <- deriv_wrapper(n_mod, ndraws = 100, seed_seed = 1977) %>%
+  mutate(currency = "abundance")
+
+joint_derivs <- bind_rows(re_e_derivs, n_derivs) %>%
+  select(year, upper, lower, mean, currency) %>%
+  distinct()
+
+ggplot(joint_derivs, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Derivatives for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0)
+```
+
+
+* This derivative isn't smack-on 0, either. However note that it spends a **lot** of time very near 0, which was not the case for the real data. 
+
+```{r}
+
+start_row <- min(e_samples$row)
+end_row <- max(e_samples$row)
+
+e_sample_summary <- e_samples %>% 
+  filter(row %in% c(start_row, end_row)) %>%
+  mutate(order = ifelse(row == start_row, "start", "end")) %>%
+  select(order, draw, fitted) %>%
+  tidyr::pivot_wider(id_cols = draw, names_from = order, values_from = fitted) %>%
+  mutate(net_change = end - start) %>%
+  mutate(net_percent_of_start = (abs(net_change) / start) * (net_change / abs(net_change))) %>%
+  mutate(currency = "energy")
+n_sample_summary <- n_samples %>% 
+  filter(row %in% c(start_row, end_row)) %>%
+  mutate(order = ifelse(row == start_row, "start", "end")) %>%
+  select(order, draw, fitted) %>%
+  tidyr::pivot_wider(id_cols = draw, names_from = order, values_from = fitted) %>%
+  mutate(net_change = end - start) %>%
+  mutate(net_percent_of_start = (abs(net_change) / start) * (net_change / abs(net_change))) %>%
+  mutate(currency = "abundance")
+
+joint_sample_summary <- bind_rows(e_sample_summary, n_sample_summary)
+
+ggplot(joint_sample_summary, aes(currency, net_percent_of_start, color = currency)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  scale_color_viridis_d()
+
+sample_cv_summary <- bind_rows(n_samples, e_samples) %>%
+  group_by(draw, currency) %>%
+  summarize(mean = mean(fitted),
+            sd = sd(fitted),
+            cv = abs(sd(fitted) / mean(fitted))) %>%
+  tidyr::pivot_longer(c(mean, sd, cv), names_to = "metric", values_to = "value")
+
+```
+
+And, the net outcome is no consistent change in energy.
