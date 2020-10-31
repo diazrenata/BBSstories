@@ -1,0 +1,247 @@
+---
+title: "Rescale energy to compare to abundance"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.dim = c(5,3))
+
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+
+ts <- read.csv(here::here("gams", "working_datasets.csv"))
+
+unique_sites <- unique(ts$site_name)
+
+site_dfs <- lapply(unique_sites, FUN = function(site, full_ts) return(filter(full_ts, site_name == site)), full_ts = ts)
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+```
+
+#### With portal
+
+```{r just e portal, echo = F}
+
+rats <- filter(ts, site_name == "portal_rats")
+
+portal_mean_perc_e <- sum(rats$energy) / sum(rats$abundance)
+
+rats <- rats %>% 
+  mutate(scaled_energy = energy / portal_mean_perc_e)
+rats_long <- rats %>%
+  select(year, scaled_energy, abundance) %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
+
+```
+
+* This is energy rescaled to be on a similar scale to abundance.
+* They **kind of** track, but note:
+* Abundance starts lower and ends higher than energy
+* There is decoupling in the late 90s
+
+
+```{r}
+e_mod <- mod_wrapper(rats, response_variable = "energy", identifier = "site_name", k = 5)
+re_e_mod <- mod_wrapper(rats, response_variable = "scaled_energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(rats, response_variable = "abundance", identifier = "site_name", k = 5)
+
+e_samples <- samples_wrapper(e_mod, seed_seed = 1994)
+re_e_samples <- samples_wrapper(re_e_mod, seed_seed = 1994)
+n_samples <- samples_wrapper(n_mod, seed_seed = 1994)
+
+joint_samples <- bind_rows(e_samples, n_samples, re_e_samples) %>%
+  select(year, currency, mean, upper, lower) %>%
+  distinct()
+
+ggplot(filter(joint_samples, currency != "energy"), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+ggplot(filter(joint_samples, currency == "energy"), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fit for energy, unscaled") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+
+
+```
+
+```{r}
+re_e_derivs <- deriv_wrapper(re_e_mod, seed_seed = 1994)
+n_derivs <- deriv_wrapper(n_mod, seed_seed = 1994)
+e_derivs <- deriv_wrapper(e_mod, seed_seed = 1994)
+joint_derivs <- bind_rows(re_e_derivs, n_derivs, e_derivs) %>%
+  select(year, upper, lower, mean, currency) %>%
+  distinct()
+
+ggplot(filter(joint_derivs, currency != "energy"), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Derivatives for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0)
+
+ggplot(filter(joint_derivs, currency == "energy"), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Derivatives for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0)
+```
+
+
+
+
+```{r}
+
+e_sample_summary <- samples_summary(e_samples)
+re_e_sample_summary <- samples_summary(re_e_samples)
+n_sample_summary <- samples_summary(n_samples)
+
+
+joint_sample_summary <- bind_rows(e_sample_summary, n_sample_summary, re_e_sample_summary)
+
+ggplot(joint_sample_summary, aes(currency, net_percent_of_start, color = currency)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  scale_color_viridis_d()
+
+
+```
+```{r}
+
+scaled_wrapper <- function(site_df) {
+  
+  site_mean_perc_e <- sum(site_df$energy) / sum(site_df$abundance)
+  
+  site_df <- site_df %>% 
+    mutate(scaled_energy = energy / site_mean_perc_e)
+  
+  e_mod <- mod_wrapper(site_df, response_variable = "energy", identifier = "site_name", k = 5)
+  re_e_mod <- mod_wrapper(site_df, response_variable = "scaled_energy", identifier = "site_name", k = 5)
+  n_mod <- mod_wrapper(site_df, response_variable = "abundance", identifier = "site_name", k = 5)
+  
+  e_samples <- samples_wrapper(e_mod, ndraws = 200, seed_seed = 1994)
+  re_e_samples <- samples_wrapper(re_e_mod, ndraws = 200, seed_seed = 1994)
+  n_samples <- samples_wrapper(n_mod, ndraws = 200, seed_seed = 1994)
+  joint_samples <- bind_rows(e_samples, n_samples, re_e_samples) %>%
+    select(year, currency, mean, upper, lower, identifier) %>%
+    distinct()
+  
+  re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 200, seed_seed = 1994)
+  n_derivs <- deriv_wrapper(n_mod, ndraws = 200, seed_seed = 1994)
+  e_derivs <- deriv_wrapper(e_mod, ndraws = 200, seed_seed = 1994)
+  joint_derivs <- bind_rows(re_e_derivs, n_derivs, e_derivs) %>%
+    select(year, upper, lower, mean, currency, identifier) %>%
+    distinct()
+  
+  
+  e_sample_summary <- samples_summary(e_samples)
+  re_e_sample_summary <- samples_summary(re_e_samples)
+  n_sample_summary <- samples_summary(n_samples)
+  
+  
+  joint_sample_summary <- bind_rows(e_sample_summary, n_sample_summary, re_e_sample_summary)
+  
+  return(list(joint_samples, joint_derivs, joint_sample_summary))
+  
+}
+
+sites_scaled <- lapply(site_dfs, scaled_wrapper)
+
+```
+
+```{r, fig.dim = c(6,5)}
+
+all_fits <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[1]]))
+
+all_fits <- bind_rows(all_fits)
+
+ggplot(filter(all_fits, currency != "energy"), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  facet_wrap(vars(identifier), scales = "free")
+
+all_derivs <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[2]]))
+
+all_derivs <- bind_rows(all_derivs)
+
+
+ggplot(filter(all_derivs, currency != "energy"), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Derivatives for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0) +
+  facet_wrap(vars(identifier), scales = "free")
+
+all_summary <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[3]]))
+
+all_summary <- bind_rows(all_summary)
+
+
+ggplot(all_summary, aes(currency, net_percent_of_start, color = currency)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  scale_color_viridis_d()+
+  facet_wrap(vars(identifier))
+
+all_summary_e_v_n <- all_summary %>% 
+  select(net_percent_of_start, identifier, currency, draw) %>%
+  tidyr::pivot_wider(id_cols = c(draw, identifier), names_from = currency, values_from = net_percent_of_start)
+
+lower <- function(vect) {
+  return(quantile(vect, probs = .025))
+}
+upper <- function(vect) {
+  return(quantile(vect, probs = .975))
+}
+
+all_summary_e_v_n_means <- all_summary_e_v_n %>%
+  group_by(identifier) %>%
+  summarize_at(c("abundance", "scaled_energy", "energy"), .funs = list(mean = mean, lower = lower, upper =upper))
+
+ggplot(all_summary_e_v_n, aes(abundance, scaled_energy, color = identifier)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_d() +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  geom_abline(slope = 1, intercept = 0) 
+
+
+ggplot(all_summary_e_v_n_means, aes(abundance_mean, scaled_energy_mean, color = identifier)) +
+  geom_point() +
+    geom_errorbar(aes(ymin = scaled_energy_lower, ymax = scaled_energy_upper)) +
+  geom_errorbarh(aes(xmin = abundance_lower, xmax = abundance_upper)) +
+  theme_bw() +
+  scale_color_viridis_d() +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  geom_abline(slope = 1, intercept = 0) +
+  geom_label(aes(label = identifier), size = 2, nudge_x = .1, nudge_y = .1)
+
+```
+
+
+

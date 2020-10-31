@@ -54,6 +54,7 @@ ggplot(rats_long, aes(year, value, color = currency)) +
     
 
 ```{r}
+e_mod <- mod_wrapper(rats, response_variable = "energy", identifier = "site_name", k = 5)
 re_e_mod <- mod_wrapper(rats_rs, response_variable = "energy", identifier = "site_name", k = 5)
 n_mod <- mod_wrapper(rats_rs, response_variable = "abundance", identifier = "site_name", k = 5)
 
@@ -70,6 +71,14 @@ e_samples <- fitted_samples(re_e_mod, n = 100, seed = 1994) %>%
   ungroup() %>%
   mutate(currency = "energy")
 
+e_raw_samples <- fitted_samples(e_mod, n = 100, seed = 1994) %>%
+  left_join(year_rows) %>%
+  group_by(year) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup() %>%
+  mutate(currency = "energy_raw")
 
 n_samples <- fitted_samples(n_mod, n = 100, seed = 1994) %>%
   left_join(year_rows) %>%
@@ -142,8 +151,15 @@ n_sample_summary <- n_samples %>%
   mutate(net_change = end - start) %>%
   mutate(net_percent_of_start = (abs(net_change) / start) * (net_change / abs(net_change))) %>%
   mutate(currency = "abundance")
-
-joint_sample_summary <- bind_rows(e_sample_summary, n_sample_summary)
+e_raw_sample_summary <- e_raw_samples %>% 
+  filter(row %in% c(start_row, end_row)) %>%
+  mutate(order = ifelse(row == start_row, "start", "end")) %>%
+  select(order, draw, fitted) %>%
+  tidyr::pivot_wider(id_cols = draw, names_from = order, values_from = fitted) %>%
+  mutate(net_change = end - start) %>%
+  mutate(net_percent_of_start = (abs(net_change) / start) * (net_change / abs(net_change))) %>%
+  mutate(currency = "energy_raw")
+joint_sample_summary <- bind_rows(e_sample_summary, n_sample_summary, e_raw_sample_summary)
 
 ggplot(joint_sample_summary, aes(currency, net_percent_of_start, color = currency)) +
   geom_boxplot() +
@@ -161,6 +177,8 @@ sample_cv_summary <- bind_rows(n_samples, e_samples) %>%
 ```
 
 * Leading to an average ~90% increase in abundance, and an average ~20% increase in energy. Note that energy sometimes crosses 0 in the estimated increase.
+
+*  There's much less variability in the fitted estimate for energy_raw, but it has the same mean...?
 
 # Scenarios
 

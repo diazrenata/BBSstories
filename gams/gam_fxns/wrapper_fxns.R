@@ -3,7 +3,7 @@ source(here::here("gams", "gam_fxns", "fd_fxns.R"))
 # Given a TS, fit a Poisson GAM with k = 5
 # Extract the derivatives
 
-mod_wrapper <- function(ts, response_variable = c("abundance", "energy", "biomass", "mean_e"), identifier = c("species", "site_name"), k = 3) {
+mod_wrapper <- function(ts, response_variable = c("abundance", "energy", "biomass", "mean_e", "scaled_energy"), identifier = c("species", "site_name"), k = 3) {
 
   response <- (match.arg(response_variable))
   ts_id <- match.arg(identifier)
@@ -12,7 +12,7 @@ mod_wrapper <- function(ts, response_variable = c("abundance", "energy", "biomas
     dplyr::rename(dependent = all_of(response),
                   identifier = all_of(ts_id))
 
-  if(response %in% c("energy", "biomass")) {
+  if(response %in% c("energy", "scaled_energy", "biomass")) {
     ts$dependent <- round(ts$dependent)
   }
 
@@ -22,6 +22,8 @@ mod_wrapper <- function(ts, response_variable = c("abundance", "energy", "biomas
     ts_mod <- gam(dependent ~ s(year, k = k), data = ts, method = "REML")
   }
   ts_mod$identifier <- ts$identifier[1]
+  ts_mod$response <- response_variable
+
 
 
   return(ts_mod)
@@ -39,6 +41,29 @@ fit_wrapper <- function(mod) {
 
 }
 
+samples_wrapper <- function(mod, seed_seed = NULL, ndraws = 1000) {
+
+  if(is.null(seed_seed)) {
+    seed_seed = sample.int(n = 100000, size = 1)
+  }
+
+  year_rows <- mod$model %>%
+    select(year) %>%
+    mutate(row = row_number())
+
+  mod_samples <- fitted_samples(mod, n = 100, seed = seed_seed) %>%
+    left_join(year_rows) %>%
+    group_by(year) %>%
+    mutate(mean = mean(fitted),
+           upper = quantile(fitted, probs = .975),
+           lower = quantile(fitted, probs = 0.025)) %>%
+    ungroup() %>%
+    mutate(identifier =  mod$identifier,
+           currency = mod$response)
+return(mod_samples)
+
+}
+
 deriv_wrapper <- function(mod, seed_seed = NULL, ndraws = 1000) {
 
 
@@ -49,8 +74,25 @@ deriv_wrapper <- function(mod, seed_seed = NULL, ndraws = 1000) {
   ts_derivs <- get_many_fd(mod, eps = .1, nsamples = ndraws, seed_seed = seed_seed)
 
   ts_derivs$identifier <- mod$identifier
-
+  ts_derivs$currency = mod$response
   return(ts_derivs)
+}
+
+samples_summary <- function(samples_df) {
+  curr <- samples_df$currency[1]
+  identif <- samples_df$identifier[1]
+  start_row <- min(samples_df$row)
+  end_row <- max(samples_df$row)
+
+  samples_df %>%
+    filter(row %in% c(start_row, end_row)) %>%
+    mutate(order = ifelse(row == start_row, "start", "end")) %>%
+    select(order, draw, fitted) %>%
+    tidyr::pivot_wider(id_cols = draw, names_from = order, values_from = fitted) %>%
+    mutate(net_change = end - start) %>%
+    mutate(net_percent_of_start = (abs(net_change) / start) * (net_change / abs(net_change))) %>%
+    mutate(currency = curr,
+           identifier = identif)
 }
 
 derivs_summary <- function(derivs_df) {

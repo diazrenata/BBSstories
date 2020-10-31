@@ -46,6 +46,7 @@ source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
 
     ## Joining, by = "row"
     ## Joining, by = "row"
+    ## Joining, by = "row"
 
 ![](rats_energy_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
@@ -65,6 +66,9 @@ source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
   - Leading to an average \~90% increase in abundance, and an average
     \~20% increase in energy. Note that energy sometimes crosses 0 in
     the estimated increase.
+
+  - There’s much less variability in the fitted estimate for
+    energy\_raw, but it has the same mean…?
 
 # Scenarios
 
@@ -119,7 +123,7 @@ maintain a near-constant energy use regardless of abundance.
 ![](rats_energy_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->![](rats_energy_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
 
   - We’ve allowed substantial variation around a constant mean for
-    energy, making it more variable
+    energy, making it more variable even than the real mean\_e.
 
 <!-- end list -->
 
@@ -128,12 +132,18 @@ maintain a near-constant energy use regardless of abundance.
 
 ![](rats_energy_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
-  - The GAMs are near-identical.
+  - Interestingly - the GAM again fits a little bit of a U to energy.
+    **We contrived it to be constant** but it has some shape that just
+    happened via samples from a normal.
 
 ![](rats_energy_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
-  - So are the derivatives…
+  - This derivative isn’t smack-on 0, either. However note that it
+    spends a **lot** of time very near 0, which was not the case for the
+    real data.
 
 ![](rats_energy_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
     ## `summarise()` regrouping output by 'draw' (override with `.groups` argument)
+
+And, the net outcome is no consistent change in energy.
