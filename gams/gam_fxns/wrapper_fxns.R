@@ -9,8 +9,8 @@ mod_wrapper <- function(ts, response_variable = c("abundance", "energy", "biomas
   ts_id <- match.arg(identifier)
 
   ts <- ts %>%
-    dplyr::rename(dependent = response,
-                  identifier = ts_id)
+    dplyr::rename(dependent = all_of(response),
+                  identifier = all_of(ts_id))
 
   if(response %in% c("energy", "biomass")) {
     ts$dependent <- round(ts$dependent)
