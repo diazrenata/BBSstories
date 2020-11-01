@@ -144,7 +144,9 @@ scaled_wrapper <- function(site_df) {
   re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 200, seed_seed = 1994)
   n_derivs <- deriv_wrapper(n_mod, ndraws = 200, seed_seed = 1994)
   e_derivs <- deriv_wrapper(e_mod, ndraws = 200, seed_seed = 1994)
-  joint_derivs <- bind_rows(re_e_derivs, n_derivs, e_derivs) %>%
+  joint_derivs_long <- bind_rows(re_e_derivs, n_derivs, e_derivs)
+  
+  joint_derivs <- joint_derivs_long %>%
     select(year, upper, lower, mean, currency, identifier) %>%
     distinct()
   
@@ -156,7 +158,7 @@ scaled_wrapper <- function(site_df) {
   
   joint_sample_summary <- bind_rows(e_sample_summary, n_sample_summary, re_e_sample_summary)
   
-  return(list(joint_samples, joint_derivs, joint_sample_summary))
+  return(list(joint_samples, joint_derivs_long, joint_derivs, joint_sample_summary))
   
 }
 
@@ -179,7 +181,7 @@ ggplot(filter(all_fits, currency != "energy"), aes(year, mean, color = currency,
   scale_fill_viridis_d() +
   facet_wrap(vars(identifier), scales = "free")
 
-all_derivs <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[2]]))
+all_derivs <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[3]]))
 
 all_derivs <- bind_rows(all_derivs)
 
@@ -194,7 +196,16 @@ ggplot(filter(all_derivs, currency != "energy"), aes(year, mean, color = currenc
   geom_hline(yintercept = 0) +
   facet_wrap(vars(identifier), scales = "free")
 
-all_summary <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[3]]))
+ggplot(filter(all_derivs, currency != "energy"), aes(mean, color = currency, fill = currency)) +
+  geom_density(alpha = .5) + 
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_vline(xintercept = 0) +
+  facet_wrap(vars(identifier), scales = "free")
+
+
+all_summary <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[4]]))
 
 all_summary <- bind_rows(all_summary)
 
@@ -241,7 +252,41 @@ ggplot(all_summary_e_v_n_means, aes(abundance_mean, scaled_energy_mean, color = 
   geom_abline(slope = 1, intercept = 0) +
   geom_label(aes(label = identifier), size = 2, nudge_x = .1, nudge_y = .1)
 
+
 ```
+
+```{r}
+
+all_derivs <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[2]]))
+
+all_derivs <- bind_rows(all_derivs)
+
+all_derivs_summary <- all_derivs %>%
+  mutate(abs_deriv = abs(derivative)) %>%
+  group_by(seed, identifier, currency) %>%
+  summarize(mean_abs_deriv = mean(abs_deriv),
+            sd_abs_deriv = sd(abs_deriv)) %>%
+  ungroup() %>%
+  group_by(identifier, currency) %>%
+  summarize(mean_abs_deriv = mean(mean_abs_deriv)) %>%
+  ungroup()
+
+all_summary_to_join <- all_summary %>%
+  group_by(currency, identifier) %>%
+  summarize(net_percent_of_start = mean(net_percent_of_start))
+
+all_derivs_summary <- left_join(all_derivs_summary, all_summary_to_join)
+
+
+ggplot(filter(all_derivs_summary, currency != "energy"), aes(abs(net_percent_of_start), mean_abs_deriv, color = currency)) +
+  geom_point() +
+  geom_label(aes(label = identifier)) 
+  facet_wrap(vars(currency), scales = "free") +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
+```
+
+
 
 
 

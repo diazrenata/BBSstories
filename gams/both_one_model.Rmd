@@ -1,0 +1,200 @@
+---
+title: "Rats - energy v abundance"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.dim = c(5,3))
+
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+
+ts <- read.csv(here::here("gams", "working_datasets.csv"))
+
+unique_sites <- unique(ts$site_name)
+
+site_dfs <- lapply(unique_sites, FUN = function(site, full_ts) return(filter(full_ts, site_name == site)), full_ts = ts)
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+```
+
+#### With portal
+
+```{r just e portal, echo = F}
+
+rats <- filter(ts, site_name == "portal_rats")
+
+portal_mean_perc_e <- sum(rats$energy) / sum(rats$abundance)
+
+rats <- rats %>% 
+  mutate(rescaled_energy = energy / portal_mean_perc_e)
+
+rats_rs <- rats %>%
+  mutate(energy = rescaled_energy)
+
+rats_long <- rats_rs %>%
+  select(year, energy, abundance) %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
+
+ggplot(rats_long, aes(year, value, color = currency)) +
+  geom_line() +
+  theme_bw() +
+  scale_color_viridis_d()
+
+```
+
+
+* This is energy rescaled to be on a similar scale to abundance.
+* They **kind of** track, but note:
+    * Abundance starts lower and ends higher than energy
+    * There is decoupling in the late 90s
+    
+
+```{r}
+e_mod <- mod_wrapper(rats, response_variable = "energy", identifier = "site_name", k = 5)
+re_e_mod <- mod_wrapper(rats_rs, response_variable = "energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(rats_rs, response_variable = "abundance", identifier = "site_name", k = 5)
+
+year_rows <- rats_rs %>%
+  select(year) %>%
+  mutate(row = row_number())
+
+e_samples <- fitted_samples(re_e_mod, n = 100, seed = 1994) %>%
+  left_join(year_rows) %>%
+  group_by(year) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup() %>%
+  mutate(currency = "energy")
+
+e_raw_samples <- fitted_samples(e_mod, n = 100, seed = 1994) %>%
+  left_join(year_rows) %>%
+  group_by(year) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup() %>%
+  mutate(currency = "energy_raw")
+
+n_samples <- fitted_samples(n_mod, n = 100, seed = 1994) %>%
+  left_join(year_rows) %>%
+  group_by(year) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup() %>%
+  mutate(currency = "abundance")
+
+joint_samples <- bind_rows(e_samples, n_samples) %>%
+  select(year, currency, mean, upper, lower) %>%
+  distinct()
+
+ggplot(joint_samples, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+
+```
+
+* The GAM fits picked right up on the divergence in energy and abundance. They fit a U-shape to energy and a more monotonic increase to abundance.
+
+
+### do I need to fit both variables in one model
+```{r}
+
+head(rats_rs)
+
+rats_both <- rats_rs %>%
+  select(year, abundance, energy) %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "response") %>%
+  mutate(response = round(response))
+
+both_gam <- gam(response ~ year * currency, data = rats_both, family = "poisson")
+
+some_fits <- add_fitted(rats_both, model = both_gam)
+
+ggplot(some_fits, aes(year, response, color = currency)) +
+  geom_point() +
+  geom_line(aes(year, .value)) +
+  theme_bw()
+
+rats_years <- select(rats_both, year, currency) %>%
+  mutate(row = row_number())
+
+some_draws <- fitted_samples(both_gam, n = 500, seed = 1977) %>%
+  left_join(rats_years)%>%
+  group_by(year, currency) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup()
+
+head(some_draws)
+
+
+
+ggplot(some_draws, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+```
+
+
+### do I need to fit both variables in one model
+```{r}
+
+head(rats_rs)
+
+rats_both <- rats_rs %>%
+  select(year, abundance, energy) %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "response") %>%
+  mutate(response = round(response))
+
+both_gam <- gam(response ~ s(year, k = 5) + currency, data = rats_both, family = "poisson")
+
+some_fits <- add_fitted(rats_both, model = both_gam)
+
+ggplot(some_fits, aes(year, response, color = currency)) +
+  geom_point() +
+  geom_line(aes(year, .value)) +
+  theme_bw()
+
+rats_years <- select(rats_both, year, currency) %>%
+  mutate(row = row_number())
+
+some_draws <- fitted_samples(both_gam, n = 500, seed = 1977) %>%
+  left_join(rats_years)%>%
+  group_by(year, currency) %>%
+  mutate(mean = mean(fitted),
+         upper = quantile(fitted, probs = .975),
+         lower = quantile(fitted, probs = 0.025)) %>%
+  ungroup()
+
+head(some_draws)
+
+
+
+ggplot(some_draws, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+```
+
+Interestingly - this fits a simpler model to energy.
+
+I'm generally inclined to fit them jointly because of broader modeling intuition, but I don't know specifically that that's what's called for here. 
+
+
