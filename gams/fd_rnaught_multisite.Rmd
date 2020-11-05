@@ -1,0 +1,373 @@
+---
+title: "Use r0 of first derivative to make comparisons"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.dim = c(5,3))
+
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+
+ts <- read.csv(here::here("gams", "working_datasets.csv"))
+
+unique_sites <- unique(ts$site_name)
+
+site_dfs <- lapply(unique_sites, FUN = function(site, full_ts) return(filter(full_ts, site_name == site)), full_ts = ts)
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+```
+
+#### With mccoy
+
+```{r just portal, echo = F}
+
+rats <- filter(ts, site_name == "mccoy")
+
+portal_mean_perc_e <- sum(rats$energy) / sum(rats$abundance)
+
+rats <- rats %>% 
+  mutate(scaled_energy = energy / portal_mean_perc_e)
+
+```
+
+```{r}
+e_mod <- mod_wrapper(rats, response_variable = "energy", identifier = "site_name", k = 5)
+re_e_mod <- mod_wrapper(rats, response_variable = "scaled_energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(rats, response_variable = "abundance", identifier = "site_name", k = 5)
+
+e_samples <- samples_wrapper(e_mod, seed_seed = 1994)
+re_e_samples <- samples_wrapper(re_e_mod, seed_seed = 1994)
+n_samples <- samples_wrapper(n_mod, seed_seed = 1994)
+
+joint_samples <- bind_rows(e_samples, n_samples, re_e_samples) %>%
+  select(year, currency, mean, upper, lower) %>%
+  distinct()
+
+
+ggplot(filter(joint_samples), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  facet_wrap(vars(currency), scales = "free_y")
+
+```
+
+E and N are on different scales. Rescaled energy divides energy by the mean percapita metabolic rate, putting it in units **closer** to the scale of the abundance values.
+
+```{r}
+re_e_derivs <- deriv_wrapper(re_e_mod, seed_seed = 1994)
+n_derivs <- deriv_wrapper(n_mod, seed_seed = 1994)
+e_derivs <- deriv_wrapper(e_mod, seed_seed = 1994)
+
+
+  joint_derivs_long <- bind_rows(re_e_derivs, n_derivs, e_derivs)
+# 
+# ggplot(joint_derivs_long, aes(year, derivative, group = seed)) +
+#   geom_line(alpha = .1) +
+#   facet_wrap(vars(currency), scales = "free_y")
+#   
+#   
+# ggplot(joint_derivs_long, aes(year, rnaught, group = seed)) +
+#   geom_line(alpha = .1) +
+#   facet_wrap(vars(currency), scales = "free_y")
+#   
+#   
+#   
+
+joint_derivs <- joint_derivs_long %>%
+  group_by(year, currency) %>%
+  mutate(rnaught_mean = mean(rnaught),
+         rnaught_upper = quantile(rnaught, probs = .975),
+         rnaught_lower = quantile(rnaught, probs = .025)) %>%
+  ungroup() %>%
+  select(year, upper, lower, mean, currency, rnaught_mean, rnaught_upper, rnaught_lower) %>%
+  distinct()
+
+ggplot(filter(joint_derivs, currency != "energy"), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Derivatives for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0)
+
+ggplot(filter(joint_derivs, currency != "energy"), aes(year, rnaught_mean, color = currency, fill = currency)) +
+  geom_line(aes(year, rnaught_mean)) +
+  geom_ribbon(aes(year, ymin = rnaught_lower, ymax = rnaught_upper),  alpha = .25) +
+  ggtitle("R0 for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 1)
+
+
+ggplot(filter(joint_derivs, currency == "energy"), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Derivatives for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0)
+
+
+ggplot(filter(joint_derivs), aes(year, rnaught_mean, color = currency, fill = currency)) +
+  geom_line(aes(year, rnaught_mean)) +
+  geom_ribbon(aes(year, ymin = rnaught_lower, ymax = rnaught_upper),  alpha = .25) +
+  ggtitle("Rnaught for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 1)
+
+
+joint_derivs %>%
+  group_by(currency) %>%
+  summarize(mean_derivative = mean(mean),
+            mean_rnaught = mean(rnaught_mean),
+            rnaught_dev = mean(abs(rnaught_mean - 1)))
+```
+
+
+
+
+```{r}
+
+e_sample_summary <- samples_summary(e_samples)
+re_e_sample_summary <- samples_summary(re_e_samples)
+n_sample_summary <- samples_summary(n_samples)
+
+
+joint_sample_summary <- bind_rows(e_sample_summary, n_sample_summary, re_e_sample_summary)
+
+ggplot(joint_sample_summary, aes(currency, net_percent_of_start, color = currency)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  scale_color_viridis_d()
+
+
+```
+
+```{r}
+
+scaled_wrapper <- function(site_df) {
+
+  site_mean_perc_e <- sum(site_df$energy) / sum(site_df$abundance)
+  
+  site_df <- site_df %>% 
+    mutate(scaled_energy = energy / site_mean_perc_e)
+  
+  e_mod <- mod_wrapper(site_df, response_variable = "energy", identifier = "site_name", k = 5)
+  re_e_mod <- mod_wrapper(site_df, response_variable = "scaled_energy", identifier = "site_name", k = 5)
+  n_mod <- mod_wrapper(site_df, response_variable = "abundance", identifier = "site_name", k = 5)
+
+  e_samples <- samples_wrapper(e_mod, ndraws = 200, seed_seed = 1994)
+  re_e_samples <- samples_wrapper(re_e_mod, ndraws = 200, seed_seed = 1994)
+  n_samples <- samples_wrapper(n_mod, ndraws = 200, seed_seed = 1994)
+  joint_samples <- bind_rows(e_samples, n_samples, re_e_samples) %>%
+    select(year, currency, mean, upper, lower, identifier) %>%
+    distinct()
+
+  re_e_derivs <- deriv_wrapper(re_e_mod, ndraws = 200, seed_seed = 1994)
+  n_derivs <- deriv_wrapper(n_mod, ndraws = 200, seed_seed = 1994)
+  e_derivs <- deriv_wrapper(e_mod, ndraws = 200, seed_seed = 1994)
+  joint_derivs_long <- bind_rows(re_e_derivs, n_derivs, e_derivs)
+
+
+joint_derivs <- joint_derivs_long %>%
+  group_by(year, currency) %>%
+  mutate(rnaught_mean = mean(rnaught),
+         rnaught_upper = quantile(rnaught, probs = .975),
+         rnaught_lower = quantile(rnaught, probs = .025)) %>%
+  ungroup() %>%
+  select(year, upper, lower, mean, currency, rnaught_mean, rnaught_upper, rnaught_lower, identifier) %>%
+  distinct()
+
+
+
+  e_sample_summary <- samples_summary(e_samples)
+  re_e_sample_summary <- samples_summary(re_e_samples)
+  n_sample_summary <- samples_summary(n_samples)
+
+
+  joint_sample_summary <- bind_rows(e_sample_summary, n_sample_summary, re_e_sample_summary)
+
+  return(list(joint_samples, joint_derivs_long, joint_derivs, joint_sample_summary))
+
+}
+
+sites_scaled <- lapply(site_dfs, scaled_wrapper)
+
+```
+
+```{r, fig.dim = c(6,5)}
+
+all_fits <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[1]]))
+
+all_fits <- bind_rows(all_fits)
+
+ggplot(filter(all_fits, currency != "energy"), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  facet_wrap(vars(identifier), scales = "free")
+
+all_derivs <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[3]]))
+
+all_derivs <- bind_rows(all_derivs)
+
+
+ggplot(filter(all_derivs, currency != "energy"), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Derivatives for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0) +
+  facet_wrap(vars(identifier), scales = "free")
+
+
+
+ggplot(filter(all_derivs, currency != "energy"), aes(year, rnaught_mean, color = currency, fill = currency)) +
+  geom_line(aes(year, rnaught_mean)) +
+  geom_ribbon(aes(year, ymin = rnaught_lower, ymax = rnaught_upper),  alpha = .25) +
+  ggtitle("R0 for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 1) +
+  facet_wrap(vars(identifier), scales = "free")
+
+
+all_summary <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[4]]))
+
+all_summary <- bind_rows(all_summary)
+
+
+ggplot(all_summary, aes(currency, net_percent_of_start, color = currency)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  scale_color_viridis_d()+
+  facet_wrap(vars(identifier))
+
+all_summary_e_v_n <- all_summary %>%
+  select(net_percent_of_start, identifier, currency, draw) %>%
+  tidyr::pivot_wider(id_cols = c(draw, identifier), names_from = currency, values_from = net_percent_of_start)
+
+lower <- function(vect) {
+  return(quantile(vect, probs = .025))
+}
+upper <- function(vect) {
+  return(quantile(vect, probs = .975))
+}
+
+all_summary_e_v_n_means <- all_summary_e_v_n %>%
+  group_by(identifier) %>%
+  summarize_at(c("abundance", "scaled_energy", "energy"), .funs = list(mean = mean, lower = lower, upper =upper))
+
+ggplot(all_summary_e_v_n, aes(abundance, scaled_energy, color = identifier)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_d() +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  geom_abline(slope = 1, intercept = 0)
+
+
+ggplot(all_summary_e_v_n_means, aes(abundance_mean, scaled_energy_mean, color = identifier)) +
+  geom_point() +
+    geom_errorbar(aes(ymin = scaled_energy_lower, ymax = scaled_energy_upper)) +
+  geom_errorbarh(aes(xmin = abundance_lower, xmax = abundance_upper)) +
+  theme_bw() +
+  scale_color_viridis_d() +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  geom_abline(slope = 1, intercept = 0) +
+  geom_label(aes(label = identifier), size = 2, nudge_x = .1, nudge_y = .1)
+
+
+
+rnaught_summary <- all_derivs %>%
+  group_by(currency, identifier) %>%
+  summarize(mean_derivative = mean(mean),
+            mean_rnaught = mean(rnaught_mean),
+            rnaught_dev = mean(abs(rnaught_mean - 1)))
+
+rnaught_summary_wide <- rnaught_summary %>%
+  select(currency, identifier, rnaught_dev) %>%
+  tidyr::pivot_wider(identifier, names_from = currency, values_from = rnaught_dev, names_prefix = "r0_")
+
+ggplot(rnaught_summary, aes(currency, rnaught_dev, color = currency)) +
+  geom_point() +
+  scale_color_viridis_d() +
+  facet_wrap(vars(identifier))
+
+ggplot(rnaught_summary_wide, aes(r0_abundance, r0_scaled_energy, color = identifier)) +
+  geom_label(aes(label = identifier)) +
+  scale_color_viridis_d() +
+  theme_bw()
+
+rnaught_summary_wide <- left_join(rnaught_summary_wide, all_summary_e_v_n)
+
+ggplot(rnaught_summary_wide, aes(r0_abundance, abundance, color = identifier)) +
+  geom_boxplot()+
+  geom_label(aes(y = 1.3, label = identifier)) +
+  scale_color_viridis_d() +
+  theme_bw()
+
+ggplot(rnaught_summary_wide, aes(r0_scaled_energy, scaled_energy, color = identifier)) +
+  geom_boxplot()+
+  geom_label(aes(y = 1.3, label = identifier)) +
+  scale_color_viridis_d() +
+  theme_bw()
+
+```
+```
+```{r}
+
+all_derivs <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[2]]))
+
+all_derivs <- bind_rows(all_derivs)
+
+all_derivs_summary <- all_derivs %>%
+  mutate(abs_deriv = abs(derivative)) %>%
+  group_by(seed, identifier, currency) %>%
+  summarize(mean_abs_deriv = mean(abs_deriv),
+            sd_abs_deriv = sd(abs_deriv)) %>%
+  ungroup() %>%
+  group_by(identifier, currency) %>%
+  summarize(mean_abs_deriv = mean(mean_abs_deriv)) %>%
+  ungroup()
+
+all_summary_to_join <- all_summary %>%
+  group_by(currency, identifier) %>%
+  summarize(net_percent_of_start = mean(net_percent_of_start))
+
+all_derivs_summary <- left_join(all_derivs_summary, all_summary_to_join)
+
+
+ggplot(filter(all_derivs_summary, currency != "energy"), aes(abs(net_percent_of_start), mean_abs_deriv, color = currency)) +
+  geom_point() +
+  geom_label(aes(label = identifier)) +
+  facet_wrap(vars(currency), scales = "free") +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
+```
+
+
+
+
