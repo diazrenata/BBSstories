@@ -18,6 +18,8 @@ get_one_fd <- function(model, eps = 1e-02, seed) {
 
   this_r0 <- vals2 / vals1
 
+  this_instant_ratio <- (abs(vals2 - vals1) / vals1) * ((vals2 - vals1)/ abs(vals2 - vals1))
+
   years1 <- newdat$year[ 1:nrow(newdat) - 1]
   years2 <- newdat$year[ 2:nrow(newdat)]
 
@@ -28,6 +30,7 @@ get_one_fd <- function(model, eps = 1e-02, seed) {
     year = this_years,
     derivative = this_fd,
     rnaught = this_r0,
+    irat = this_instant_ratio,
     seed = seed,
     eps = eps,
     first_value = this_sim$fitted[1],

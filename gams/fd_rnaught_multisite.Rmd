@@ -85,9 +85,12 @@ joint_derivs <- joint_derivs_long %>%
   group_by(year, currency) %>%
   mutate(rnaught_mean = mean(rnaught),
          rnaught_upper = quantile(rnaught, probs = .975),
-         rnaught_lower = quantile(rnaught, probs = .025)) %>%
+         rnaught_lower = quantile(rnaught, probs = .025),
+         irat_mean = mean(irat),
+         irat_upper = quantile(irat, probs = .975),
+         irat_lower = quantile(irat, probs = .025)) %>%
   ungroup() %>%
-  select(year, upper, lower, mean, currency, rnaught_mean, rnaught_upper, rnaught_lower) %>%
+  select(year, upper, lower, mean, currency, rnaught_mean, rnaught_upper, rnaught_lower,  irat_mean, irat_upper, irat_lower) %>%
   distinct()
 
 ggplot(filter(joint_derivs, currency != "energy"), aes(year, mean, color = currency, fill = currency)) +
@@ -109,6 +112,15 @@ ggplot(filter(joint_derivs, currency != "energy"), aes(year, rnaught_mean, color
   geom_hline(yintercept = 1)
 
 
+ggplot(filter(joint_derivs, currency != "energy"), aes(year, irat_mean, color = currency, fill = currency)) +
+  geom_line(aes(year, irat_mean)) +
+  geom_ribbon(aes(year, ymin = irat_lower, ymax = irat_upper),  alpha = .25) +
+  ggtitle("Instantaneous ratio for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0)
+
 ggplot(filter(joint_derivs, currency == "energy"), aes(year, mean, color = currency, fill = currency)) +
   geom_line(aes(year, mean)) +
   geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
@@ -128,12 +140,22 @@ ggplot(filter(joint_derivs), aes(year, rnaught_mean, color = currency, fill = cu
   scale_fill_viridis_d() +
   geom_hline(yintercept = 1)
 
+ggplot(filter(joint_derivs), aes(year, irat_mean, color = currency, fill = currency)) +
+  geom_line(aes(year, irat_mean)) +
+  geom_ribbon(aes(year, ymin = irat_lower, ymax = irat_upper),  alpha = .25) +
+  ggtitle("irat for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0)
+
 
 joint_derivs %>%
   group_by(currency) %>%
   summarize(mean_derivative = mean(mean),
             mean_rnaught = mean(rnaught_mean),
-            rnaught_dev = mean(abs(rnaught_mean - 1)))
+            rnaught_dev = mean(abs(rnaught_mean - 1)),
+            irat_dev = mean(abs(irat_mean)))
 ```
 
 
@@ -187,10 +209,14 @@ joint_derivs <- joint_derivs_long %>%
   group_by(year, currency) %>%
   mutate(rnaught_mean = mean(rnaught),
          rnaught_upper = quantile(rnaught, probs = .975),
-         rnaught_lower = quantile(rnaught, probs = .025)) %>%
+         rnaught_lower = quantile(rnaught, probs = .025),
+         irat_mean = mean(irat),
+         irat_upper = quantile(irat, probs = .975),
+         irat_lower = quantile(irat, probs = .025)) %>%
   ungroup() %>%
-  select(year, upper, lower, mean, currency, rnaught_mean, rnaught_upper, rnaught_lower, identifier) %>%
+  select(year, upper, lower, mean, currency, rnaught_mean, rnaught_upper, rnaught_lower,  irat_mean, irat_upper, irat_lower, identifier) %>%
   distinct()
+
 
 
 
@@ -251,6 +277,15 @@ ggplot(filter(all_derivs, currency != "energy"), aes(year, rnaught_mean, color =
   geom_hline(yintercept = 1) +
   facet_wrap(vars(identifier), scales = "free")
 
+ggplot(filter(all_derivs, currency != "energy"), aes(year, irat_mean, color = currency, fill = currency)) +
+  geom_line(aes(year, irat_mean)) +
+  geom_ribbon(aes(year, ymin = irat_lower, ymax = irat_upper),  alpha = .25) +
+  ggtitle("Instant ratio for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 1) +
+  facet_wrap(vars(identifier), scales = "free")
 
 all_summary <- lapply(sites_scaled, FUN = function(wrapper_list) return(wrapper_list[[4]]))
 
@@ -330,6 +365,42 @@ ggplot(rnaught_summary_wide, aes(r0_abundance, abundance, color = identifier)) +
   theme_bw()
 
 ggplot(rnaught_summary_wide, aes(r0_scaled_energy, scaled_energy, color = identifier)) +
+  geom_boxplot()+
+  geom_label(aes(y = 1.3, label = identifier)) +
+  scale_color_viridis_d() +
+  theme_bw()
+
+
+
+irat_summary <- all_derivs %>%
+  group_by(currency, identifier) %>%
+  summarize(mean_derivative = mean(mean),
+            mean_irat = mean(irat_mean),
+            irat_dev = mean(abs(irat_mean)))
+
+irat_summary_wide <- irat_summary %>%
+  select(currency, identifier, irat_dev) %>%
+  tidyr::pivot_wider(identifier, names_from = currency, values_from = irat_dev, names_prefix = "irat_")
+
+ggplot(irat_summary, aes(currency, irat_dev, color = currency)) +
+  geom_point() +
+  scale_color_viridis_d() +
+  facet_wrap(vars(identifier))
+
+ggplot(irat_summary_wide, aes(irat_abundance, irat_scaled_energy, color = identifier)) +
+  geom_label(aes(label = identifier)) +
+  scale_color_viridis_d() +
+  theme_bw()
+
+irat_summary_wide <- left_join(irat_summary_wide, all_summary_e_v_n)
+
+ggplot(irat_summary_wide, aes(irat_abundance, abundance, color = identifier)) +
+  geom_boxplot()+
+  geom_label(aes(y = 1.3, label = identifier)) +
+  scale_color_viridis_d() +
+  theme_bw()
+
+ggplot(irat_summary_wide, aes(irat_scaled_energy, scaled_energy, color = identifier)) +
   geom_boxplot()+
   geom_label(aes(y = 1.3, label = identifier)) +
   scale_color_viridis_d() +

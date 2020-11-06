@@ -50,16 +50,16 @@ E and N are on different scales. Rescaled energy divides energy by the
 mean percapita metabolic rate, putting it in units **closer** to the
 scale of the abundance values.
 
-![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-3-3.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-3-4.png)<!-- -->
+![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-3-3.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-3-4.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-3-5.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-3-6.png)<!-- -->
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
-    ## # A tibble: 3 x 4
-    ##   currency      mean_derivative mean_rnaught rnaught_dev
-    ##   <chr>                   <dbl>        <dbl>       <dbl>
-    ## 1 abundance             -0.0583         1.00     0.00501
-    ## 2 energy              1858.             1.00     0.00750
-    ## 3 scaled_energy          5.93           1.00     0.00748
+    ## # A tibble: 3 x 5
+    ##   currency      mean_derivative mean_rnaught rnaught_dev irat_dev
+    ##   <chr>                   <dbl>        <dbl>       <dbl>    <dbl>
+    ## 1 abundance             -0.0583         1.00     0.00501  0.00501
+    ## 2 energy              1858.             1.00     0.00750  0.00750
+    ## 3 scaled_energy          5.93           1.00     0.00748  0.00748
 
 ![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
@@ -91,15 +91,23 @@ scale of the abundance values.
     ## Joining, by = "row"
     ## Joining, by = "row"
 
-![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-4.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-5.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-6.png)<!-- -->
+![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-4.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-5.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-6.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-7.png)<!-- -->
 
     ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
 
-![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-7.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-8.png)<!-- -->
+![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-8.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-9.png)<!-- -->
 
     ## Joining, by = "identifier"
 
-![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-9.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-10.png)<!-- -->
+![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-10.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-11.png)<!-- -->
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-12.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-13.png)<!-- -->
+
+    ## Joining, by = "identifier"
+
+![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-14.png)<!-- -->![](fd_rnaught_multisite_files/figure-gfm/unnamed-chunk-6-15.png)<!-- -->
 
 ``` 
 ```
