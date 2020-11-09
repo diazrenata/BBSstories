@@ -1,0 +1,222 @@
+---
+title: "Instantaneous change demos"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.dim = c(5,3))
+
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+source(here::here("gams", "gam_fxns", "sunrise_fxns.R"))
+
+```
+
+The "instantaneous change" I talk about probably has precedent. It's basically the derivative divided by the function, where the function is the actual or fitted time series and the derivative is the change from timestep to timestep (or very small interval to very small interval). 
+
+I started using it because, unlike the derivative, it is comparable even when the functions involve different actual numbers. 
+
+## Differences in scale
+
+A has generally very small numbers, B has much larger numbers.
+
+```{r scale}
+
+a <- data.frame(fitted = rnorm(100, mean = 10, sd = .01), draw = 1, year = 1:100, row = 1:100, currency = "NA", identifier = "a")
+b <- data.frame(fitted = rnorm(100, mean = 1000, sd = 1), draw = 1, year = 1:100, row = 1:100, currency = "NA", identifier = "b")
+
+scale_df <- bind_rows(a, b)
+
+ggplot(scale_df, aes(year, fitted, color = identifier)) +
+  geom_line() +
+  facet_wrap(vars(identifier), scales = "fixed")
+
+scale_ichange <- bind_rows(instant_change_wrapper(b), instant_change_wrapper(a))
+
+ggplot(scale_ichange, aes(year, tstep_change, color =  identifier)) +
+  geom_line()
+
+ggplot(scale_ichange, aes(year, tstep_change, color =  identifier)) +
+  geom_line() +
+  facet_wrap(vars(identifier), scales = "free_y")
+
+ggplot(scale_ichange, aes(year, instant_change_proportional, color = identifier)) +
+  geom_line()
+
+scale_ichange %>%
+  group_by(identifier) %>%
+  summarize(mean_abs_derivative = mean(abs(tstep_change)),
+            mean_abs_ichange = mean(abs(instant_change_proportional)))
+
+```
+
+a and b are just noise from a normal with different means but the same c.v. we can't compare the derivatives directly because the actual numbers for b are so much larger. However the instant change scaled by the values is appropriately comparable.
+
+
+
+```{r scale w change}
+
+a <- data.frame(fitted = seq(4, 16, length.out=  100), draw = 1, year = 1:100, row = 1:100, currency = "NA", identifier = "a")
+# %>%
+#   mutate(err = .1 * fitted) %>%
+#   group_by(year) %>%
+#   mutate(fitted = rnorm(n = 1, mean = fitted, sd = err)) %>%
+#   select(-err) %>%
+#   ungroup()
+
+b <- data.frame(fitted = seq(400, 1600, length.out=  100), draw = 1, year = 1:100, row = 1:100, currency = "NA", identifier = "b")
+# %>%
+#   mutate(err = .1 * fitted) %>%
+#   group_by(year) %>%
+#   mutate(fitted = rnorm(n = 1, mean = fitted, sd = err)) %>%
+#   select(-err) %>%
+#   ungroup()
+
+scale_df <- bind_rows(a, b)
+
+ggplot(scale_df, aes(year, fitted, color = identifier)) +
+  geom_line() +
+  facet_wrap(vars(identifier), scales = "fixed")
+
+scale_ichange <- bind_rows(instant_change_wrapper(b), instant_change_wrapper(a))
+
+ggplot(scale_ichange, aes(year, tstep_change, color =  identifier)) +
+  geom_line()
+
+ggplot(scale_ichange, aes(year, tstep_change, color =  identifier)) +
+  geom_line() +
+  facet_wrap(vars(identifier), scales = "free_y")
+
+ggplot(scale_ichange, aes(year, instant_change_proportional, color = identifier)) +
+  geom_line()
+
+scale_ichange %>%
+  group_by(identifier) %>%
+  summarize(mean_abs_derivative = mean(abs(tstep_change)),
+            mean_abs_ichange = mean(abs(instant_change_proportional)))
+
+```
+
+## Different functional forms
+
+Sin vs no variation
+
+```{r sin}
+
+
+a <- data.frame(draw = 1, year = 1:100, row = 1:100, currency = "NA", identifier = "a") %>%
+  mutate(fitted = 500)
+
+
+b <- data.frame(draw = 1, year = 1:100, row = 1:100, currency = "NA", identifier = "b") %>%
+  mutate(fitted = 500 + 50 * sin(year))
+
+scale_df <- bind_rows(a, b)
+
+ggplot(scale_df, aes(year, fitted, color = identifier)) +
+  geom_line() +
+  facet_wrap(vars(identifier), scales = "fixed")
+
+scale_ichange <- bind_rows(instant_change_wrapper(b), instant_change_wrapper(a))
+
+ggplot(scale_ichange, aes(year, tstep_change, color =  identifier)) +
+  geom_line()
+
+ggplot(scale_ichange, aes(year, tstep_change, color =  identifier)) +
+  geom_line() +
+  facet_wrap(vars(identifier), scales = "free_y")
+
+ggplot(scale_ichange, aes(year, instant_change_proportional, color = identifier)) +
+  geom_line()
+
+scale_ichange %>%
+  group_by(identifier) %>%
+  summarize(mean_abs_derivative = mean(abs(tstep_change)),
+            mean_abs_ichange = mean(abs(instant_change_proportional)))
+
+
+```
+
+
+
+```{r sin with longer period}
+
+
+a <- data.frame(draw = 1, year = 1:100, row = 1:100, currency = "NA", identifier = "a") %>%
+  mutate(fitted = 525)
+
+
+b <- data.frame(draw = 1, year = 1:100, row = 1:100, currency = "NA", identifier = "b") %>%
+  mutate(fitted = 500 + 50 * sin(seq(0, 3, length.out = 100)))
+
+scale_df <- bind_rows(a, b)
+
+ggplot(scale_df, aes(year, fitted, color = identifier)) +
+  geom_line() +
+  facet_wrap(vars(identifier), scales = "fixed")
+
+scale_ichange <- bind_rows(instant_change_wrapper(b), instant_change_wrapper(a))
+
+ggplot(scale_ichange, aes(year, tstep_change, color =  identifier)) +
+  geom_line()
+
+ggplot(scale_ichange, aes(year, tstep_change, color =  identifier)) +
+  geom_line() +
+  facet_wrap(vars(identifier), scales = "free_y")
+
+ggplot(scale_ichange, aes(year, instant_change_proportional, color = identifier)) +
+  geom_line()
+
+scale_ichange %>%
+  group_by(identifier) %>%
+  summarize(mean_abs_derivative = mean(abs(tstep_change)),
+            mean_abs_ichange = mean(abs(instant_change_proportional)))
+
+
+```
+
+
+
+Sin with change
+
+```{r sin with change}
+
+
+a <- data.frame(draw = 1, year = 1:100, row = 1:100, currency = "NA", identifier = "a") %>%
+  mutate(fitted = seq(400, 1600, length.out = 100))
+
+
+b <- data.frame(draw = 1, year = 1:100, row = 1:100, currency = "NA", identifier = "b") %>%
+  mutate(fitted = seq(400, 1600, length.out = 100) + 50 * sin(year))
+
+scale_df <- bind_rows(a, b)
+
+ggplot(scale_df, aes(year, fitted, color = identifier)) +
+  geom_line() +
+  facet_wrap(vars(identifier), scales = "fixed")
+
+scale_ichange <- bind_rows(instant_change_wrapper(b), instant_change_wrapper(a))
+
+ggplot(scale_ichange, aes(year, tstep_change, color =  identifier)) +
+  geom_line()
+
+ggplot(scale_ichange, aes(year, tstep_change, color =  identifier)) +
+  geom_line() +
+  facet_wrap(vars(identifier), scales = "free_y")
+
+ggplot(scale_ichange, aes(year, instant_change_proportional, color = identifier)) +
+  geom_line()
+
+scale_ichange %>%
+  group_by(identifier) %>%
+  summarize(mean_abs_derivative = mean(abs(tstep_change)),
+            mean_abs_ichange = mean(abs(instant_change_proportional)))
+
+
+```
+
+

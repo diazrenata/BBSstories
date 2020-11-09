@@ -1,0 +1,129 @@
+---
+title: "a trimmed-ish draft"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.dim = c(5,3))
+
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+
+ts <- read.csv(here::here("gams", "working_datasets.csv"))
+
+unique_sites <- unique(ts$site_name)
+
+site_dfs <- lapply(unique_sites, FUN = function(site, full_ts) return(filter(full_ts, site_name == site)), full_ts = ts)
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+source(here::here("gams", "gam_fxns", "sunrise_fxns.R"))
+
+```
+
+#### With portal
+
+```{r just e portal, echo = F}
+
+rats <- filter(ts, site_name == "portal_rats")
+
+portal_mean_perc_e <- sum(rats$energy) / sum(rats$abundance)
+
+rats <- rats %>% 
+  mutate(scaled_energy = energy / portal_mean_perc_e)
+
+rats_long <- rats %>%
+  select(year, energy, abundance, scaled_energy) %>%
+  tidyr::pivot_longer(-year, names_to = "currency", values_to = "value")
+
+ggplot(filter(rats_long, currency != "energy"), aes(year, value, color = currency)) +
+  geom_line() +
+  theme_bw() +
+  scale_color_viridis_d()
+
+```
+
+
+```{r}
+e_mod <- mod_wrapper(rats, response_variable = "energy", identifier = "site_name", k = 5)
+re_e_mod <- mod_wrapper(rats, response_variable = "scaled_energy", identifier = "site_name", k = 5)
+n_mod <- mod_wrapper(rats, response_variable = "abundance", identifier = "site_name", k = 5)
+
+e_samples <- samples_wrapper(re_e_mod, seed_seed = 1994)
+n_samples <- samples_wrapper(n_mod, seed_seed = 1990)
+
+joint_samples <- bind_rows(e_samples, n_samples) %>%
+  select(year, currency, mean, upper, lower) %>%
+  distinct()
+
+ggplot(joint_samples, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d()
+
+```
+
+
+Calculated off the samples, we can get:
+
+* the net change from beginning to end, plus a CI
+* a timeseries of the instantaneous rate of change, which we can summarize in order to get a sense of how much backtracking is occurring over the course of the timeseries
+
+## Net change
+
+```{r shortcut to net change}
+
+
+e_change <- net_change_wrapper(e_samples)
+n_change <- net_change_wrapper(n_samples)
+
+both_change <- bind_rows(e_change, n_change)
+
+ggplot(both_change, aes(currency, net_proportional)) +
+  geom_boxplot() +
+  theme_bw()
+
+both_summary <- change_summary_wrapper(both_change)
+
+both_summary
+```
+
+So this is a way of saying
+
+* Abundance increases by about ```r both_summary$mean_net_proportional[1] * 100``` percent, and energy increases by about ```r both_summary$mean_net_proportional[2] * 100```, with a CI given by the lower/upper.
+
+## Instantaneous change and backtracking
+
+```{r instant change}
+
+
+e_instant_change <- instant_change_wrapper(e_samples)
+n_instant_change <- instant_change_wrapper(n_samples)
+
+both_instant_change <- bind_rows(e_instant_change, n_instant_change)
+
+both_ichange_summary <- instant_change_summary_wrapper(both_instant_change)
+
+ggplot(both_ichange_summary, aes(year, mean_ichange_proportional, color = currency, fill = currency)) +
+  geom_line(aes(year, mean_ichange_proportional)) +
+  geom_ribbon(aes(year, ymin = lower_ichange_proportional, ymax = upper_ichange_proportional),  alpha = .25) +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0)
+
+both_ichange_ts_summary <- instant_change_absolute_summary_wrapper(both_instant_change)
+
+
+ggplot(both_ichange_ts_summary, aes(currency, mean_abs_ichange_over_ts)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw()
+```
+
+On average there's about a 12% change (up or down) timestep to timestep for abundance, and maybe a 9% change for energy. For abundance this is consistently an increase; for energy this is sometimes a decrease and later an increase. 
