@@ -1,0 +1,228 @@
+---
+title: "selecting nb of basis fxns"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.dim = c(5,3))
+
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+
+ts <- read.csv(here::here("gams", "working_datasets.csv"))
+
+ts <- ts %>%
+  group_by(site_name) %>%
+  mutate(totale = sum(energy),
+         totaln = sum(abundance)) %>%
+  mutate(avg_perc_e = totale/totaln) %>%
+  mutate(rescaled_energy = energy / avg_perc_e) %>%
+  ungroup() %>%
+  select(-totale, -totaln, -avg_perc_e) %>%
+  mutate(rescaled_energy = round(rescaled_energy))
+
+unique_sites <- unique(ts$site_name)
+
+site_dfs <- lapply(unique_sites, FUN = function(site, full_ts) return(filter(full_ts, site_name == site)), full_ts = ts)
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+source(here::here("gams", "gam_fxns", "sunrise_fxns.R"))
+```
+## Alberta energy
+```{r}
+this_site <- "alberta"
+
+this_df <- filter(ts, site_name == this_site)
+
+e_linear <- gam(rescaled_energy ~ year, data = this_df, family = "poisson")
+
+ks <- c(3:(nrow(this_df)))
+
+e_candidate_mods <- lapply(ks, FUN = function(k) return( gam(rescaled_energy ~ s(year, k = k),  data = this_df, method = "REML", family = "poisson")))
+
+e_candidate_aics <- lapply(e_candidate_mods, FUN = function(mod) return(data.frame(aic = AIC(mod), deviance = mod$deviance, k =  k.check(mod)[,"k'"], smooth = T, kscore =  k.check(mod)[,"k-index"]))) %>%
+  bind_rows()
+e_linear_aic <- data.frame(k = 0, smooth = F, aic = AIC(e_linear), deviance = e_linear$deviance, kscore = 100) %>%
+  bind_rows(e_candidate_aics) %>%
+  mutate(k_pass = kscore > 1)
+
+lowest_k = filter(e_linear_aic, k_pass, smooth) %>%
+  group_by(smooth) %>%
+  arrange(k) 
+
+lowest_k_model <- gam(rescaled_energy ~ s(year, k = lowest_k$k[1] + 1),  data = this_df, method = "REML", family = "poisson")
+
+ggplot(e_linear_aic, aes(k, aic, color = k_pass)) + geom_point()
+
+
+with_fits <- gratia::add_fitted(this_df, lowest_k_model, value = "smooth_lowk") %>%
+  add_fitted(e_linear, value = "just_year") %>%
+  select(year, rescaled_energy, smooth_lowk, just_year) %>%
+  tidyr::pivot_longer(-year, names_to = "fit_method", values_to = "val")
+
+e_linear_aic %>%
+  filter(k %in% c(0, lowest_k$k[1]))
+
+
+ggplot(with_fits, aes(year, val, color = fit_method)) +
+  geom_line(size = 4, alpha = .5) +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  geom_point() +
+  facet_wrap(vars(fit_method))
+
+
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+
+smooth_samples <- samples_wrapper(lowest_k_model) %>%
+  mutate(method = "smooth_lowk")
+
+year_samples <- samples_wrapper(e_linear) %>%
+  mutate(method = "linear")
+# both_samples <- samples_wrapper(n_both) # fails
+
+
+joint_samples <- bind_rows(smooth_samples, year_samples) %>%
+  select(year, mean, upper, lower, method) %>%
+  distinct()
+
+ggplot(joint_samples, aes(year, mean, color = method, fill = method)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for linear and smooth") +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  scale_fill_viridis_d(end = .8)
+
+
+
+```
+
+## Alberta abundance
+```{r}
+this_site <- "alberta"
+
+this_df <- filter(ts, site_name == this_site)
+
+n_linear <- gam(abundance ~ year, data = this_df, family = "poisson")
+
+ks <- c(3:(nrow(this_df)))
+
+n_candidate_mods <- lapply(ks, FUN = function(k) return( gam(abundance ~ s(year, k = k),  data = this_df, method = "REML", family = "poisson")))
+
+n_candidate_aics <- lapply(n_candidate_mods, FUN = function(mod) return(data.frame(aic = AIC(mod), deviance = mod$deviance, k =  k.check(mod)[,"k'"], smooth = T, kscore =  k.check(mod)[,"k-index"]))) %>%
+  bind_rows()
+n_linear_aic <- data.frame(k = 0, smooth = F, aic = AIC(n_linear), deviance = n_linear$deviance, kscore = 100) %>%
+  bind_rows(n_candidate_aics) %>%
+  mutate(k_pass = kscore > 1)
+
+lowest_k = filter(n_linear_aic, k_pass, smooth) %>%
+  group_by(smooth) %>%
+  arrange(k) 
+
+lowest_k_model <- gam(abundance ~ s(year, k = lowest_k$k[1] + 1),  data = this_df, method = "REML", family = "poisson")
+
+ggplot(n_linear_aic, aes(k, aic, color = k_pass)) + geom_point()
+
+
+with_fits <- gratia::add_fitted(this_df, lowest_k_model, value = "smooth_lowk") %>%
+  add_fitted(n_linear, value = "just_year") %>%
+  select(year, abundance, smooth_lowk, just_year) %>%
+  tidyr::pivot_longer(-year, names_to = "fit_method", values_to = "val")
+
+n_linear_aic %>%
+  filter(k %in% c(0, lowest_k$k[1]))
+
+
+ggplot(with_fits, aes(year, val, color = fit_method)) +
+  geom_line(size = 4, alpha = .5) +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  geom_point() +
+  facet_wrap(vars(fit_method))
+
+
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+
+smooth_samples <- samples_wrapper(lowest_k_model) %>%
+  mutate(method = "smooth_lowk")
+
+year_samples <- samples_wrapper(n_linear) %>%
+  mutate(method = "linear")
+# both_samples <- samples_wrapper(n_both) # fails
+
+
+joint_samples <- bind_rows(smooth_samples, year_samples) %>%
+  select(year, mean, upper, lower, method) %>%
+  distinct()
+
+ggplot(joint_samples, aes(year, mean, color = method, fill = method)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for linear and smooth") +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  scale_fill_viridis_d(end = .8)
+
+
+```
+```{r}
+
+ggplot(this_df, aes(year, abundance)) +
+  geom_line() +
+  theme_bw()
+
+
+ggplot(this_df, aes(year, rescaled_energy)) +
+  geom_line() +
+  theme_bw()
+
+
+```
+
+```{r}
+
+lowest_k_model <- gam(rescaled_energy ~ s(year, k = lowest_k$k[1] + 1),  data = this_df, method = "REML", family = "poisson")
+
+
+with_fits <- gratia::add_fitted(this_df, lowest_k_model, value = "smooth_lowk") %>%
+  add_fitted(e_linear, value = "just_year") %>%
+  select(year, rescaled_energy, smooth_lowk, just_year) %>%
+  tidyr::pivot_longer(-year, names_to = "fit_method", values_to = "val")
+
+
+ggplot(with_fits, aes(year, val, color = fit_method)) +
+  geom_line(size = 4, alpha = .5) +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  geom_point() +
+  facet_wrap(vars(fit_method))
+
+source(here::here("gams", "gam_fxns", "wrapper_fxns.R"))
+
+smooth_samples <- samples_wrapper(lowest_k_model) %>%
+  mutate(method = "smooth_lowk")
+
+year_samples <- samples_wrapper(e_linear) %>%
+  mutate(method = "linear")
+# both_samples <- samples_wrapper(n_both) # fails
+
+
+joint_samples <- bind_rows(smooth_samples, year_samples) %>%
+  select(year, mean, upper, lower, method) %>%
+  distinct()
+
+ggplot(joint_samples, aes(year, mean, color = method, fill = method)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for linear and smooth") +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  scale_fill_viridis_d(end = .8)
+
+```
