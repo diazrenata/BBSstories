@@ -3,7 +3,7 @@ a trimmed-ish draft
 
 ``` r
 knitr::opts_chunk$set(echo = FALSE)
-knitr::opts_chunk$set(fig.dim = c(5,3))
+#knitr::opts_chunk$set(fig.dim = c(5,3))
 
 library(dplyr)
 ```
@@ -85,3 +85,236 @@ So this is a way of saying
     ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
 
 ![](sunrise_files/figure-gfm/instant%20change-2.png)<!-- -->
+
+On average there’s about a 12% change (up or down) timestep to timestep
+for abundance, and maybe a 9% change for energy. For abundance this is
+consistently an increase; for energy this is sometimes a decrease and
+later an increase.
+
+# For all sites
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+![](sunrise_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->![](sunrise_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+
+![](sunrise_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->![](sunrise_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->![](sunrise_files/figure-gfm/unnamed-chunk-5-3.png)<!-- -->
+
+# For all sites, k = 10
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## `summarise()` regrouping output by 'currency' (override with `.groups` argument)
+
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+    ## Joining, by = c("row", "draw", "identifier", "currency")
+
+    ## `summarise()` regrouping output by 'currency', 'identifier', 'row' (override with `.groups` argument)
+
+    ## `summarise()` regrouping output by 'currency', 'identifier' (override with `.groups` argument)
+
+![](sunrise_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->![](sunrise_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
+
+![](sunrise_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->![](sunrise_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->![](sunrise_files/figure-gfm/unnamed-chunk-8-3.png)<!-- -->

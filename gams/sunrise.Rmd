@@ -5,7 +5,7 @@ output: github_document
 
 ```{r}
 knitr::opts_chunk$set(echo = FALSE)
-knitr::opts_chunk$set(fig.dim = c(5,3))
+#knitr::opts_chunk$set(fig.dim = c(5,3))
 
 library(dplyr)
 library(gratia)
@@ -127,3 +127,246 @@ ggplot(both_ichange_ts_summary, aes(currency, mean_abs_ichange_over_ts)) +
 ```
 
 On average there's about a 12% change (up or down) timestep to timestep for abundance, and maybe a 9% change for energy. For abundance this is consistently an increase; for energy this is sometimes a decrease and later an increase. 
+
+
+# For all sites
+
+```{r}
+
+re_e_mods <- list()
+n_mods <- list()
+e_samples <- list()
+n_samples <- list()
+joint_samples <- list()
+both_change <- list()
+both_summary <- list()
+both_instant_change <- list()
+both_ichange_summary <- list()
+both_ichange_ts_summary <- list()
+
+for(i in 1:length(site_dfs)) {
+  this_df <- site_dfs[[i]]
+  
+  
+mean_perc_e <- sum(this_df$energy) / sum(this_df$abundance)
+
+this_df <- this_df %>% 
+  mutate(scaled_energy = energy / mean_perc_e)
+
+re_e_mods[[i]] <- mod_wrapper(this_df, response_variable = "scaled_energy", identifier = "site_name", k = 5)
+n_mods[[i]] <- mod_wrapper(this_df, response_variable = "abundance", identifier = "site_name", k = 5)
+
+e_samples[[i]] <- samples_wrapper(re_e_mods[[i]], seed_seed = 1994)
+n_samples[[i]] <- samples_wrapper(n_mods[[i]], seed_seed = 1990)
+
+joint_samples[[i]] <- bind_rows(e_samples, n_samples) %>%
+  select(year, currency, mean, upper, lower, identifier) %>%
+  distinct()
+
+
+e_change <- net_change_wrapper(e_samples[[i]])
+n_change <- net_change_wrapper(n_samples[[i]])
+
+both_change[[i]] <- bind_rows(e_change, n_change)
+
+both_summary[[i]] <- change_summary_wrapper(both_change[[i]])
+
+
+e_instant_change <- instant_change_wrapper(e_samples[[i]])
+n_instant_change <- instant_change_wrapper(n_samples[[i]])
+
+both_instant_change[[i]] <- bind_rows(e_instant_change, n_instant_change)
+
+both_ichange_summary[[i]] <- instant_change_summary_wrapper(both_instant_change[[i]])
+
+both_ichange_ts_summary[[i]] <- instant_change_absolute_summary_wrapper(both_instant_change[[i]])
+}
+
+
+
+
+```
+
+```{r}
+
+joint_samples <- bind_rows(joint_samples)
+
+ggplot(joint_samples, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() + 
+  facet_wrap(vars(identifier), scales = "free")
+
+both_change <- bind_rows(both_change)
+# 
+# ggplot(both_change, aes(identifier, net_proportional, color = currency)) +
+#   geom_boxplot() +
+#   theme_bw()
+
+both_summary <- bind_rows(both_summary) 
+
+both_summary_wide <- both_summary %>%
+  tidyr::pivot_wider(id_cols = identifier, names_from = currency, values_from = c(mean_net_proportional, lower_net_proportional, upper_net_proportional))
+
+ggplot(both_summary_wide, aes(x = mean_net_proportional_abundance, y = mean_net_proportional_scaled_energy, color = identifier)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower_net_proportional_scaled_energy,
+                    ymax = upper_net_proportional_scaled_energy)) +
+  geom_errorbarh(aes(xmin = lower_net_proportional_abundance,
+                     xmax = upper_net_proportional_abundance)) +
+  theme_bw() +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) + 
+  geom_abline(slope = 1, intercept = 0)
+
+```
+
+```{r}
+both_ichange_summary <- bind_rows(both_ichange_summary)
+ggplot(both_ichange_summary, aes(year, mean_ichange_proportional, color = currency, fill = currency)) +
+  geom_line(aes(year, mean_ichange_proportional)) +
+  geom_ribbon(aes(year, ymin = lower_ichange_proportional, ymax = upper_ichange_proportional),  alpha = .25) +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0) +
+  facet_wrap(vars(identifier), scales = "free")
+
+
+both_ichange_ts_summary <- bind_rows(both_ichange_ts_summary)
+
+ggplot(both_ichange_ts_summary, aes(currency, mean_abs_ichange_over_ts)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  facet_wrap(vars(identifier))
+
+ggplot(both_ichange_ts_summary, aes(identifier, mean_abs_ichange_over_ts)) +
+  geom_boxplot() +
+  theme_bw() +
+  facet_wrap(vars(currency))
+```
+
+# For all sites, k = 10
+
+```{r}
+
+re_e_mods <- list()
+n_mods <- list()
+e_samples <- list()
+n_samples <- list()
+joint_samples <- list()
+both_change <- list()
+both_summary <- list()
+both_instant_change <- list()
+both_ichange_summary <- list()
+both_ichange_ts_summary <- list()
+
+for(i in 1:length(site_dfs)) {
+  this_df <- site_dfs[[i]]
+  
+  
+mean_perc_e <- sum(this_df$energy) / sum(this_df$abundance)
+
+this_df <- this_df %>% 
+  mutate(scaled_energy = energy / mean_perc_e)
+
+re_e_mods[[i]] <- mod_wrapper(this_df, response_variable = "scaled_energy", identifier = "site_name", k = 10)
+n_mods[[i]] <- mod_wrapper(this_df, response_variable = "abundance", identifier = "site_name", k = 10)
+
+e_samples[[i]] <- samples_wrapper(re_e_mods[[i]], seed_seed = 1994)
+n_samples[[i]] <- samples_wrapper(n_mods[[i]], seed_seed = 1990)
+
+joint_samples[[i]] <- bind_rows(e_samples, n_samples) %>%
+  select(year, currency, mean, upper, lower, identifier) %>%
+  distinct()
+
+
+e_change <- net_change_wrapper(e_samples[[i]])
+n_change <- net_change_wrapper(n_samples[[i]])
+
+both_change[[i]] <- bind_rows(e_change, n_change)
+
+both_summary[[i]] <- change_summary_wrapper(both_change[[i]])
+
+
+e_instant_change <- instant_change_wrapper(e_samples[[i]])
+n_instant_change <- instant_change_wrapper(n_samples[[i]])
+
+both_instant_change[[i]] <- bind_rows(e_instant_change, n_instant_change)
+
+both_ichange_summary[[i]] <- instant_change_summary_wrapper(both_instant_change[[i]])
+
+both_ichange_ts_summary[[i]] <- instant_change_absolute_summary_wrapper(both_instant_change[[i]])
+}
+
+
+
+
+```
+
+```{r}
+
+joint_samples <- bind_rows(joint_samples)
+
+ggplot(joint_samples, aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle("Fits for energy and abundance") +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() + 
+  facet_wrap(vars(identifier), scales = "free")
+
+both_change <- bind_rows(both_change)
+# 
+# ggplot(both_change, aes(identifier, net_proportional, color = currency)) +
+#   geom_boxplot() +
+#   theme_bw()
+
+both_summary <- bind_rows(both_summary) 
+
+both_summary_wide <- both_summary %>%
+  tidyr::pivot_wider(id_cols = identifier, names_from = currency, values_from = c(mean_net_proportional, lower_net_proportional, upper_net_proportional))
+
+ggplot(both_summary_wide, aes(x = mean_net_proportional_abundance, y = mean_net_proportional_scaled_energy, color = identifier)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower_net_proportional_scaled_energy,
+                    ymax = upper_net_proportional_scaled_energy)) +
+  geom_errorbarh(aes(xmin = lower_net_proportional_abundance,
+                     xmax = upper_net_proportional_abundance)) +
+  theme_bw() +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) + 
+  geom_abline(slope = 1, intercept = 0)
+
+```
+
+```{r}
+both_ichange_summary <- bind_rows(both_ichange_summary)
+ggplot(both_ichange_summary, aes(year, mean_ichange_proportional, color = currency, fill = currency)) +
+  geom_line(aes(year, mean_ichange_proportional)) +
+  geom_ribbon(aes(year, ymin = lower_ichange_proportional, ymax = upper_ichange_proportional),  alpha = .25) +
+  theme_bw() +
+  scale_color_viridis_d() +
+  scale_fill_viridis_d() +
+  geom_hline(yintercept = 0) +
+  facet_wrap(vars(identifier), scales = "free")
+
+
+both_ichange_ts_summary <- bind_rows(both_ichange_ts_summary)
+
+ggplot(both_ichange_ts_summary, aes(currency, mean_abs_ichange_over_ts)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw() +
+  facet_wrap(vars(identifier))
+
+ggplot(both_ichange_ts_summary, aes(identifier, mean_abs_ichange_over_ts)) +
+  geom_boxplot() +
+  theme_bw() +
+  facet_wrap(vars(currency))
+```

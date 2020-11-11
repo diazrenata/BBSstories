@@ -62,6 +62,9 @@ source(here::here("gams", "gam_fxns", "sunrise_fxns.R"))
     ## Joining, by = "row"
     ## Joining, by = "row"
 
+    ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning -
+    ## Inf
+
 ![](select_k_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
 
 ## Alberta abundance
@@ -77,12 +80,112 @@ source(here::here("gams", "gam_fxns", "sunrise_fxns.R"))
     ## Joining, by = "row"
     ## Joining, by = "row"
 
+    ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning -
+    ## Inf
+
 ![](select_k_files/figure-gfm/unnamed-chunk-3-3.png)<!-- -->
-![](select_k_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->![](select_k_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
 
-![](select_k_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+# everything
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+![](select_k_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->![](select_k_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+
+# Rockies
+
+![](select_k_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+    ##   k smooth      aic deviance    kscore k_pass site_name currency
+    ## 1 0  FALSE 439.6797 258.3695 100.00000   TRUE   rockies   energy
+    ## 2 2   TRUE 439.8673 257.2508   1.14416   TRUE   rockies   energy
+
+![](select_k_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 
     ## Joining, by = "row"
     ## Joining, by = "row"
 
-![](select_k_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+    ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning -
+    ## Inf
+
+![](select_k_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->![](select_k_files/figure-gfm/unnamed-chunk-6-4.png)<!-- -->
+
+    ##   k smooth      aic deviance     kscore k_pass site_name  currency
+    ## 1 0  FALSE 760.3815 579.7590 100.000000   TRUE   rockies abundance
+    ## 2 3   TRUE 482.0903 297.4695   1.037864   TRUE   rockies abundance
+
+![](select_k_files/figure-gfm/unnamed-chunk-6-5.png)<!-- -->
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning -
+    ## Inf
+
+![](select_k_files/figure-gfm/unnamed-chunk-6-6.png)<!-- -->
+
+# Rockies, k = 10
+
+![](select_k_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+    ##   k smooth      aic deviance    kscore k_pass site_name currency
+    ## 1 0  FALSE 439.6797 258.3695 100.00000   TRUE   rockies   energy
+    ## 2 2   TRUE 439.8673 257.2508   1.14416   TRUE   rockies   energy
+
+![](select_k_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning -
+    ## Inf
+
+![](select_k_files/figure-gfm/unnamed-chunk-7-3.png)<!-- -->![](select_k_files/figure-gfm/unnamed-chunk-7-4.png)<!-- -->
+
+    ##   k smooth      aic deviance     kscore k_pass site_name  currency
+    ## 1 0  FALSE 760.3815 579.7590 100.000000   TRUE   rockies abundance
+    ## 2 3   TRUE 482.0903 297.4695   1.037864   TRUE   rockies abundance
+
+![](select_k_files/figure-gfm/unnamed-chunk-7-5.png)<!-- -->
+
+    ## Joining, by = "row"
+    ## Joining, by = "row"
+
+    ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning -
+    ## Inf
+
+![](select_k_files/figure-gfm/unnamed-chunk-7-6.png)<!-- -->
