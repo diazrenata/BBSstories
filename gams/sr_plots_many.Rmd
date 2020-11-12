@@ -1,0 +1,181 @@
+---
+title: "a trimmed-ish draft"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+#knitr::opts_chunk$set(fig.dim = c(5,3))
+
+library(dplyr)
+library(gratia)
+library(ggplot2)
+load_mgcv()
+
+ts <- read.csv(here::here("gams", "results", "ts_w_rescaled_e_100bbs.csv"))
+```
+
+```{r}
+
+
+max_to_plot = 16
+
+ones_to_plot <- unique(ts$site_name)[sample.int(n = length(unique(ts$site_name)), size = max_to_plot, replace = F)]
+
+ts_long <- ts %>%
+  select(year, abundance, scaled_energy, site_name) %>%
+  tidyr::pivot_longer(c(abundance, scaled_energy), names_to = "currency", values_to = "value")
+
+ggplot(filter(ts_long, site_name %in% ones_to_plot), aes(year, value, color= currency)) +
+  geom_line() +
+  theme_bw() +
+  ggtitle("Actual values")+
+  scale_color_viridis_d(end = .8) +
+  facet_wrap(vars(site_name), scales = "free")
+```
+
+```{r}
+joint_samples <- read.csv(here::here("gams", "results", "joint_samples_5_100bbs.csv"))
+
+ggplot(filter(joint_samples, identifier %in% ones_to_plot), aes(year, mean, color = currency, fill = currency)) +
+  geom_line(aes(year, mean)) +
+  geom_ribbon(aes(year, ymin = lower, ymax = upper),  alpha = .25) +
+  ggtitle(paste0("Fits for energy and abundance, k = ", joint_samples$k[1])) +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  scale_fill_viridis_d(end = .8) + 
+  facet_wrap(vars(identifier), scales = "free")
+```
+
+```{r}
+
+both_change <- read.csv(here::here("gams", "results", "both_change_5_100bbs.csv"))
+
+ggplot(filter(both_change, identifier %in% ones_to_plot), aes(net_proportional,color = identifier, fill = identifier)) +
+  geom_density(alpha = .4) +
+  facet_wrap(vars(currency), scales = "free") +
+  theme_bw() +
+  geom_vline(xintercept = 0)
+
+```
+
+```{r}
+both_summary <- read.csv(here::here("gams", "results", "both_summary_5_100bbs.csv"))
+
+ggplot(both_summary, aes(x = mean_net_proportional)) +
+  geom_histogram(binwidth = .1) +
+  theme_bw() +
+  facet_wrap(vars(currency), scales = "free") +
+  geom_vline(xintercept = 0)
+
+both_summary <- both_summary %>%
+  group_by_all() %>%
+  mutate(over_zero = ((lower_net_proportional * upper_net_proportional) < 0),
+         increasing = all((lower_net_proportional > 0), upper_net_proportional > 0),
+         decreasing = all((lower_net_proportional < 0), upper_net_proportional < 0)) %>%
+  ungroup()
+
+ggplot(filter(both_summary, !over_zero), aes(mean_net_proportional)) +
+  geom_histogram(binwidth = .1) +
+  facet_wrap(vars(currency)) +
+  theme_bw()
+
+both_summary %>%
+  group_by(currency) %>%
+  summarize(ntotal = dplyr::n(),
+            noverzero = sum(over_zero),
+            nincreasing = sum(increasing),
+            ndecreasing = sum(decreasing))
+
+both_summary %>%
+  select(identifier, currency, mean_net_proportional, over_zero, increasing, decreasing) %>%
+  tidyr::pivot_longer(c(over_zero, increasing, decreasing), names_to = "description", values_to = "tf") %>%
+  filter(tf) %>%
+  select(-tf) %>%
+  group_by(currency, description) %>%
+  summarize(mean_shift = mean(mean_net_proportional))
+
+```
+
+```{r}
+both_summary_wide <- both_summary %>%
+  tidyr::pivot_wider(id_cols = c(identifier, k), names_from = currency, values_from = c(mean_net_proportional, lower_net_proportional, upper_net_proportional))
+
+ggplot(both_summary_wide, aes(x = mean_net_proportional_abundance, y = mean_net_proportional_scaled_energy, color = identifier)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower_net_proportional_scaled_energy,
+                    ymax = upper_net_proportional_scaled_energy)) +
+  geom_errorbarh(aes(xmin = lower_net_proportional_abundance,
+                     xmax = upper_net_proportional_abundance)) +
+  theme_bw() +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) + 
+  geom_abline(slope = 1, intercept = 0) +
+  theme(legend.position="none")
+
+
+
+ggplot(both_summary_wide, aes(x = mean_net_proportional_abundance, y = mean_net_proportional_scaled_energy, color = identifier)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower_net_proportional_scaled_energy,
+                    ymax = upper_net_proportional_scaled_energy)) +
+  geom_errorbarh(aes(xmin = lower_net_proportional_abundance,
+                     xmax = upper_net_proportional_abundance)) +
+  theme_bw() +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) + 
+  geom_abline(slope = 1, intercept = 0) +
+  theme(legend.position="none") +
+  xlim(-1, 1.5) +
+  ylim(-1,1.5)
+```
+
+```{r}
+
+e_v_n_resid <- both_summary_wide %>%
+  mutate(resid = mean_net_proportional_abundance - mean_net_proportional_scaled_energy)
+
+ggplot(e_v_n_resid, aes(mean_net_proportional_abundance, resid)) +
+  geom_point() +
+  ylab("abundance minus energy")
+
+```
+
+```{r}
+both_ichange_summary <- read.csv(here::here("gams", "results", "both_ichange_summary_5_100bbs.csv"))
+ggplot(filter(both_ichange_summary, identifier %in% ones_to_plot), aes(year, mean_ichange_proportional, color = currency, fill = currency)) +
+  geom_line(aes(year, mean_ichange_proportional)) +
+  geom_ribbon(aes(year, ymin = lower_ichange_proportional, ymax = upper_ichange_proportional),  alpha = .25) +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  scale_fill_viridis_d(end = .8) +
+  geom_hline(yintercept = 0) +
+  facet_wrap(vars(identifier), scales = "free") +
+  ylab("f' / f")
+
+
+both_ichange_ts_summary <-read.csv(here::here("gams", "results", "both_ichange_ts_summary_5_100bbs.csv"))
+change_together <- left_join(both_change, both_ichange_ts_summary)
+
+lwr <- function(x) {
+  quantile(x, probs = .025)
+}
+upr <- function(x) {
+  quantile(x, probs = .975)
+}
+
+change_together_summary <- change_together %>%
+  group_by(currency, identifier) %>%
+  summarize_at(.vars = c("net_proportional", "mean_abs_ichange_over_ts"),
+               .funs = c(mean = mean, upr = upr, lwr = lwr))
+
+ggplot(change_together_summary, aes(net_proportional_mean, mean_abs_ichange_over_ts_mean, color = currency)) +
+  #geom_label(aes(label = identifier)) +  
+  geom_point() +
+  scale_color_viridis_d(end = .8) +
+  theme_bw() +
+  geom_vline(xintercept = 0)
+
+```
+
+
