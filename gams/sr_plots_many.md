@@ -36,8 +36,6 @@ ts <- read.csv(here::here("gams", "results", "ts_w_rescaled_e_100bbs.csv"))
 
 ![](sr_plots_many_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
-![](sr_plots_many_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
-
 ![](sr_plots_many_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->![](sr_plots_many_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
@@ -69,10 +67,10 @@ ts <- read.csv(here::here("gams", "results", "ts_w_rescaled_e_100bbs.csv"))
 
 ![](sr_plots_many_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 
-![](sr_plots_many_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
-
 ![](sr_plots_many_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
     ## Joining, by = c("draw", "currency", "identifier", "k")
 
 ![](sr_plots_many_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
+
+![](sr_plots_many_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->![](sr_plots_many_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->

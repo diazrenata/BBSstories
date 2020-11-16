@@ -46,23 +46,10 @@ ggplot(joint_samples, aes(year, mean, color = currency, fill = currency)) +
 
 both_change <- read.csv(here::here("gams", "results", "both_change_5.csv"))
 
-ggplot(both_change, aes(net_proportional,color = identifier, fill = identifier)) +
-  geom_density(alpha = .4) +
-  facet_wrap(vars(currency), scales = "free") +
-  theme_bw() +
-  geom_vline(xintercept = 0)
-
-
 ```
 
 ```{r}
 both_summary <- read.csv(here::here("gams", "results", "both_summary_5.csv"))
-
-ggplot(both_summary, aes(x = mean_net_proportional)) +
-  geom_histogram() +
-  theme_bw() +
-  facet_wrap(vars(currency), scales = "free") +
-  geom_vline(xintercept = 0)
 
 ```
 
@@ -101,16 +88,7 @@ ggplot(both_ichange_summary, aes(year, mean_ichange_proportional, color = curren
 
 both_ichange_ts_summary <-read.csv(here::here("gams", "results", "both_ichange_ts_summary_5.csv"))
 
-ggplot(both_ichange_ts_summary, aes(mean_abs_ichange_over_ts, color = identifier, fill = identifier)) +
-  geom_density(alpha = .4) +
-  facet_wrap(vars(currency)) +
-  theme_bw() +
-  geom_vline(xintercept = 0)
-
 change_together <- left_join(both_change, both_ichange_ts_summary)
-
-ggplot(change_together, aes(net_proportional, mean_abs_ichange_over_ts, color = identifier, shape = currency)) +
-  geom_point(alpha = .5) 
 
 lwr <- function(x) {
   quantile(x, probs = .025)
@@ -132,4 +110,31 @@ ggplot(change_together_summary, aes(net_proportional_mean, mean_abs_ichange_over
 
 ```
 
+```{r}
+
+ggplot(both_change, aes(net_proportional,color = identifier, fill = identifier)) +
+  geom_density(alpha = .4) +
+  facet_wrap(vars(currency), scales = "free") +
+  theme_bw() +
+  geom_vline(xintercept = 0)
+
+
+ggplot(both_summary, aes(x = mean_net_proportional)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(currency), scales = "free") +
+  geom_vline(xintercept = 0)
+
+
+ggplot(both_ichange_ts_summary, aes(mean_abs_ichange_over_ts, color = identifier, fill = identifier)) +
+  geom_density(alpha = .4) +
+  facet_wrap(vars(currency)) +
+  theme_bw() +
+  geom_vline(xintercept = 0)
+
+ggplot(change_together, aes(net_proportional, mean_abs_ichange_over_ts, color = identifier, shape = currency)) +
+  geom_point(alpha = .5) 
+
+
+```
 

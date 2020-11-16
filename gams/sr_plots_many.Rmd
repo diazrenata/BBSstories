@@ -16,6 +16,7 @@ ts <- read.csv(here::here("gams", "results", "ts_w_rescaled_e_100bbs.csv"))
 ```
 
 ```{r}
+set.seed(1977)
 
 
 max_to_plot = 16
@@ -50,13 +51,6 @@ ggplot(filter(joint_samples, identifier %in% ones_to_plot), aes(year, mean, colo
 ```{r}
 
 both_change <- read.csv(here::here("gams", "results", "both_change_5_100bbs.csv"))
-
-ggplot(filter(both_change, identifier %in% ones_to_plot), aes(net_proportional,color = identifier, fill = identifier)) +
-  geom_density(alpha = .4) +
-  facet_wrap(vars(currency), scales = "free") +
-  theme_bw() +
-  geom_vline(xintercept = 0)
-
 ```
 
 ```{r}
@@ -135,9 +129,6 @@ ggplot(both_summary_wide, aes(x = mean_net_proportional_abundance, y = mean_net_
 e_v_n_resid <- both_summary_wide %>%
   mutate(resid = mean_net_proportional_abundance - mean_net_proportional_scaled_energy)
 
-ggplot(e_v_n_resid, aes(mean_net_proportional_abundance, resid)) +
-  geom_point() +
-  ylab("abundance minus energy")
 
 ```
 
@@ -178,4 +169,17 @@ ggplot(change_together_summary, aes(net_proportional_mean, mean_abs_ichange_over
 
 ```
 
+```{r}
 
+
+
+ggplot(filter(both_change, identifier %in% ones_to_plot), aes(net_proportional,color = identifier, fill = identifier)) +
+  geom_density(alpha = .4) +
+  facet_wrap(vars(currency), scales = "free") +
+  theme_bw() +
+  geom_vline(xintercept = 0)
+
+ggplot(e_v_n_resid, aes(mean_net_proportional_abundance, resid)) +
+  geom_point() +
+  ylab("abundance minus energy")
+```
