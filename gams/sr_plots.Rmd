@@ -95,7 +95,7 @@ ggplot(both_ichange_summary, aes(year, mean_ichange_proportional, color = curren
   scale_color_viridis_d(end = .8) +
   scale_fill_viridis_d(end = .8) +
   geom_hline(yintercept = 0) +
-  facet_wrap(vars(identifier), scales = "free") +
+  facet_wrap(vars(identifier), scales = "free_x") +
   ylab("f' / f")
 
 

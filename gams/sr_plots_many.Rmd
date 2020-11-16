@@ -150,7 +150,7 @@ ggplot(filter(both_ichange_summary, identifier %in% ones_to_plot), aes(year, mea
   scale_color_viridis_d(end = .8) +
   scale_fill_viridis_d(end = .8) +
   geom_hline(yintercept = 0) +
-  facet_wrap(vars(identifier), scales = "free") +
+  facet_wrap(vars(identifier), scales = "free_x") +
   ylab("f' / f")
 
 
